@@ -55,7 +55,7 @@ export function PhilosophySection() {
   }, [updateTransforms]);
 
   return (
-    <section id="products" className="bg-background">
+    <section id="philosophy" className="bg-background">
       {/* Scroll-Animated Product Grid */}
       <div ref={sectionRef} className="relative" style={{ height: "200vh" }}>
         <div className="sticky top-0 h-screen flex items-center justify-center">
@@ -65,16 +65,16 @@ export function PhilosophySection() {
               className="absolute inset-0 flex items-center justify-center pointer-events-none z-0"
               style={{ opacity: titleOpacity }}
             >
-              <h2 className="text-[12vw] font-medium leading-[0.95] tracking-tighter text-foreground md:text-[10vw] lg:text-[8vw] text-center px-6">
-                Meet Alpine & Forest.
+              <h2 className="text-[12vw] font-serif font-light leading-[0.95] tracking-tighter text-foreground md:text-[10vw] lg:text-[8vw] text-center px-6">
+                Why Choose Aakar.
               </h2>
             </div>
 
             {/* Product Grid */}
             <div className="relative z-10 grid grid-cols-1 gap-4 px-6 md:grid-cols-2 md:px-12 lg:px-20">
-              {/* Alpine Image - comes from left */}
+              {/* Craftsmanship Image - comes from left */}
               <div 
-                className="relative aspect-[4/3] overflow-hidden rounded-2xl"
+                className="relative aspect-[4/3] overflow-hidden rounded-none"
                 style={{
                   transform: `translate3d(${alpineTranslateX}%, 0, 0)`,
                   WebkitTransform: `translate3d(${alpineTranslateX}%, 0, 0)`,
@@ -84,20 +84,20 @@ export function PhilosophySection() {
               >
                 <Image
                   src="/images/product-backpack.png"
-                  alt="V1 Expedition Backpack in alpine setting"
+                  alt="Handcrafted wooden furniture detail"
                   fill
                   className="object-cover"
                 />
                 <div className="absolute bottom-6 left-6">
-                  <span className="backdrop-blur-md px-4 py-2 text-sm font-medium rounded-full bg-[rgba(255,255,255,0.2)] text-white">
-                    Alpine $299
+                  <span className="backdrop-blur-md px-4 py-2 text-sm font-medium rounded-none bg-[rgba(45,90,61,0.9)] text-white">
+                    Artisan Crafted
                   </span>
                 </div>
               </div>
 
-              {/* Forest Image - comes from right */}
+              {/* Sustainability Image - comes from right */}
               <div 
-                className="relative aspect-[4/3] overflow-hidden rounded-2xl"
+                className="relative aspect-[4/3] overflow-hidden rounded-none"
                 style={{
                   transform: `translate3d(${forestTranslateX}%, 0, 0)`,
                   WebkitTransform: `translate3d(${forestTranslateX}%, 0, 0)`,
@@ -106,14 +106,14 @@ export function PhilosophySection() {
                 }}
               >
                 <Image
-                  src="/images/02cdc426-dff4-4dff-b131-1b134c3699b5.png"
-                  alt="V1 Thermal mug in forest setting"
+                  src="/images/product-forest.png"
+                  alt="Sustainable wood sourcing"
                   fill
                   className="object-cover"
                 />
                 <div className="absolute bottom-6 left-6">
-                  <span className="backdrop-blur-md px-4 py-2 text-sm font-medium rounded-full bg-[rgba(255,255,255,0.2)] text-white">
-                    Forest $199
+                  <span className="backdrop-blur-md px-4 py-2 text-sm font-medium rounded-none bg-[rgba(139,111,71,0.9)] text-white">
+                    Sustainable
                   </span>
                 </div>
               </div>
@@ -124,13 +124,13 @@ export function PhilosophySection() {
 
       {/* Description */}
       <div className="px-6 py-20 md:px-12 md:py-28 lg:px-20 lg:py-36 lg:pb-14">
-        <div className="text-center">
-          <p className="text-xs uppercase tracking-widest text-muted-foreground">
-            First generation
+        <div className="text-center space-y-4">
+          <p className="text-xs uppercase tracking-widest text-secondary font-semibold">
+            Our Philosophy
           </p>
-          <p className="mt-8 leading-relaxed text-muted-foreground text-3xl text-center">
-            Alpine & Forest are high-tech outdoor accessories designed for modern adventurers. 
-            Lightweight, durable, and engineered for extreme conditions.
+          <p className="mt-8 leading-relaxed text-foreground text-3xl text-center font-serif font-light">
+            We create timeless furniture using solid wood and traditional joinery techniques. 
+            Every piece is handcrafted with care, designed to last generations while honoring sustainable forestry.
           </p>
         </div>
       </div>

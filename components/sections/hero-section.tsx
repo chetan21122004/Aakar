@@ -3,30 +3,30 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
-const word = "EVASION";
+const word = "AAKAR";
 
 const sideImages = [
   {
-    src: "https://images.unsplash.com/photo-1517824806704-9040b037703b?q=80&w=1000",
-    alt: "Mountain hiking adventure",
+    src: "/images/bottle-bike.png",
+    alt: "Wooden furniture showcase",
     position: "left",
     span: 1,
   },
   {
-    src: "https://images.unsplash.com/photo-1510312305653-8ed496efae75?q=80&w=1000",
-    alt: "Camping under stars",
+    src: "/images/bottle-lake.png",
+    alt: "Artisan woodcraft detail",
     position: "left",
     span: 1,
   },
   {
-    src: "https://images.unsplash.com/photo-1533873984035-25970ab07461?q=80&w=1000",
-    alt: "Forest exploration",
+    src: "/images/bottle-water.png",
+    alt: "Handcrafted wood grain",
     position: "right",
     span: 1,
   },
   {
-    src: "https://images.unsplash.com/photo-1527004013197-933c4bb611b3?q=80&w=1000",
-    alt: "Lake camping view",
+    src: "/images/bottle-stream.png",
+    alt: "Natural wood finish",
     position: "right",
     span: 1,
   },
@@ -194,10 +194,10 @@ export function HeroSection() {
 
       {/* Tagline Section */}
       <div className="px-6 pt-32 pb-28 md:pt-48 md:px-12 md:pb-36 lg:px-20 lg:pt-56 lg:pb-44">
-        <p className="mx-auto max-w-2xl text-center text-2xl leading-relaxed text-muted-foreground md:text-3xl lg:text-[2.5rem] lg:leading-snug">
-          Lightweight, durable
+        <p className="mx-auto max-w-2xl text-center font-serif text-3xl leading-relaxed text-foreground md:text-4xl lg:text-5xl lg:leading-snug font-light">
+          Handcrafted wooden furniture
           <br />
-          and adventure-ready.
+          for timeless living spaces.
         </p>
       </div>
     </section>
