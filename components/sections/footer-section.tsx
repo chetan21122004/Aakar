@@ -4,22 +4,22 @@ import Link from "next/link";
 
 const footerLinks = {
   explore: [
-    { label: "Products", href: "#products" },
-    { label: "Technology", href: "#technology" },
-    { label: "Gallery", href: "#gallery" },
-    { label: "Accessories", href: "#accessories" },
+    { label: "Shop", href: "/shop" },
+    { label: "Collections", href: "/collections" },
+    { label: "Our Craft", href: "/about" },
+    { label: "See in Your Room", href: "/see-in-room" },
   ],
   about: [
-    { label: "Our Story", href: "#" },
-    { label: "Team", href: "#" },
-    { label: "Careers", href: "#" },
-    { label: "Contact", href: "#" },
+    { label: "Our Story", href: "/about" },
+    { label: "Sustainability", href: "/about" },
+    { label: "Bespoke Services", href: "/contact" },
+    { label: "Contact Us", href: "/contact" },
   ],
   service: [
-    { label: "FAQ", href: "#" },
-    { label: "Shipping", href: "#" },
-    { label: "Returns", href: "#" },
-    { label: "Warranty", href: "#" },
+    { label: "FAQ", href: "/faq" },
+    { label: "Delivery & Installation", href: "/faq" },
+    { label: "Care & Maintenance", href: "/faq" },
+    { label: "Warranty", href: "/faq" },
   ],
 };
 
@@ -31,11 +31,11 @@ export function FooterSection() {
         <div className="grid grid-cols-2 gap-12 md:grid-cols-4 lg:grid-cols-5">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1 lg:col-span-2">
-            <Link href="/" className="text-lg font-medium text-foreground">
-              EVASION
+            <Link href="/" className="text-lg font-serif font-semibold text-foreground">
+              AAKAR WOODCRAFT
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
-              Premium smart bottles engineered for adventure. GPS tracking, LED flashlight, and self-heating technology.
+              Handcrafted solid wood furniture using traditional techniques. Every piece is designed to be cherished for generations.
             </p>
           </div>
 
@@ -96,7 +96,7 @@ export function FooterSection() {
       <div className="border-t border-border px-6 py-6 md:px-12 lg:px-20">
         <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
           <p className="text-xs text-muted-foreground">
-            2026 EVASION. All rights reserved.
+            2026 Aakar Woodcraft. All rights reserved.
           </p>
 
           

@@ -1,14 +1,15 @@
 import React from "react"
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Inter, Playfair_Display } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
-const inter = Inter({ subsets: ["latin"], variable: '--font-inter' });
+const inter = Inter({ subsets: ["latin"], variable: '--font-sans' });
+const playfair = Playfair_Display({ subsets: ["latin"], variable: '--font-serif' });
 
 export const metadata: Metadata = {
-  title: 'VILDMARK | Go Further',
-  description: 'High-performance outdoor gear engineered for the modern explorer. Lightweight, durable, adventure-ready.',
+  title: 'Aakar Woodcraft | Handcrafted Wooden Furniture',
+  description: 'Premium solid wood furniture handcrafted with traditional techniques. Sustainable, timeless design for your home.',
   generator: 'v0.app',
   icons: {
     icon: [
@@ -35,8 +36,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body className={`${inter.variable} font-sans antialiased`}>
+    <html lang="en" className="bg-background">
+      <body className={`${inter.variable} ${playfair.variable} font-sans antialiased bg-background text-foreground`}>
         {children}
         <Analytics />
       </body>
