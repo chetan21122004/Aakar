@@ -8,6 +8,7 @@ interface ProductCardProps {
   price: string
   image: string
   href?: string
+  quoteHref?: string
 }
 
 export function ProductCard({
@@ -16,11 +17,12 @@ export function ProductCard({
   category,
   price,
   image,
-  href = `/shop/${id}`
+  href = `/shop/${id}`,
+  quoteHref = '/contact',
 }: ProductCardProps) {
   return (
-    <Link href={href}>
-      <div className="group cursor-pointer">
+    <div className="group">
+      <Link href={href} className="cursor-pointer">
         <div className="relative overflow-hidden bg-muted mb-4 aspect-square">
           <Image
             src={image}
@@ -40,7 +42,21 @@ export function ProductCard({
             {price}
           </p>
         </div>
+      </Link>
+      <div className="mt-4 flex items-center gap-5">
+        <Link
+          href={href}
+          className="border-b border-foreground pb-0.5 text-xs font-medium uppercase tracking-widest text-foreground transition-opacity hover:opacity-70"
+        >
+          View Details
+        </Link>
+        <Link
+          href={quoteHref}
+          className="border-b border-accent pb-0.5 text-xs font-medium uppercase tracking-widest text-accent transition-opacity hover:opacity-70"
+        >
+          Request Quote
+        </Link>
       </div>
-    </Link>
+    </div>
   )
 }

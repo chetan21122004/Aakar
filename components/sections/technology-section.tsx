@@ -60,26 +60,26 @@ function ScrollRevealText({ text }: { text: string }) {
 
 const sideImages = [
   {
-    src: "https://images.unsplash.com/photo-1476610182048-b716b8518aae?q=80&w=1000",
-    alt: "Forest trail",
+    src: "https://images.unsplash.com/photo-1560448204-603b3fc33ddc?q=80&w=1000&auto=format&fit=crop",
+    alt: "Empty living room ready for furniture placement",
     position: "left",
     span: 1,
   },
   {
-    src: "https://images.unsplash.com/photo-1511593358241-7eea1f3c84e5?q=80&w=1000",
-    alt: "Mountain peak",
+    src: "https://images.unsplash.com/photo-1560185128-e173042f79dd?q=80&w=1000&auto=format&fit=crop",
+    alt: "Bedroom styled with a wooden bed frame",
     position: "left",
     span: 1,
   },
   {
-    src: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=1000",
-    alt: "Alpine landscape",
+    src: "https://images.unsplash.com/photo-1631510390389-c1e4fb20ff31?q=80&w=1000&auto=format&fit=crop",
+    alt: "Living room with sofa near a window",
     position: "right",
     span: 1,
   },
   {
-    src: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1000",
-    alt: "Snow mountain",
+    src: "https://images.unsplash.com/photo-1718717621302-a359be21a111?q=80&w=1000&auto=format&fit=crop",
+    alt: "Wooden bedside table styled with a lamp",
     position: "right",
     span: 1,
   },
@@ -91,7 +91,7 @@ export function TechnologySection() {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [textProgress, setTextProgress] = useState(0);
   
-  const descriptionText = "Experience outdoor gear reimagined with cutting-edge technology. Alpine & Forest accessories combine ultra-lightweight materials, intelligent temperature control, and weather-resistant engineering to elevate every adventure. From mountain peaks to forest trails, your gear adapts to the conditions.";
+  const descriptionText = "A future-ready visualization feature where customers can upload a room photo and preview selected furniture in their space before requesting a quote.";
 
   useEffect(() => {
     const handleScroll = () => {
@@ -198,21 +198,21 @@ export function TechnologySection() {
               }}
             >
               <Image
-                src="https://images.unsplash.com/photo-1501555088652-021faa106b9b?q=80&w=2000"
-                alt="Aerial view of camping expedition in wilderness"
+                src="https://images.unsplash.com/photo-1560184897-67f4a3f9a7fa?q=80&w=2000&auto=format&fit=crop"
+                alt="Living room styled with handcrafted wooden furniture"
                 fill
                 className="object-cover"
               />
               <div className="absolute inset-0 bg-foreground/40" />
-              
+
               {/* Title Text - Fades out word by word with blur */}
-              <div 
+              <div
                 className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center"
               >
                 <h2 className="max-w-3xl font-medium leading-tight tracking-tight text-white md:text-5xl lg:text-7xl text-5xl">
-                  {["Technology", "Meets", "Wilderness."].map((word, index) => {
+                  {["See Furniture", "In Your", "Room."].map((word, index) => {
                     // Each word fades out sequentially based on scrollProgress
-                    const wordFadeStart = index * 0.07; // Technology: 0, Meets: 0.07, Wilderness: 0.14
+                    const wordFadeStart = index * 0.07; // See Furniture: 0, In Your: 0.07, Room: 0.14
                     const wordFadeEnd = wordFadeStart + 0.07;
                     const wordProgress = Math.max(0, Math.min(1, (scrollProgress - wordFadeStart) / (wordFadeEnd - wordFadeStart)));
                     const wordOpacity = 1 - wordProgress;
@@ -285,6 +285,14 @@ export function TechnologySection() {
         {/* Text Content */}
         <div className="relative z-10 mx-auto max-w-4xl">
           <ScrollRevealText text={descriptionText} />
+          <div className="mt-10">
+            <a
+              href="/see-in-room"
+              className="inline-block bg-foreground px-8 py-4 text-sm font-medium text-background transition-opacity hover:opacity-85"
+            >
+              Try See in Your Room
+            </a>
+          </div>
         </div>
       </div>
     </section>

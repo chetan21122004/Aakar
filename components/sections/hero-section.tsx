@@ -7,26 +7,26 @@ const word = "AAKAR";
 
 const sideImages = [
   {
-    src: "/images/bottle-bike.png",
-    alt: "Wooden furniture showcase",
+    src: "https://images.unsplash.com/photo-1581428982868-e410dd047a90?q=80&w=1000&auto=format&fit=crop",
+    alt: "Wooden coffee table beside a sofa",
     position: "left",
     span: 1,
   },
   {
-    src: "/images/bottle-lake.png",
-    alt: "Artisan woodcraft detail",
+    src: "https://images.unsplash.com/photo-1736506159893-22cca29b8018?q=80&w=1000&auto=format&fit=crop",
+    alt: "Close-up of dark wood grain texture",
     position: "left",
     span: 1,
   },
   {
-    src: "/images/bottle-water.png",
-    alt: "Handcrafted wood grain",
+    src: "https://images.unsplash.com/photo-1758977403438-1b8546560d31?q=80&w=1000&auto=format&fit=crop",
+    alt: "Modern dining table with upholstered chairs",
     position: "right",
     span: 1,
   },
   {
-    src: "/images/bottle-stream.png",
-    alt: "Natural wood finish",
+    src: "https://images.unsplash.com/photo-1685612213152-b995e1641013?q=80&w=1000&auto=format&fit=crop",
+    alt: "Handcrafted wooden lounge chair",
     position: "right",
     span: 1,
   },
@@ -126,8 +126,8 @@ export function HeroSection() {
               }}
             >
               <Image
-                src="/images/hero-main.png"
-                alt="Mountain landscape with camping tent at sunset"
+                src="https://images.unsplash.com/photo-1762529716272-b316f61502e7?q=80&w=2000&auto=format&fit=crop"
+                alt="Modern living room styled with handcrafted wooden furniture"
                 fill
                 className="object-cover"
                 priority
@@ -193,12 +193,29 @@ export function HeroSection() {
       <div className="h-[200vh]" />
 
       {/* Tagline Section */}
-      <div className="px-6 pt-32 pb-28 md:pt-48 md:px-12 md:pb-36 lg:px-20 lg:pt-56 lg:pb-44">
-        <p className="mx-auto max-w-2xl text-center font-serif text-3xl leading-relaxed text-foreground md:text-4xl lg:text-5xl lg:leading-snug font-light">
-          Handcrafted wooden furniture
-          <br />
-          for timeless living spaces.
+      <div className="px-6 pt-32 pb-12 md:pt-48 md:px-12 md:pb-16 lg:px-20 lg:pt-56 lg:pb-20">
+        <h2 className="mx-auto max-w-3xl text-center font-serif text-3xl leading-snug text-foreground md:text-4xl lg:text-5xl font-light">
+          Custom Wooden Furniture Crafted for Modern Indian Homes
+        </h2>
+        <p className="mx-auto mt-6 max-w-xl text-center text-base leading-relaxed text-muted-foreground md:text-lg">
+          Premium solid wood furniture, artistic collections, and made-to-order pieces designed with craftsmanship, comfort, and timeless style.
         </p>
+      </div>
+
+      {/* Hero CTAs */}
+      <div className="flex flex-col items-center justify-center gap-4 px-6 pb-28 sm:flex-row md:pb-36 lg:pb-44">
+        <a
+          href="/collections"
+          className="w-full bg-foreground px-8 py-4 text-center text-sm font-medium text-background transition-opacity hover:opacity-85 sm:w-auto"
+        >
+          Explore Collections
+        </a>
+        <a
+          href="/contact"
+          className="w-full border border-border px-8 py-4 text-center text-sm font-medium text-foreground transition-colors hover:bg-muted sm:w-auto"
+        >
+          Request a Quote
+        </a>
       </div>
     </section>
   );

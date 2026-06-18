@@ -12,14 +12,14 @@ export function GallerySection() {
   const lastScrollRef = useRef(0);
 
   const images = [
-    { src: "/images/bottle-bike.png", alt: "Thermal bottle on bike" },
-    { src: "/images/bottle-lake.png", alt: "Thermal bottle by lake" },
-    { src: "/images/bottle-water.png", alt: "Thermal bottle in water" },
-    { src: "/images/bottle-stream.png", alt: "Thermal bottle by stream" },
-    { src: "/images/bottle-fire.png", alt: "Thermal bottle by fire" },
-    { src: "/images/bottle-snow.png", alt: "Thermal bottle in snow" },
-    { src: "/images/bottle-mountain.png", alt: "Thermal bottle on mountain" },
-    { src: "/images/bottle-canyon.png", alt: "Thermal bottle at canyon" },
+    { src: "https://images.unsplash.com/photo-1762529716272-b316f61502e7?q=80&w=1600&auto=format&fit=crop", alt: "Modern living room styled with handcrafted wooden furniture" },
+    { src: "https://images.unsplash.com/photo-1585128903994-9788298932a6?q=80&w=1600&auto=format&fit=crop", alt: "Solid wood dining table with chairs" },
+    { src: "https://images.unsplash.com/photo-1736506159893-22cca29b8018?q=80&w=1600&auto=format&fit=crop", alt: "Close-up of dark wood grain texture" },
+    { src: "https://images.unsplash.com/photo-1581428982868-e410dd047a90?q=80&w=1600&auto=format&fit=crop", alt: "Wooden coffee table beside a sofa" },
+    { src: "https://images.unsplash.com/photo-1687422810663-c316494f725a?q=80&w=1600&auto=format&fit=crop", alt: "Craftsman shaping a piece of wood by hand" },
+    { src: "https://images.unsplash.com/photo-1769690398694-9c5d5ca4b4ea?q=80&w=1600&auto=format&fit=crop", alt: "Bedroom with a large wooden wardrobe" },
+    { src: "https://images.unsplash.com/photo-1761591671882-b1c7b84bd0d6?q=80&w=1600&auto=format&fit=crop", alt: "Wooden bed frame with bedside table and lamp" },
+    { src: "https://images.unsplash.com/photo-1685612213152-b995e1641013?q=80&w=1600&auto=format&fit=crop", alt: "Vintage-style wooden armchair" },
   ];
 
   // Calculate section height based on content width
@@ -88,7 +88,15 @@ export function GallerySection() {
   }, [updateTransform]);
 
   return (
-    <section 
+    <>
+      {/* Section Title */}
+      <div className="bg-background px-6 pt-20 pb-10 md:px-12 md:pt-28 lg:px-20">
+        <h2 className="text-3xl font-serif font-light tracking-tight text-foreground md:text-4xl">
+          Spaces, Details and Finished Pieces
+        </h2>
+      </div>
+
+    <section
       id="gallery"
       ref={galleryRef}
       className="relative bg-background"
@@ -133,5 +141,6 @@ export function GallerySection() {
         </div>
       </div>
     </section>
+    </>
   );
 }
