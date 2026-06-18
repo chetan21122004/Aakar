@@ -42,8 +42,8 @@ export default function RootLayout({
       <body className={`${inter.variable} ${playfair.variable} font-sans antialiased bg-background text-foreground`}>
         <Providers>
           {children}
+          <WhatsAppButton />
         </Providers>
-        <WhatsAppButton />
         <Analytics />
       </body>
     </html>

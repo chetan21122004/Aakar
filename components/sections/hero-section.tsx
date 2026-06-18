@@ -41,7 +41,7 @@ export function HeroSection() {
       if (!sectionRef.current) return;
       
       const rect = sectionRef.current.getBoundingClientRect();
-      const scrollableHeight = window.innerHeight * 2;
+      const scrollableHeight = window.innerHeight * 0.9;
       const scrolled = -rect.top;
       const progress = Math.max(0, Math.min(1, scrolled / scrollableHeight));
       
@@ -74,21 +74,31 @@ export function HeroSection() {
   
   // Vertical offset for side columns to move them up on mobile
   const sideTranslateY = -(imageProgress * 15); // Move up by 15% when fully expanded
+  const taglineOpacity = Math.max(0, (scrollProgress - 0.45) / 0.55);
+  const taglineVisible = scrollProgress > 0.45;
+  const sidePadding = imageProgress * 16;
+  const bottomPadding = taglineVisible ? imageProgress * 8 : 0;
 
   return (
     <section ref={sectionRef} className="relative bg-background">
       {/* Sticky container for scroll animation */}
       <div className="sticky top-0 h-screen overflow-hidden">
-        <div className="flex h-full w-full items-center justify-center">
-          {/* Bento Grid Container */}
-          <div 
-            className="relative flex h-full w-full items-stretch justify-center"
-            style={{ gap: `${gap}px`, padding: `${imageProgress * 16}px`, paddingBottom: `${60 + (imageProgress * 40)}px` }}
+        <div className="relative flex h-full flex-col">
+          {/* Bento Grid — top area only, cannot overlap content below */}
+          <div
+            className="relative flex h-full min-h-0 flex-1 items-stretch justify-center"
+            style={{
+              gap: `${gap}px`,
+              paddingTop: `${sidePadding}px`,
+              paddingRight: `${sidePadding}px`,
+              paddingBottom: `${bottomPadding}px`,
+              paddingLeft: `${sidePadding}px`,
+            }}
           >
             
             {/* Left Column */}
             <div 
-              className="flex flex-col will-change-transform"
+              className="relative z-[1] flex flex-col will-change-transform"
               style={{
                 width: `${sideWidth}%`,
                 gap: `${gap}px`,
@@ -117,7 +127,7 @@ export function HeroSection() {
 
             {/* Main Hero Image - Center */}
             <div 
-              className="relative overflow-hidden will-change-transform"
+              className="relative z-[2] overflow-hidden will-change-transform"
               style={{
                 width: `${centerWidth}%`,
                 height: `${centerHeight}%`,
@@ -158,7 +168,7 @@ export function HeroSection() {
 
             {/* Right Column */}
             <div 
-              className="flex flex-col will-change-transform"
+              className="relative z-[1] flex flex-col will-change-transform"
               style={{
                 width: `${sideWidth}%`,
                 gap: `${gap}px`,
@@ -186,37 +196,43 @@ export function HeroSection() {
             </div>
 
           </div>
+
+          {/* Tagline + CTAs — only reserves space once visible */}
+          <div
+            className="relative z-20 shrink-0 overflow-hidden bg-background transition-[max-height] duration-300 ease-out"
+            style={{
+              opacity: taglineOpacity,
+              maxHeight: taglineVisible ? "360px" : "0px",
+            }}
+          >
+            <div className="px-6 pb-6 pt-2 md:px-12 md:pb-8 lg:px-20">
+            <h2 className="mx-auto max-w-3xl text-center font-serif text-2xl font-light leading-snug text-foreground md:text-3xl lg:text-4xl">
+              Custom Wooden Furniture Crafted for Modern Indian Homes
+            </h2>
+            <p className="mx-auto mt-3 max-w-xl text-center text-sm leading-relaxed text-muted-foreground md:mt-4 md:text-base">
+              Premium solid wood furniture, artistic collections, and made-to-order pieces designed with craftsmanship, comfort, and timeless style.
+            </p>
+            <div className="mt-4 flex flex-col items-center justify-center gap-3 sm:mt-5 sm:flex-row sm:gap-4">
+              <a
+                href="/collections"
+                className="w-full bg-foreground px-8 py-3.5 text-center text-sm font-medium text-background transition-opacity hover:opacity-85 sm:w-auto"
+              >
+                Explore Collections
+              </a>
+              <a
+                href="/contact"
+                className="w-full border border-border px-8 py-3.5 text-center text-sm font-medium text-foreground transition-colors hover:bg-muted sm:w-auto"
+              >
+                Request a Quote
+              </a>
+            </div>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Scroll space to enable animation */}
-      <div className="h-[200vh]" />
-
-      {/* Tagline Section */}
-      <div className="px-6 pt-32 pb-12 md:pt-48 md:px-12 md:pb-16 lg:px-20 lg:pt-56 lg:pb-20">
-        <h2 className="mx-auto max-w-3xl text-center font-serif text-3xl leading-snug text-foreground md:text-4xl lg:text-5xl font-light">
-          Custom Wooden Furniture Crafted for Modern Indian Homes
-        </h2>
-        <p className="mx-auto mt-6 max-w-xl text-center text-base leading-relaxed text-muted-foreground md:text-lg">
-          Premium solid wood furniture, artistic collections, and made-to-order pieces designed with craftsmanship, comfort, and timeless style.
-        </p>
-      </div>
-
-      {/* Hero CTAs */}
-      <div className="flex flex-col items-center justify-center gap-4 px-6 pb-28 sm:flex-row md:pb-36 lg:pb-44">
-        <a
-          href="/collections"
-          className="w-full bg-foreground px-8 py-4 text-center text-sm font-medium text-background transition-opacity hover:opacity-85 sm:w-auto"
-        >
-          Explore Collections
-        </a>
-        <a
-          href="/contact"
-          className="w-full border border-border px-8 py-4 text-center text-sm font-medium text-foreground transition-colors hover:bg-muted sm:w-auto"
-        >
-          Request a Quote
-        </a>
-      </div>
+      <div className="h-[90vh]" />
     </section>
   );
 }

@@ -42,15 +42,12 @@ export function Header() {
 
   return (
     <>
-      <header
-        className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-5xl transition-all duration-300 ${isScrolled ? "bg-background/90 backdrop-blur-md rounded-full" : "bg-transparent"}`}
-        style={{
-          boxShadow: isScrolled
-            ? "rgba(23, 63, 53, 0.06) 0px 0px 0px 1px, rgba(23, 63, 53, 0.06) 0px 1px 1px -0.5px, rgba(23, 63, 53, 0.06) 0px 3px 3px -1.5px, rgba(23, 63, 53, 0.06) 0px 6px 6px -3px, rgba(23, 63, 53, 0.06) 0px 12px 12px -6px"
-            : "none",
-        }}
-      >
-        <div className="flex items-center justify-between transition-all duration-300 px-2 pl-5 py-2">
+      <header className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-5xl">
+        <div
+          className={`flex items-center justify-between transition-all duration-300 px-5 pl-5 py-2 ${
+            isScrolled ? "bg-background/95 backdrop-blur-md rounded-full border border-border/50 shadow-sm" : ""
+          }`}
+        >
           <Link
             href="/"
             className={`font-serif text-lg font-semibold tracking-tight transition-colors duration-300 whitespace-nowrap ${isHomeHero ? "text-white" : "text-foreground"}`}

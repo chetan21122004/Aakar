@@ -30,7 +30,8 @@ export function GallerySection() {
       const viewportWidth = window.innerWidth;
       const viewportHeight = window.innerHeight;
       // Height = viewport height + the extra scroll needed to reveal all content
-      const totalHeight = viewportHeight + (containerWidth - viewportWidth);
+      const scrollDistance = (containerWidth - viewportWidth) / 1.67;
+      const totalHeight = viewportHeight + scrollDistance;
       setSectionHeight(`${totalHeight}px`);
     };
 
@@ -51,7 +52,7 @@ export function GallerySection() {
     const viewportWidth = window.innerWidth;
     
     // Total scroll distance needed to reveal all images
-    const totalScrollDistance = containerWidth - viewportWidth;
+    const totalScrollDistance = (containerWidth - viewportWidth) / 1.67;
     
     // Current scroll position within this section
     const scrolled = Math.max(0, -rect.top);
