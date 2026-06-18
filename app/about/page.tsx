@@ -4,139 +4,158 @@ import { CTASection } from "@/components/cta-section"
 import Image from "next/image"
 
 export const metadata = {
-  title: "About Us | Aakar Woodcraft",
-  description: "Learn about our craft, heritage, and commitment to sustainable woodworking",
+  title: "About Aakar Woodcraft | Custom Furniture Craftsmanship",
+  description: "Learn how Aakar Woodcraft crafts custom wooden furniture with artistry, precision, and purpose for modern Indian homes.",
 }
+
+const materials = [
+  {
+    title: "Solid Wood",
+    description: "Sheesham, mango, teak, and oak — no particleboard or MDF veneers.",
+  },
+  {
+    title: "Natural Finishes",
+    description: "Hand-rubbed oils and natural-tone stains that let the grain show through.",
+  },
+  {
+    title: "Premium Upholstery",
+    description: "Carefully sourced fabrics chosen for comfort, durability, and feel.",
+  },
+  {
+    title: "Quality Hardware",
+    description: "Soft-close hinges, reinforced joints, and fittings built to outlast trends.",
+  },
+]
+
+const values = [
+  {
+    title: "Craftsmanship",
+    description: "Every piece is shaped by hand, using techniques passed down through generations of Indian carpentry.",
+  },
+  {
+    title: "Honest Materials",
+    description: "We use what we say we use — solid wood construction, never disguised particleboard.",
+  },
+  {
+    title: "Custom Design",
+    description: "Every dimension, finish, and detail can be adapted to fit your space and your taste.",
+  },
+  {
+    title: "Long-Lasting Quality",
+    description: "Furniture built to be repaired and refinished for decades, not replaced after a few years.",
+  },
+  {
+    title: "Client-Focused Process",
+    description: "From first enquiry to final installation, we keep you involved in every decision.",
+  },
+]
 
 export default function AboutPage() {
   return (
     <main className="min-h-screen bg-background">
       <Header />
-      
-      {/* Hero Section */}
-      <section className="pt-24 pb-20 px-6 md:px-12 lg:px-20 bg-gradient-to-br from-background to-muted/30">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="font-serif text-5xl md:text-6xl font-light text-foreground mb-6">
-            Our Story
+
+      {/* Hero */}
+      <section className="pt-32 pb-20 px-6 md:px-12 lg:px-20">
+        <div className="max-w-3xl mx-auto text-center">
+          <h1 className="font-serif text-4xl font-light text-foreground md:text-5xl mb-6">
+            About Aakar Woodcraft
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            For over two decades, Aakar Woodcraft has been creating timeless wooden furniture using traditional Indian woodworking techniques passed down through generations.
+          <p className="text-lg text-muted-foreground leading-relaxed">
+            Crafting custom wooden furniture with artistry, precision, and purpose.
           </p>
         </div>
       </section>
 
-      {/* Values Section */}
-      <section className="py-20 px-6 md:px-12 lg:px-20">
+      {/* Brand story */}
+      <section className="px-6 md:px-12 lg:px-20 pb-20">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="font-serif text-2xl md:text-3xl text-foreground mb-6">Our Story</h2>
+          <p className="text-base leading-relaxed text-muted-foreground">
+            Aakar Woodcraft was built around a simple idea: furniture should be made for the home it
+            lives in, not the other way around. We work directly with you to design and build pieces
+            that fit your space, your wood and finish preferences, and the way you actually live —
+            crafted by hand, piece by piece, rather than pulled off an assembly line.
+          </p>
+        </div>
+      </section>
+
+      {/* Craftsmanship */}
+      <section className="bg-muted/40 px-6 md:px-12 lg:px-20 py-20">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="font-serif text-2xl md:text-3xl text-foreground mb-6">Craftsmanship</h2>
+          <p className="text-base leading-relaxed text-muted-foreground">
+            Each piece passes through the hands of skilled artisans who use traditional joinery —
+            mortise-and-tenon, dovetail — rather than relying solely on glue and screws. Every surface
+            is sanded and finished by hand across multiple passes, so the final piece feels as good as
+            it looks.
+          </p>
+        </div>
+      </section>
+
+      {/* Materials We Use */}
+      <section className="px-6 md:px-12 lg:px-20 py-20">
         <div className="max-w-6xl mx-auto">
-          <h2 className="font-serif text-4xl font-light text-foreground mb-16 text-center">
-            Our Values
+          <h2 className="font-serif text-2xl md:text-3xl text-foreground mb-12 text-center">
+            Materials We Use
           </h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-            <div className="space-y-4">
-              <div className="w-12 h-12 bg-primary/10 flex items-center justify-center">
-                <div className="text-2xl text-primary">🌲</div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+            {materials.map((material) => (
+              <div key={material.title} className="text-center sm:text-left">
+                <h3 className="font-serif text-lg text-foreground mb-2">{material.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{material.description}</p>
               </div>
-              <h3 className="font-serif text-2xl text-foreground">Sustainability</h3>
-              <p className="text-muted-foreground">
-                We source wood responsibly from certified sustainable forests, ensuring our craft preserves nature for generations to come.
-              </p>
-            </div>
-            
-            <div className="space-y-4">
-              <div className="w-12 h-12 bg-secondary/10 flex items-center justify-center">
-                <div className="text-2xl">✋</div>
-              </div>
-              <h3 className="font-serif text-2xl text-foreground">Craftsmanship</h3>
-              <p className="text-muted-foreground">
-                Every piece is handcrafted by skilled artisans using time-honored joinery techniques, not mass production.
-              </p>
-            </div>
-            
-            <div className="space-y-4">
-              <div className="w-12 h-12 bg-accent/10 flex items-center justify-center">
-                <div className="text-2xl">⏳</div>
-              </div>
-              <h3 className="font-serif text-2xl text-foreground">Timelessness</h3>
-              <p className="text-muted-foreground">
-                We design furniture meant to last lifetimes, transcending trends. Quality that becomes more beautiful with age.
-              </p>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Our Process */}
-      <section className="py-20 px-6 md:px-12 lg:px-20 bg-muted/20">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="font-serif text-4xl font-light text-foreground mb-12 text-center">
-            Our Process
+      {/* Workshop / Team */}
+      <section className="bg-muted/40 px-6 md:px-12 lg:px-20 py-20">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="relative aspect-[4/3] w-full overflow-hidden">
+            <Image
+              src="https://images.unsplash.com/photo-1687422810663-c316494f725a?q=80&w=1600&auto=format&fit=crop"
+              alt="Craftsman shaping a piece of wood by hand in the workshop"
+              fill
+              className="object-cover"
+            />
+          </div>
+          <div>
+            <h2 className="font-serif text-2xl md:text-3xl text-foreground mb-6">
+              Our Workshop &amp; Team
+            </h2>
+            <p className="text-base leading-relaxed text-muted-foreground">
+              Behind every piece is a small team of carpenters, finishers, and designers who treat
+              furniture-making as a craft, not just a production process. We work in a workshop where
+              every order is treated as a one-off project — measured, planned, and built specifically
+              for the person who asked for it.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Values */}
+      <section className="px-6 md:px-12 lg:px-20 py-20">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="font-serif text-2xl md:text-3xl text-foreground mb-12 text-center">
+            What We Stand For
           </h2>
-          
-          <div className="space-y-8">
-            <div className="flex gap-6">
-              <div className="flex-shrink-0">
-                <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-semibold">
-                  1
-                </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+            {values.map((value) => (
+              <div key={value.title}>
+                <h3 className="font-serif text-lg text-foreground mb-2">{value.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{value.description}</p>
               </div>
-              <div>
-                <h3 className="font-semibold text-foreground mb-2">Wood Selection</h3>
-                <p className="text-muted-foreground">
-                  We carefully select premium solid wood from sustainable sources, chosen for grain, durability, and beauty.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-6">
-              <div className="flex-shrink-0">
-                <div className="w-10 h-10 rounded-full bg-secondary text-white flex items-center justify-center font-semibold">
-                  2
-                </div>
-              </div>
-              <div>
-                <h3 className="font-semibold text-foreground mb-2">Design & Planning</h3>
-                <p className="text-muted-foreground">
-                  Our designers create detailed plans, considering proportions, functionality, and aesthetic harmony.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-6">
-              <div className="flex-shrink-0">
-                <div className="w-10 h-10 rounded-full bg-accent text-foreground flex items-center justify-center font-semibold">
-                  3
-                </div>
-              </div>
-              <div>
-                <h3 className="font-semibold text-foreground mb-2">Master Craftsmanship</h3>
-                <p className="text-muted-foreground">
-                  Skilled artisans hand-craft each piece using traditional joinery and finishes, paying meticulous attention to detail.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-6">
-              <div className="flex-shrink-0">
-                <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-semibold">
-                  4
-                </div>
-              </div>
-              <div>
-                <h3 className="font-semibold text-foreground mb-2">Quality Assurance</h3>
-                <p className="text-muted-foreground">
-                  Every piece undergoes rigorous inspection to ensure it meets our standards for durability and beauty.
-                </p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
       <CTASection
-        title="Create Your Perfect Piece"
-        subtitle="Work with our artisans to design furniture that's uniquely yours."
-        primaryText="Start Your Project"
+        title="Start Your Custom Furniture Enquiry"
+        subtitle="Tell us about your space and requirement, and our team will help you design the right piece."
+        primaryText="Start Your Custom Furniture Enquiry"
         primaryHref="/contact"
         secondaryText="Browse Collections"
         secondaryHref="/collections"

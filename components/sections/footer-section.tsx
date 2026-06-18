@@ -23,7 +23,7 @@ const footerLinks = {
   service: [
     { label: "Contact Us", href: "/contact" },
     { label: "FAQ", href: "/faq" },
-    { label: "See in Your Room", href: "/see-in-room" },
+    { label: "See in Your Room", href: "/see-in-your-room" },
     { label: "Request a Quote", href: "/contact" },
   ],
 };
@@ -94,7 +94,7 @@ export function FooterSection() {
               {categories.map((category) => (
                 <li key={category.slug}>
                   <Link
-                    href={`/shop/category/${category.slug}`}
+                    href={`/${category.slug}`}
                     className="text-sm text-muted-foreground transition-colors hover:text-foreground"
                   >
                     {category.name}

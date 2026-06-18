@@ -2,78 +2,50 @@ import { Header } from "@/components/header"
 import { FooterSection } from "@/components/sections/footer-section"
 import { CollectionCard } from "@/components/collection-card"
 import { CTASection } from "@/components/cta-section"
-
-const collections = [
-  {
-    title: "Sofas & Seating",
-    description: "Hand-upholstered comfort seating with solid wood frames. Timeless designs that become family heirlooms.",
-    image: "/images/bottle-water.png",
-    itemCount: 12,
-  },
-  {
-    title: "Dining Tables",
-    description: "Expansive tables crafted from premium solid woods. Perfect for gathering and creating memories.",
-    image: "/images/bottle-mountain.png",
-    itemCount: 8,
-  },
-  {
-    title: "Coffee Tables",
-    description: "Statement pieces with hand-turned details and inlays. Functional art for your living room.",
-    image: "/images/bottle-lake.png",
-    itemCount: 6,
-  },
-  {
-    title: "Wardrobes & Storage",
-    description: "Spacious storage solutions with traditional joinery. Beauty meets practicality.",
-    image: "/images/product-forest.png",
-    itemCount: 10,
-  },
-  {
-    title: "Beds & Frames",
-    description: "Substantial bed frames designed for heirloom quality. Crafted to last generations.",
-    image: "/images/bottle-stream.png",
-    itemCount: 7,
-  },
-  {
-    title: "Custom Bespoke",
-    description: "Work directly with our artisans to create furniture made for your unique space.",
-    image: "/images/bottle-fire.png",
-  },
-]
+import { collections } from "@/lib/data"
 
 export const metadata = {
-  title: "Collections | Aakar Woodcraft",
-  description: "Browse our furniture collections organized by category",
+  title: "Furniture Collections | Aakar Woodcraft",
+  description: "Browse our curated furniture collections, each inspired by a different place, material, and design language.",
 }
 
 export default function CollectionsPage() {
   return (
     <main className="min-h-screen bg-background">
       <Header />
-      
-      <section className="pt-24 pb-20 px-6 md:px-12 lg:px-20">
+
+      <section className="pt-32 pb-20 px-6 md:px-12 lg:px-20">
         <div className="max-w-7xl mx-auto mb-16">
-          <h1 className="font-serif text-5xl font-light text-foreground mb-4">
-            Shop by Collection
+          <h1 className="font-serif text-4xl font-light text-foreground md:text-5xl mb-4">
+            Furniture Collections Inspired by Craft and Place
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl">
-            Explore our curated collections of handcrafted wooden furniture, organized by room and style.
+            Each collection reflects a different place, material story, and design language —
+            explore handcrafted pieces inspired by Indian heritage, natural textures, and modern living.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
           {collections.map((collection) => (
-            <CollectionCard key={collection.title} {...collection} />
+            <CollectionCard
+              key={collection.slug}
+              title={collection.name}
+              description={collection.tagline}
+              image={collection.image}
+              href={`/collections/${collection.slug}`}
+              itemCount={collection.pieceCount}
+              ctaLabel="View Collection →"
+            />
           ))}
         </div>
       </section>
 
       <CTASection
         title="Looking for Something Specific?"
-        subtitle="Browse our full product catalog or speak with our design consultants."
-        primaryText="View All Products"
+        subtitle="Browse our full product catalog or share your custom furniture requirement with our team."
+        primaryText="Shop All Furniture"
         primaryHref="/shop"
-        secondaryText="Schedule Consultation"
+        secondaryText="Request a Quote"
         secondaryHref="/contact"
       />
 

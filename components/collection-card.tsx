@@ -7,6 +7,7 @@ interface CollectionCardProps {
   image: string
   href?: string
   itemCount?: number
+  ctaLabel?: string
 }
 
 export function CollectionCard({
@@ -14,7 +15,8 @@ export function CollectionCard({
   description,
   image,
   href = `/collections/${title.toLowerCase()}`,
-  itemCount
+  itemCount,
+  ctaLabel = 'Explore →'
 }: CollectionCardProps) {
   return (
     <Link href={href}>
@@ -44,7 +46,7 @@ export function CollectionCard({
           )}
           <div className="pt-2">
             <span className="text-sm font-semibold text-accent group-hover:text-primary transition-colors">
-              Explore →
+              {ctaLabel}
             </span>
           </div>
         </div>

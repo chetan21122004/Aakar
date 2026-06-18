@@ -28,6 +28,20 @@ export function EnquiryForm() {
       </div>
 
       <div>
+        <label htmlFor="phone" className="block text-sm font-semibold text-foreground mb-2">
+          Phone Number
+        </label>
+        <input
+          type="tel"
+          id="phone"
+          name="phone"
+          required
+          className="w-full px-4 py-3 border border-border bg-white text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+          placeholder="+91 XXXXX XXXXX"
+        />
+      </div>
+
+      <div>
         <label htmlFor="email" className="block text-sm font-semibold text-foreground mb-2">
           Email Address
         </label>
@@ -42,33 +56,33 @@ export function EnquiryForm() {
       </div>
 
       <div>
-        <label htmlFor="phone" className="block text-sm font-semibold text-foreground mb-2">
-          Phone Number
+        <label htmlFor="requirement" className="block text-sm font-semibold text-foreground mb-2">
+          Furniture Requirement
         </label>
         <input
-          type="tel"
-          id="phone"
-          name="phone"
+          type="text"
+          id="requirement"
+          name="requirement"
           className="w-full px-4 py-3 border border-border bg-white text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-          placeholder="+1 (555) 000-0000"
+          placeholder="e.g. Dining table for 6, Wardrobe for bedroom"
         />
       </div>
 
       <div>
-        <label htmlFor="subject" className="block text-sm font-semibold text-foreground mb-2">
-          Subject
+        <label htmlFor="budget" className="block text-sm font-semibold text-foreground mb-2">
+          Preferred Budget
         </label>
         <select
-          id="subject"
-          name="subject"
+          id="budget"
+          name="budget"
           className="w-full px-4 py-3 border border-border bg-white text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
         >
-          <option value="">Select a topic</option>
-          <option value="custom">Custom Furniture</option>
-          <option value="order">Order Inquiry</option>
-          <option value="delivery">Delivery & Installation</option>
-          <option value="maintenance">Care & Maintenance</option>
-          <option value="other">Other</option>
+          <option value="">Select a range</option>
+          <option value="under-30k">Under ₹30,000</option>
+          <option value="30k-60k">₹30,000 - ₹60,000</option>
+          <option value="60k-1l">₹60,000 - ₹1,00,000</option>
+          <option value="above-1l">Above ₹1,00,000</option>
+          <option value="not-sure">Not sure yet</option>
         </select>
       </div>
 
@@ -90,7 +104,7 @@ export function EnquiryForm() {
         type="submit"
         className="w-full bg-primary text-white font-semibold py-3 hover:bg-primary-light transition-colors"
       >
-        {submitted ? 'Message Sent!' : 'Send Enquiry'}
+        {submitted ? 'Enquiry Sent!' : 'Submit Enquiry'}
       </button>
     </form>
   )

@@ -287,7 +287,7 @@ export function TechnologySection() {
           <ScrollRevealText text={descriptionText} />
           <div className="mt-10">
             <a
-              href="/see-in-room"
+              href="/see-in-your-room"
               className="inline-block bg-foreground px-8 py-4 text-sm font-medium text-background transition-opacity hover:opacity-85"
             >
               Try See in Your Room

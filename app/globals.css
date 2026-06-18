@@ -122,11 +122,57 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
   }
-  
+
   html {
     scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  .type-display {
+    @apply font-serif text-3xl font-light tracking-tight text-foreground md:text-4xl;
+  }
+
+  .type-h1 {
+    @apply font-serif text-4xl font-light tracking-tight text-foreground md:text-5xl;
+  }
+
+  .type-h2 {
+    @apply font-serif text-3xl font-light tracking-tight text-foreground md:text-4xl;
+  }
+
+  .type-h3 {
+    @apply font-serif text-xl font-light text-foreground md:text-2xl;
+  }
+
+  .type-body {
+    @apply font-sans text-base leading-relaxed text-muted-foreground;
+  }
+
+  .type-label {
+    @apply font-sans text-xs font-semibold uppercase tracking-widest text-secondary;
+  }
+
+  .type-price {
+    @apply font-sans text-2xl font-medium tabular-nums text-foreground;
+  }
+
+  .type-price-sm {
+    @apply font-sans text-sm font-medium tabular-nums text-foreground;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center bg-foreground px-6 py-3.5 font-sans text-sm font-semibold uppercase tracking-wide text-background transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center border border-border bg-background px-6 py-3.5 font-sans text-sm font-medium text-foreground transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .btn-outline-sm {
+    @apply inline-flex items-center justify-center border border-foreground px-4 py-2 font-sans text-xs font-medium uppercase tracking-wide text-foreground transition-colors hover:bg-muted;
   }
 }
 

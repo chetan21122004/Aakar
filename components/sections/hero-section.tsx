@@ -138,7 +138,7 @@ export function HeroSection() {
                 className="absolute inset-0 flex items-end overflow-hidden"
                 style={{ opacity: textOpacity }}
               >
-                <h1 className="w-full text-[22vw] font-medium leading-[0.8] tracking-tighter text-white">
+                <h1 className="w-full font-sans text-[22vw] font-medium leading-[0.8] tracking-tighter text-white">
                   {word.split("").map((letter, index) => (
                     <span
                       key={index}
