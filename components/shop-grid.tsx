@@ -4,17 +4,7 @@ import { useState } from "react"
 import { ProductCard } from "@/components/product-card"
 import { catalogProducts } from "@/lib/products"
 
-const filters = [
-  "All",
-  "Sofas",
-  "Dining Tables",
-  "Coffee Tables",
-  "Wardrobes",
-  "Beds",
-  "Chairs",
-  "Consoles",
-  "Storage",
-]
+const filters = ["All", "Consoles", "Dining Tables", "Coffee Tables", "Chairs"]
 
 export function ShopGrid() {
   const [activeFilter, setActiveFilter] = useState("All")

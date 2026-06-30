@@ -1,3 +1,4 @@
+import Link from "next/link"
 import { Header } from "@/components/header"
 import { FooterSection } from "@/components/sections/footer-section"
 import { EnquiryForm } from "@/components/enquiry-form"
@@ -5,7 +6,8 @@ import { contactInfo } from "@/lib/data"
 
 export const metadata = {
   title: "Contact Us | Aakar Woodcraft",
-  description: "Share your custom furniture requirement with Aakar Woodcraft and our team will get back to you with the next steps.",
+  description:
+    "Share your requirements. We will guide you through material selection, dimensions, and timelines.",
 }
 
 export default function ContactPage() {
@@ -21,10 +23,11 @@ export default function ContactPage() {
         <div className="max-w-7xl mx-auto">
           <div className="mb-16 text-center max-w-2xl mx-auto">
             <h1 className="font-serif text-4xl font-light text-foreground md:text-5xl mb-4">
-              Let&apos;s Build Your Custom Furniture
+              Get in Touch
             </h1>
             <p className="text-lg text-muted-foreground">
-              Share your requirement and our team will get back to you with the next steps.
+              Share your requirements. We will guide you through material selection, dimensions, and
+              timelines.
             </p>
           </div>
 
@@ -32,25 +35,49 @@ export default function ContactPage() {
             {/* Contact Info */}
             <div className="space-y-12">
               <div>
-                <h3 className="font-semibold text-foreground mb-2">Phone</h3>
-                <p className="text-muted-foreground">+91 XXXXX XXXXX</p>
-              </div>
-
-              <div>
                 <h3 className="font-semibold text-foreground mb-2">Email</h3>
-                <a href={`mailto:${contactInfo.email}`} className="text-primary hover:text-primary-light transition-colors">
+                <a
+                  href={`mailto:${contactInfo.email}`}
+                  className="text-primary hover:text-primary-light transition-colors"
+                >
                   {contactInfo.email}
                 </a>
               </div>
 
               <div>
-                <h3 className="font-semibold text-foreground mb-2">Location</h3>
-                <p className="text-muted-foreground">India</p>
+                <h3 className="font-semibold text-foreground mb-2">WhatsApp</h3>
+                <a
+                  href={whatsappHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:text-primary-light transition-colors"
+                >
+                  {contactInfo.phone}
+                </a>
               </div>
 
               <div>
-                <h3 className="font-semibold text-foreground mb-2">Business Hours</h3>
-                <p className="text-muted-foreground">Monday to Saturday, 10:00 AM &ndash; 7:00 PM</p>
+                <h3 className="font-semibold text-foreground mb-2">Instagram</h3>
+                <a
+                  href={contactInfo.instagramUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:text-primary-light transition-colors"
+                >
+                  {contactInfo.instagram}
+                </a>
+              </div>
+
+              <div>
+                <h3 className="font-semibold text-foreground mb-2">Response Time</h3>
+                <p className="text-muted-foreground">{contactInfo.responseTime}</p>
+              </div>
+
+              <div>
+                <h3 className="font-semibold text-foreground mb-2">Workshop Visits</h3>
+                <p className="text-muted-foreground">
+                  Available by appointment. See our process firsthand and review material samples.
+                </p>
               </div>
 
               <a
@@ -72,12 +99,18 @@ export default function ContactPage() {
             </div>
           </div>
 
-          {/* Map placeholder */}
-          <div className="pt-12 border-t border-border">
-            <h3 className="font-semibold text-foreground mb-4">Find Us</h3>
-            <div className="w-full h-64 bg-muted/50 border border-border flex items-center justify-center">
-              <p className="text-sm text-muted-foreground">Google Maps placeholder</p>
-            </div>
+          {/* Workshop location */}
+          <div className="border-t border-border pt-12">
+            <h3 className="mb-4 font-semibold text-foreground">Find Us</h3>
+            <p className="mb-6 max-w-lg text-sm leading-relaxed text-muted-foreground">
+              {contactInfo.address}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Workshop visits available by appointment.{" "}
+              <Link href="/contact" className="text-primary underline-offset-2 hover:underline">
+                Schedule a visit
+              </Link>
+            </p>
           </div>
         </div>
       </section>

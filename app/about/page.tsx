@@ -1,52 +1,46 @@
 import { Header } from "@/components/header"
 import { FooterSection } from "@/components/sections/footer-section"
 import { CTASection } from "@/components/cta-section"
-import Image from "next/image"
 
 export const metadata = {
-  title: "About Aakar Woodcraft | Custom Furniture Craftsmanship",
-  description: "Learn how Aakar Woodcraft crafts custom wooden furniture with artistry, precision, and purpose for modern Indian homes.",
+  title: "About Aakar Woodcraft | Form. Crafted. Timeless.",
+  description:
+    "We design contemporary forms rooted in traditional woodworking craft. Every piece is made to order with no mass production, no compromise on materials, and no shortcuts in construction.",
 }
 
-const materials = [
+const beliefs = [
   {
-    title: "Solid Wood",
-    description: "Sheesham, mango, teak, and oak — no particleboard or MDF veneers.",
+    title: "Quality Over Quantity",
+    description:
+      "We work slowly, deliberately, and with absolute precision. Our goal is not to make more—it is to make better.",
   },
   {
-    title: "Natural Finishes",
-    description: "Hand-rubbed oils and natural-tone stains that let the grain show through.",
+    title: "Transparency",
+    description:
+      "We openly share our methods, materials, and timelines. No hidden processes. No marketing language.",
   },
   {
-    title: "Premium Upholstery",
-    description: "Carefully sourced fabrics chosen for comfort, durability, and feel.",
-  },
-  {
-    title: "Quality Hardware",
-    description: "Soft-close hinges, reinforced joints, and fittings built to outlast trends.",
+    title: "Longevity",
+    description:
+      "Furniture designed to be passed down. Built to last decades. Made to age beautifully.",
   },
 ]
 
-const values = [
+const principles = [
   {
-    title: "Craftsmanship",
-    description: "Every piece is shaped by hand, using techniques passed down through generations of Indian carpentry.",
+    title: "No Mass Production",
+    description:
+      "Every piece is made to order. We control the entire process from wood selection to final finishing.",
   },
   {
-    title: "Honest Materials",
-    description: "We use what we say we use — solid wood construction, never disguised particleboard.",
+    title: "Traditional Joinery",
+    description:
+      "Mortise and tenon joints. Dovetails. Time-tested methods that ensure structural integrity for generations.",
   },
   {
-    title: "Custom Design",
-    description: "Every dimension, finish, and detail can be adapted to fit your space and your taste.",
-  },
-  {
-    title: "Long-Lasting Quality",
-    description: "Furniture built to be repaired and refinished for decades, not replaced after a few years.",
-  },
-  {
-    title: "Client-Focused Process",
-    description: "From first enquiry to final installation, we keep you involved in every decision.",
+    title: "Hand Finishing",
+    description:
+      "Every surface hand-sanded through 7 grits. Hand-rubbed finishes that enhance the natural beauty of wood.",
   },
 ]
 
@@ -59,93 +53,86 @@ export default function AboutPage() {
       <section className="pt-32 pb-20 px-6 md:px-12 lg:px-20">
         <div className="max-w-3xl mx-auto text-center">
           <h1 className="font-serif text-4xl font-light text-foreground md:text-5xl mb-6">
-            About Aakar Woodcraft
+            About Aakar
           </h1>
+          <p className="font-serif text-2xl md:text-3xl text-foreground font-light mb-6">
+            Form. Crafted. Timeless.
+          </p>
           <p className="text-lg text-muted-foreground leading-relaxed">
-            Crafting custom wooden furniture with artistry, precision, and purpose.
+            We design contemporary forms rooted in traditional woodworking craft. Every piece is made
+            to order in our controlled workshop environment. No mass production. No compromise on
+            materials. No shortcuts in construction.
           </p>
         </div>
       </section>
 
-      {/* Brand story */}
-      <section className="px-6 md:px-12 lg:px-20 pb-20">
-        <div className="max-w-3xl mx-auto text-center">
-          <h2 className="font-serif text-2xl md:text-3xl text-foreground mb-6">Our Story</h2>
-          <p className="text-base leading-relaxed text-muted-foreground">
-            Aakar Woodcraft was built around a simple idea: furniture should be made for the home it
-            lives in, not the other way around. We work directly with you to design and build pieces
-            that fit your space, your wood and finish preferences, and the way you actually live —
-            crafted by hand, piece by piece, rather than pulled off an assembly line.
-          </p>
-        </div>
-      </section>
-
-      {/* Craftsmanship */}
+      {/* Our Philosophy */}
       <section className="bg-muted/40 px-6 md:px-12 lg:px-20 py-20">
         <div className="max-w-3xl mx-auto text-center">
-          <h2 className="font-serif text-2xl md:text-3xl text-foreground mb-6">Craftsmanship</h2>
+          <h2 className="font-serif text-2xl md:text-3xl text-foreground mb-6">Our Philosophy</h2>
           <p className="text-base leading-relaxed text-muted-foreground">
-            Each piece passes through the hands of skilled artisans who use traditional joinery —
-            mortise-and-tenon, dovetail — rather than relying solely on glue and screws. Every surface
-            is sanded and finished by hand across multiple passes, so the final piece feels as good as
-            it looks.
+            We believe in restraint. In letting the material speak. In forms that endure. Our
+            furniture is designed for homes that value quality over trends—pieces built to last, not
+            to be replaced.
           </p>
         </div>
       </section>
 
-      {/* Materials We Use */}
+      {/* Our Approach */}
       <section className="px-6 md:px-12 lg:px-20 py-20">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="font-serif text-2xl md:text-3xl text-foreground mb-6">Our Approach</h2>
+          <p className="text-base leading-relaxed text-muted-foreground">
+            Each piece begins with careful material selection. Solid wood. Traditional joinery. Hand
+            finishing. We work slowly, deliberately, and with absolute precision. Our goal is not
+            to make more—it is to make better.
+          </p>
+        </div>
+      </section>
+
+      {/* What We Believe In */}
+      <section className="bg-muted/40 px-6 md:px-12 lg:px-20 py-20">
         <div className="max-w-6xl mx-auto">
           <h2 className="font-serif text-2xl md:text-3xl text-foreground mb-12 text-center">
-            Materials We Use
+            What We Believe In
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
-            {materials.map((material) => (
-              <div key={material.title} className="text-center sm:text-left">
-                <h3 className="font-serif text-lg text-foreground mb-2">{material.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{material.description}</p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
+            {beliefs.map((belief) => (
+              <div key={belief.title} className="text-center sm:text-left">
+                <h3 className="font-serif text-lg text-foreground mb-2">{belief.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{belief.description}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Workshop / Team */}
-      <section className="bg-muted/40 px-6 md:px-12 lg:px-20 py-20">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div className="relative aspect-[4/3] w-full overflow-hidden">
-            <Image
-              src="https://images.unsplash.com/photo-1687422810663-c316494f725a?q=80&w=1600&auto=format&fit=crop"
-              alt="Craftsman shaping a piece of wood by hand in the workshop"
-              fill
-              className="object-cover"
-            />
-          </div>
-          <div>
-            <h2 className="font-serif text-2xl md:text-3xl text-foreground mb-6">
-              Our Workshop &amp; Team
-            </h2>
-            <p className="text-base leading-relaxed text-muted-foreground">
-              Behind every piece is a small team of carpenters, finishers, and designers who treat
-              furniture-making as a craft, not just a production process. We work in a workshop where
-              every order is treated as a one-off project — measured, planned, and built specifically
-              for the person who asked for it.
-            </p>
-          </div>
+      {/* Founder story */}
+      <section className="px-6 md:px-12 lg:px-20 py-20">
+        <div className="max-w-3xl mx-auto text-center">
+          <p className="text-base leading-relaxed text-muted-foreground mb-8">
+            Founded by craftspeople and designers who believe modern Indian homes deserve furniture
+            that reflects both contemporary sensibility and enduring craft.
+          </p>
+          <blockquote className="font-serif text-xl md:text-2xl text-foreground font-light leading-relaxed">
+            &ldquo;We design for homes that value substance over trends.&rdquo;
+          </blockquote>
         </div>
       </section>
 
-      {/* Values */}
-      <section className="px-6 md:px-12 lg:px-20 py-20">
+      {/* Our Principles */}
+      <section className="bg-muted/40 px-6 md:px-12 lg:px-20 py-20">
         <div className="max-w-6xl mx-auto">
           <h2 className="font-serif text-2xl md:text-3xl text-foreground mb-12 text-center">
-            What We Stand For
+            Our Principles
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
-            {values.map((value) => (
-              <div key={value.title}>
-                <h3 className="font-serif text-lg text-foreground mb-2">{value.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{value.description}</p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
+            {principles.map((principle) => (
+              <div key={principle.title} className="text-center sm:text-left">
+                <h3 className="font-serif text-lg text-foreground mb-2">{principle.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {principle.description}
+                </p>
               </div>
             ))}
           </div>
@@ -153,12 +140,10 @@ export default function AboutPage() {
       </section>
 
       <CTASection
-        title="Start Your Custom Furniture Enquiry"
-        subtitle="Tell us about your space and requirement, and our team will help you design the right piece."
-        primaryText="Start Your Custom Furniture Enquiry"
+        title="Visit Our Workshop"
+        subtitle="See how we work. Understand our process. Experience the materials firsthand. Workshop visits available by appointment."
+        primaryText="Schedule a Visit"
         primaryHref="/contact"
-        secondaryText="Browse Collections"
-        secondaryHref="/collections"
         dark
       />
 

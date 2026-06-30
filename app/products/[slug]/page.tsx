@@ -40,11 +40,11 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             Home
           </Link>
           <span className="mx-2">/</span>
-          <Link href="/shop" className="hover:text-foreground transition-colors">
-            Shop
+          <Link href="/collections" className="hover:text-foreground transition-colors">
+            Collections
           </Link>
           <span className="mx-2">/</span>
-          <Link href={`/${product.categorySlug}`} className="hover:text-foreground transition-colors">
+          <Link href="/collections" className="hover:text-foreground transition-colors">
             {product.category}
           </Link>
           <span className="mx-2">/</span>

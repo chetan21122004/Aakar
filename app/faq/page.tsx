@@ -1,11 +1,11 @@
 import { Header } from "@/components/header"
 import { FooterSection } from "@/components/sections/footer-section"
 import { FAQAccordion } from "@/components/faq-accordion"
-import { faqItems } from "@/lib/data"
+import { faqItems, faqQuickStats } from "@/lib/data"
 
 export const metadata = {
   title: "Frequently Asked Questions | Aakar Woodcraft",
-  description: "Answers to common questions about custom furniture, materials, timelines, and enquiries.",
+  description: "Common questions about our process, materials, and delivery.",
 }
 
 export default function FAQPage() {
@@ -20,11 +20,23 @@ export default function FAQPage() {
               Frequently Asked Questions
             </h1>
             <p className="text-lg text-muted-foreground">
-              Answers to common questions about custom furniture, materials, timelines, and enquiries.
+              Common questions about our process, materials, and delivery.
             </p>
           </div>
 
           <FAQAccordion items={faqItems} />
+
+          {/* Quick stats */}
+          <div className="mt-16 grid grid-cols-1 gap-8 border-t border-border pt-16 sm:grid-cols-3">
+            {faqQuickStats.map((stat) => (
+              <div key={stat.label} className="text-center">
+                <p className="font-serif text-2xl md:text-3xl text-foreground font-light">
+                  {stat.value}
+                </p>
+                <p className="mt-2 text-sm text-muted-foreground">{stat.label}</p>
+              </div>
+            ))}
+          </div>
 
           {/* Contact CTA */}
           <div className="mt-16 p-8 bg-muted/50 text-center">

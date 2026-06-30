@@ -13,14 +13,14 @@ export function ProductGridSection() {
         <div>
           <h2 className="type-h2">Best Sellers</h2>
           <p className="type-body mt-4 max-w-md">
-            Our most-loved pieces — add to cart with live pricing and variant options.
+            Our most-loved pieces — explore live pricing and variant options, then enquire for a quote.
           </p>
         </div>
         <Link
-          href="/shop"
+          href="/collections"
           className="btn-outline-sm whitespace-nowrap"
         >
-          Shop All
+          View All
         </Link>
       </div>
 

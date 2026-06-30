@@ -1,22 +1,28 @@
-import { Truck, Shield, TreePine, MapPin } from "lucide-react"
+import { Clock, MapPin, Shield } from "lucide-react"
+import { trustBadges } from "@/lib/data"
 
-const items = [
-  { icon: Truck, label: "Free delivery over ₹1L" },
-  { icon: TreePine, label: "Solid wood craftsmanship" },
-  { icon: MapPin, label: "Made in India" },
-  { icon: Shield, label: "Secure checkout" },
-]
+const icons = [Clock, MapPin, Shield]
 
 export function TrustBarSection() {
   return (
-    <section className="border-y border-border bg-muted/30 px-6 py-8 md:px-12 lg:px-20">
-      <div className="max-w-7xl mx-auto grid grid-cols-2 gap-6 md:grid-cols-4">
-        {items.map(({ icon: Icon, label }) => (
-          <div key={label} className="flex items-center gap-3">
-            <Icon size={20} className="shrink-0 text-primary" />
-            <span className="font-sans text-sm font-medium text-foreground">{label}</span>
-          </div>
-        ))}
+    <section className="border-y border-border bg-muted/30 px-6 py-10 md:px-12 lg:px-20">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 sm:grid-cols-3">
+        {trustBadges.map((badge, index) => {
+          const Icon = icons[index]
+          return (
+            <div key={badge.title} className="flex flex-col items-center gap-3 text-center sm:items-start sm:text-left">
+              <div className="flex h-10 w-10 items-center justify-center border border-border bg-background">
+                <Icon size={18} className="text-primary" />
+              </div>
+              <div>
+                <p className="font-sans text-sm font-semibold uppercase tracking-wide text-foreground">
+                  {badge.title}
+                </p>
+                <p className="mt-1 text-sm text-muted-foreground">{badge.subtitle}</p>
+              </div>
+            </div>
+          )
+        })}
       </div>
     </section>
   )

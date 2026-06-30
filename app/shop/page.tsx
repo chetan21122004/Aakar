@@ -5,7 +5,7 @@ import { ShopGrid } from "@/components/shop-grid"
 export const metadata = {
   title: "Shop Custom Wooden Furniture | Aakar Woodcraft",
   description:
-    "Browse handcrafted furniture pieces across sofas, dining tables, coffee tables, wardrobes, beds, chairs, consoles, and storage.",
+    "Browse handcrafted solid walnut furniture — consoles, dining tables, coffee tables, and chairs.",
 }
 
 export default function ShopPage() {
@@ -20,8 +20,7 @@ export default function ShopPage() {
               Shop Custom Wooden Furniture
             </h1>
             <p className="type-body text-lg">
-              Browse handcrafted furniture pieces across sofas, dining tables, coffee tables,
-              wardrobes, beds, chairs, consoles, and storage.
+              Browse handcrafted solid walnut furniture — consoles, dining tables, coffee tables, and chairs.
             </p>
           </div>
 

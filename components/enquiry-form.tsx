@@ -12,10 +12,10 @@ export function EnquiryForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-md mx-auto">
+    <form onSubmit={handleSubmit} className="space-y-6">
       <div>
         <label htmlFor="name" className="block text-sm font-semibold text-foreground mb-2">
-          Full Name
+          Name <span className="text-primary">*</span>
         </label>
         <input
           type="text"
@@ -28,22 +28,8 @@ export function EnquiryForm() {
       </div>
 
       <div>
-        <label htmlFor="phone" className="block text-sm font-semibold text-foreground mb-2">
-          Phone Number
-        </label>
-        <input
-          type="tel"
-          id="phone"
-          name="phone"
-          required
-          className="w-full px-4 py-3 border border-border bg-white text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-          placeholder="+91 XXXXX XXXXX"
-        />
-      </div>
-
-      <div>
         <label htmlFor="email" className="block text-sm font-semibold text-foreground mb-2">
-          Email Address
+          Email <span className="text-primary">*</span>
         </label>
         <input
           type="email"
@@ -56,39 +42,45 @@ export function EnquiryForm() {
       </div>
 
       <div>
-        <label htmlFor="requirement" className="block text-sm font-semibold text-foreground mb-2">
-          Furniture Requirement
+        <label htmlFor="phone" className="block text-sm font-semibold text-foreground mb-2">
+          Phone
         </label>
         <input
-          type="text"
-          id="requirement"
-          name="requirement"
+          type="tel"
+          id="phone"
+          name="phone"
           className="w-full px-4 py-3 border border-border bg-white text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-          placeholder="e.g. Dining table for 6, Wardrobe for bedroom"
+          placeholder="+91 98765 43210"
         />
       </div>
 
       <div>
-        <label htmlFor="budget" className="block text-sm font-semibold text-foreground mb-2">
-          Preferred Budget
+        <label htmlFor="projectType" className="block text-sm font-semibold text-foreground mb-2">
+          Project Type
         </label>
         <select
-          id="budget"
-          name="budget"
+          id="projectType"
+          name="projectType"
           className="w-full px-4 py-3 border border-border bg-white text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+          defaultValue=""
         >
-          <option value="">Select a range</option>
-          <option value="under-30k">Under ₹30,000</option>
-          <option value="30k-60k">₹30,000 - ₹60,000</option>
-          <option value="60k-1l">₹60,000 - ₹1,00,000</option>
-          <option value="above-1l">Above ₹1,00,000</option>
-          <option value="not-sure">Not sure yet</option>
+          <option value="" disabled>
+            Select project type
+          </option>
+          <option value="console">Console</option>
+          <option value="dining-table">Dining Table</option>
+          <option value="coffee-table">Coffee Table</option>
+          <option value="dining-chair">Dining Chair</option>
+          <option value="custom">Custom Furniture</option>
+          <option value="architect">Architect / Designer Project</option>
+          <option value="workshop-visit">Workshop Visit</option>
+          <option value="other">Other</option>
         </select>
       </div>
 
       <div>
         <label htmlFor="message" className="block text-sm font-semibold text-foreground mb-2">
-          Message
+          Message <span className="text-primary">*</span>
         </label>
         <textarea
           id="message"
@@ -96,7 +88,7 @@ export function EnquiryForm() {
           rows={5}
           required
           className="w-full px-4 py-3 border border-border bg-white text-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none"
-          placeholder="Tell us about your inquiry..."
+          placeholder="Tell us about your requirements, preferred pieces, timelines, or any specific questions..."
         ></textarea>
       </div>
 
@@ -104,7 +96,7 @@ export function EnquiryForm() {
         type="submit"
         className="w-full bg-primary text-white font-semibold py-3 hover:bg-primary-light transition-colors"
       >
-        {submitted ? 'Enquiry Sent!' : 'Submit Enquiry'}
+        {submitted ? 'Enquiry Sent!' : 'Send Enquiry'}
       </button>
     </form>
   )

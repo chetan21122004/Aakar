@@ -3,10 +3,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
 import useEmblaCarousel from "embla-carousel-react"
-import { MessageCircle, Minus, Plus, Star } from "lucide-react"
-import { toast } from "sonner"
+import { MessageCircle } from "lucide-react"
 import {
   Accordion,
   AccordionContent,
@@ -14,13 +12,10 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 import { EnquiryForm } from "@/components/enquiry-form"
-import { useCart } from "@/contexts/cart-context"
 import { contactInfo } from "@/lib/data"
 import { formatINR, formatOptionsLabel } from "@/lib/format"
 import {
   getDefaultVariant,
-  getStockLabel,
-  getStockStatus,
   resolveVariant,
   type CatalogProduct,
 } from "@/lib/products"
@@ -66,14 +61,10 @@ function OptionGroup({
 }
 
 export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
-  const router = useRouter()
-  const { addItem } = useCart()
   const defaultVariant = getDefaultVariant(product)
 
   const [selected, setSelected] = useState({
-    size: defaultVariant.options.size,
-    wood: defaultVariant.options.wood,
-    fabric: defaultVariant.options.fabric,
+    finish: defaultVariant.options.finish,
   })
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true })
@@ -82,8 +73,6 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
     () => resolveVariant(product, selected) ?? defaultVariant,
     [product, selected, defaultVariant]
   )
-
-  const stockStatus = getStockStatus(activeVariant.stockQty)
 
   const whatsappHref = `https://wa.me/${contactInfo.whatsapp}?text=${encodeURIComponent(
     `Hi, I'm interested in the ${product.name} (${formatOptionsLabel(activeVariant.options)}).`
@@ -105,22 +94,6 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
       emblaApi.off("select", onSelect)
     }
   }, [emblaApi])
-
-  const handleAddToCart = (redirectToCheckout = false) => {
-    if (!activeVariant) return
-    addItem({
-      variantId: activeVariant.id,
-      productSlug: product.slug,
-      name: product.name,
-      image: product.images[0],
-      options: activeVariant.options,
-      pricePaise: activeVariant.pricePaise,
-    })
-    toast.success("Added to cart", {
-      description: `${product.name} — ${formatINR(activeVariant.pricePaise)}`,
-    })
-    if (redirectToCheckout) router.push("/checkout")
-  }
 
   return (
     <>
@@ -161,68 +134,25 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
 
         {/* Buy box */}
         <div className="lg:sticky lg:top-28 lg:self-start">
-          <p className="type-label mb-3">
-            {product.category} · {product.collection} Collection
-          </p>
+          <p className="type-label mb-3">{product.category}</p>
           <h1 className="type-display mb-3">{product.name}</h1>
 
-          <div className="mb-4 flex items-center gap-1.5 text-secondary">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Star key={i} size={14} className={i < 4 ? "fill-accent text-accent" : "text-muted"} />
-            ))}
-            <span className="ml-1 font-sans text-sm text-muted-foreground">(24 reviews)</span>
-          </div>
-
-          <p className="type-price mb-4">{formatINR(activeVariant.pricePaise)}</p>
-
-          <span
-            className={cn(
-              "mb-6 inline-block px-3 py-1 font-sans text-xs font-medium",
-              stockStatus === "in_stock" && "bg-primary/10 text-primary",
-              stockStatus === "low_stock" && "bg-amber-100 text-amber-800",
-              stockStatus === "made_to_order" && "bg-muted text-muted-foreground"
-            )}
-          >
-            {getStockLabel(activeVariant.stockQty)}
-          </span>
+          <p className="type-price mb-6">{formatINR(activeVariant.pricePaise)}</p>
 
           <div className="space-y-6 mb-8">
-            {product.options.size && (
-              <OptionGroup
-                label="Size"
-                options={product.options.size}
-                value={selected.size}
-                onChange={(size) => setSelected((s) => ({ ...s, size }))}
-              />
-            )}
-            {product.options.wood && (
-              <OptionGroup
-                label="Wood"
-                options={product.options.wood}
-                value={selected.wood}
-                onChange={(wood) => setSelected((s) => ({ ...s, wood }))}
-              />
-            )}
-            {product.options.fabric && (
-              <OptionGroup
-                label="Fabric"
-                options={product.options.fabric}
-                value={selected.fabric}
-                onChange={(fabric) => setSelected((s) => ({ ...s, fabric }))}
-              />
-            )}
+            <OptionGroup
+              label="Finish"
+              options={product.options.finish}
+              value={selected.finish}
+              onChange={(finish) => setSelected((s) => ({ ...s, finish }))}
+            />
           </div>
 
-          <div className="hidden sm:flex flex-col sm:flex-row gap-3 mb-4">
-            <button type="button" className="btn-primary flex-1" onClick={() => handleAddToCart(false)}>
-              Add to Cart
-            </button>
-            <button type="button" className="btn-secondary flex-1" onClick={() => handleAddToCart(true)}>
-              Buy Now
-            </button>
+          <div className="hidden sm:block mb-4">
+            <Link href="/contact" className="btn-primary w-full text-center">
+              Enquire
+            </Link>
           </div>
-
-          <p className="type-body text-sm mb-4">Free delivery on orders over ₹1,00,000</p>
 
           <a
             href={whatsappHref}
@@ -248,9 +178,23 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
                     ))}
                   </ul>
                 )}
+                {product.specs && (
+                  <ul className="space-y-1.5 mt-4">
+                    {product.specs.map((s) => (
+                      <li key={s} className="type-body text-sm flex gap-2">
+                        <span className="text-accent">—</span> {s}
+                      </li>
+                    ))}
+                  </ul>
+                )}
                 {product.dimensions && (
                   <p className="type-body text-sm mt-4">
                     <span className="font-medium text-foreground">Dimensions:</span> {product.dimensions}
+                  </p>
+                )}
+                {product.productionTime && (
+                  <p className="type-body text-sm mt-4">
+                    <span className="font-medium text-foreground">Production:</span> {product.productionTime}
                   </p>
                 )}
               </AccordionContent>
@@ -272,11 +216,10 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
         <div className="flex items-center gap-4">
           <div className="flex-1">
             <p className="type-price-sm">{formatINR(activeVariant.pricePaise)}</p>
-            <p className="font-sans text-xs text-muted-foreground">{getStockLabel(activeVariant.stockQty)}</p>
           </div>
-          <button type="button" className="btn-primary px-5 py-3" onClick={() => handleAddToCart(false)}>
-            Add to Cart
-          </button>
+          <Link href="/contact" className="btn-primary px-5 py-3">
+            Enquire
+          </Link>
         </div>
       </div>
     </>

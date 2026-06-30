@@ -202,22 +202,25 @@ export function HeroSection() {
             className="relative z-20 shrink-0 overflow-hidden bg-background transition-[max-height] duration-300 ease-out"
             style={{
               opacity: taglineOpacity,
-              maxHeight: taglineVisible ? "360px" : "0px",
+              maxHeight: taglineVisible ? "440px" : "0px",
             }}
           >
             <div className="px-6 pb-6 pt-2 md:px-12 md:pb-8 lg:px-20">
             <h2 className="mx-auto max-w-3xl text-center font-serif text-2xl font-light leading-snug text-foreground md:text-3xl lg:text-4xl">
-              Custom Wooden Furniture Crafted for Modern Indian Homes
+              Contemporary Form. Rooted in Craft.
             </h2>
             <p className="mx-auto mt-3 max-w-xl text-center text-sm leading-relaxed text-muted-foreground md:mt-4 md:text-base">
-              Premium solid wood furniture, artistic collections, and made-to-order pieces designed with craftsmanship, comfort, and timeless style.
+              We design contemporary forms rooted in traditional craft. Every piece is made to order in our controlled workshop environment. No mass production. No shortcuts.
+            </p>
+            <p className="mx-auto mt-4 max-w-xl text-center font-serif text-lg font-light leading-relaxed text-foreground md:text-xl">
+              Solid wood. Traditional joinery. Hand finishing. Furniture built to last generations.
             </p>
             <div className="mt-4 flex flex-col items-center justify-center gap-3 sm:mt-5 sm:flex-row sm:gap-4">
               <a
                 href="/collections"
                 className="w-full bg-foreground px-8 py-3.5 text-center text-sm font-medium text-background transition-opacity hover:opacity-85 sm:w-auto"
               >
-                Explore Collections
+                Explore the Collection
               </a>
               <a
                 href="/contact"

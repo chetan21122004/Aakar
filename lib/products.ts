@@ -1,10 +1,10 @@
 import { products as rawProducts, type Product as BaseProduct } from "@/lib/data"
-import { formatINR } from "@/lib/format"
+import { formatStartingPrice } from "@/lib/format"
 
 export type ProductVariant = {
   id: string
   sku: string
-  options: { size?: string; wood?: string; fabric?: string }
+  options: { finish?: string }
   pricePaise: number
   stockQty: number
 }
@@ -13,17 +13,12 @@ export type CatalogProduct = BaseProduct & {
   basePricePaise: number
   images: string[]
   options: {
-    size?: string[]
-    wood?: string[]
-    fabric?: string[]
+    finish: string[]
   }
   variants: ProductVariant[]
 }
 
 export type StockStatus = "in_stock" | "low_stock" | "made_to_order"
-
-const WOODS = ["Sheesham", "Mango", "Teak"] as const
-const FABRICS = ["Linen", "Velvet", "Leather"] as const
 
 const EXTRA_IMAGES = [
   "https://images.unsplash.com/photo-1736506159893-22cca29b8018?q=80&w=1200&auto=format&fit=crop",
@@ -38,49 +33,9 @@ function parsePricePaise(price: string): number {
   return parseInt(match[0].replace(/,/g, ""), 10) * 100
 }
 
-function getSizesForCategory(categorySlug: string): string[] {
-  if (categorySlug === "sofas") return ["2-Seater", "3-Seater", "Sectional"]
-  if (categorySlug === "dining-tables") return ["4-Seater", "6-Seater", "8-Seater"]
-  if (categorySlug === "coffee-tables") return ["Small", "Medium", "Large"]
-  if (categorySlug === "beds") return ["Queen", "King"]
-  if (categorySlug === "wardrobes") return ["2-Door", "3-Door", "4-Door"]
-  return ["Standard", "Large"]
-}
-
-function hasFabric(categorySlug: string): boolean {
-  return categorySlug === "sofas" || categorySlug === "chairs"
-}
-
-function woodModifier(wood: string): number {
-  if (wood === "Teak") return 800_000
-  if (wood === "Mango") return 300_000
-  return 0
-}
-
-function sizeModifier(categorySlug: string, size: string, index: number): number {
-  if (categorySlug === "sofas") {
-    if (size === "3-Seater") return 500_000
-    if (size === "Sectional") return 1_200_000
-  }
-  if (categorySlug === "dining-tables") {
-    if (size === "6-Seater") return 400_000
-    if (size === "8-Seater") return 900_000
-  }
-  if (categorySlug === "coffee-tables") {
-    if (size === "Medium") return 200_000
-    if (size === "Large") return 450_000
-  }
-  if (categorySlug === "wardrobes") {
-    if (size === "3-Door") return 600_000
-    if (size === "4-Door") return 1_100_000
-  }
-  if (categorySlug === "beds" && size === "King") return 500_000
-  return index * 150_000
-}
-
-function fabricModifier(fabric: string): number {
-  if (fabric === "Velvet") return 250_000
-  if (fabric === "Leather") return 600_000
+function finishModifier(finish: string): number {
+  if (finish === "Matte Lacquer") return 150_000
+  if (finish === "Dark Stain") return 200_000
   return 0
 }
 
@@ -93,37 +48,14 @@ function stockForVariant(productIndex: number, variantIndex: number): number {
 
 function buildVariants(product: BaseProduct, productIndex: number): ProductVariant[] {
   const base = parsePricePaise(product.price)
-  const sizes = getSizesForCategory(product.categorySlug)
-  const withFabric = hasFabric(product.categorySlug)
-  const variants: ProductVariant[] = []
-  let variantIndex = 0
 
-  for (const size of sizes) {
-    for (const wood of WOODS) {
-      const fabrics = withFabric ? FABRICS : [undefined]
-      for (const fabric of fabrics) {
-        const options: ProductVariant["options"] = { size, wood }
-        if (fabric) options.fabric = fabric
-
-        const pricePaise =
-          base +
-          sizeModifier(product.categorySlug, size, sizes.indexOf(size)) +
-          woodModifier(wood) +
-          (fabric ? fabricModifier(fabric) : 0)
-
-        variants.push({
-          id: `${product.id}-v${variantIndex}`,
-          sku: `AKR-${product.id.padStart(2, "0")}-${variantIndex + 1}`,
-          options,
-          pricePaise,
-          stockQty: stockForVariant(productIndex, variantIndex),
-        })
-        variantIndex++
-      }
-    }
-  }
-
-  return variants
+  return product.finishOptions.map((finish, variantIndex) => ({
+    id: `${product.id}-v${variantIndex}`,
+    sku: `AKR-${product.id.padStart(2, "0")}-${variantIndex + 1}`,
+    options: { finish },
+    pricePaise: base + finishModifier(finish),
+    stockQty: stockForVariant(productIndex, variantIndex),
+  }))
 }
 
 function buildImages(product: BaseProduct, index: number): string[] {
@@ -138,18 +70,14 @@ function buildImages(product: BaseProduct, index: number): string[] {
 
 function enrichProduct(product: BaseProduct, index: number): CatalogProduct {
   const basePricePaise = parsePricePaise(product.price)
-  const sizes = getSizesForCategory(product.categorySlug)
-  const withFabric = hasFabric(product.categorySlug)
 
   return {
     ...product,
-    price: `From ${formatINR(basePricePaise)}`,
+    price: formatStartingPrice(basePricePaise),
     basePricePaise,
     images: buildImages(product, index),
     options: {
-      size: sizes,
-      wood: [...WOODS],
-      ...(withFabric ? { fabric: [...FABRICS] } : {}),
+      finish: [...product.finishOptions],
     },
     variants: buildVariants(product, index),
   }
@@ -168,15 +96,10 @@ export function getDefaultVariant(product: CatalogProduct): ProductVariant {
 
 export function resolveVariant(
   product: CatalogProduct,
-  selected: { size?: string; wood?: string; fabric?: string }
+  selected: { finish?: string }
 ): ProductVariant | undefined {
   return product.variants.find((variant) => {
-    if (selected.size && variant.options.size !== selected.size) return false
-    if (selected.wood && variant.options.wood !== selected.wood) return false
-    if (product.options.fabric) {
-      if (selected.fabric && variant.options.fabric !== selected.fabric) return false
-      if (!selected.fabric && variant.options.fabric) return false
-    }
+    if (selected.finish && variant.options.finish !== selected.finish) return false
     return true
   })
 }

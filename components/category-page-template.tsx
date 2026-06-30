@@ -54,7 +54,7 @@ export function CategoryPageTemplate({ category, heroTitle, intro, ctaLabel }: C
         title={`Ready to Order Your ${category.name.replace(/s$/, "")}?`}
         subtitle={`${category.description} ${category.startingPrice}.`}
         primaryText={ctaLabel}
-        primaryHref="/shop"
+        primaryHref="/the-console"
         secondaryText="WhatsApp Us"
         secondaryHref={`https://wa.me/${contactInfo.whatsapp}`}
       />
