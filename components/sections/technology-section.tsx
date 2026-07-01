@@ -155,7 +155,7 @@ export function TechnologySection() {
           {/* Bento Grid Container */}
           <div 
             className="relative flex h-full w-full items-stretch justify-center"
-            style={{ gap: `${gap}px`, padding: `${imageProgress * 16}px` }}
+            style={{ gap: `${gap}px` }}
           >
             
             {/* Left Column */}
@@ -277,7 +277,7 @@ export function TechnologySection() {
       {/* Description Section with Background Image and Scroll Reveal */}
       <div 
         ref={textSectionRef}
-        className="relative overflow-hidden bg-background px-6 py-24 md:px-12 md:py-32 lg:px-20 lg:py-40"
+        className="relative overflow-hidden bg-background px-6 py-12 md:px-12 md:py-16 lg:px-20"
       >
         {/* Background Image with Grayscale Filter */}
         

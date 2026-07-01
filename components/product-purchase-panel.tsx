@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import useEmblaCarousel from "embla-carousel-react"
-import { MessageCircle } from "lucide-react"
+import { WhatsAppIcon } from "@/components/whatsapp-icon"
 import {
   Accordion,
   AccordionContent,
@@ -160,7 +160,7 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 font-sans text-sm text-muted-foreground transition-colors hover:text-foreground"
           >
-            <MessageCircle size={16} />
+            <WhatsAppIcon size={16} />
             Questions? Chat on WhatsApp
           </a>
 

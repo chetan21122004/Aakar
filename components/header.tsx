@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Menu, MessageCircle, X } from "lucide-react"
+import { Menu, X } from "lucide-react"
+import { WhatsAppIcon } from "@/components/whatsapp-icon"
 import { contactInfo } from "@/lib/data"
 
 const navLinks = [
@@ -20,21 +21,6 @@ const navLinks = [
 export function Header() {
   const pathname = usePathname()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isScrolled, setIsScrolled] = useState(false)
-  const isHomeHero = pathname === "/" && !isScrolled
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50)
-    }
-
-    window.addEventListener("scroll", handleScroll, { passive: true })
-    handleScroll()
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
-
-  const showBarBackground = isScrolled || isMenuOpen || pathname !== "/"
-  const useLightNav = isHomeHero && !showBarBackground
   const barRadius = isMenuOpen ? "rounded-t-2xl" : "rounded-full"
 
   useEffect(() => {
@@ -44,11 +30,6 @@ export function Header() {
   const linkClass = (href: string) => {
     const isActive =
       href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`)
-    if (useLightNav) {
-      return isActive
-        ? "font-sans text-xs xl:text-sm whitespace-nowrap text-white transition-colors"
-        : "font-sans text-xs xl:text-sm whitespace-nowrap text-white/70 transition-colors hover:text-white"
-    }
     return isActive
       ? "font-sans text-xs xl:text-sm whitespace-nowrap text-foreground transition-colors"
       : "font-sans text-xs xl:text-sm whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground"
@@ -57,15 +38,11 @@ export function Header() {
   return (
     <header className="fixed top-4 left-1/2 z-50 w-[96%] max-w-7xl -translate-x-1/2">
       <div
-        className={`grid grid-cols-[auto_1fr_auto] items-center gap-3 px-4 py-2 transition-all duration-300 xl:gap-4 xl:px-5 ${
-          showBarBackground ? `${barRadius} border border-border/50 bg-background/95 shadow-sm backdrop-blur-md` : ""
-        }`}
+        className={`grid grid-cols-[auto_1fr_auto] items-center gap-3 px-4 py-2 transition-all duration-300 xl:gap-4 xl:px-5 ${barRadius} border border-border/50 bg-background/95 shadow-sm backdrop-blur-md`}
       >
         <Link
           href="/"
-          className={`shrink-0 font-serif text-base font-semibold tracking-tight transition-colors duration-300 whitespace-nowrap xl:text-lg ${
-            useLightNav ? "text-white" : "text-foreground"
-          }`}
+          className="shrink-0 font-serif text-base font-semibold tracking-tight text-foreground transition-colors duration-300 whitespace-nowrap xl:text-lg"
         >
           Aakar Woodcraft
         </Link>
@@ -83,22 +60,14 @@ export function Header() {
             href={`https://wa.me/${contactInfo.whatsapp}`}
             target="_blank"
             rel="noopener noreferrer"
-            className={`ml-1 flex items-center gap-1.5 border px-2.5 py-1.5 font-sans text-xs font-medium transition-all xl:px-3 ${
-              useLightNav
-                ? "border-white/30 text-white/80 hover:text-white"
-                : "border-border text-muted-foreground hover:text-foreground"
-            }`}
+            className="ml-1 flex items-center gap-1.5 border border-border px-2.5 py-1.5 font-sans text-xs font-medium text-muted-foreground transition-all hover:text-foreground xl:px-3"
           >
-            <MessageCircle size={14} />
+            <WhatsAppIcon size={14} />
             <span className="hidden 2xl:inline">WhatsApp</span>
           </Link>
           <Link
             href="/contact"
-            className={`ml-1 px-3 py-2 font-sans text-xs font-semibold uppercase tracking-wide transition-all xl:px-4 ${
-              useLightNav
-                ? "bg-white text-foreground hover:bg-white/90"
-                : "bg-foreground text-background hover:opacity-80"
-            }`}
+            className="ml-1 bg-foreground px-3 py-2 font-sans text-xs font-semibold uppercase tracking-wide text-background transition-all hover:opacity-80 xl:px-4"
           >
             Enquire
           </Link>
@@ -108,7 +77,7 @@ export function Header() {
           <button
             type="button"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className={`transition-colors ${useLightNav ? "text-white" : "text-foreground"}`}
+            className="text-foreground transition-colors"
             aria-label="Toggle menu"
           >
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -148,7 +117,7 @@ export function Header() {
               className="flex items-center justify-center gap-2 border border-border px-5 py-3 text-center font-sans text-sm text-foreground"
               onClick={() => setIsMenuOpen(false)}
             >
-              <MessageCircle size={16} />
+              <WhatsAppIcon size={16} />
               WhatsApp
             </Link>
           </nav>

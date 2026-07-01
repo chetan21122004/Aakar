@@ -1,6 +1,13 @@
 "use client";
 
 import { FadeImage } from "@/components/fade-image";
+import {
+  FadeIn,
+  FadeInUp,
+  Parallax,
+  StaggerContainer,
+  StaggerItem,
+} from "@/components/motion/scroll-motion";
 
 const features = [
   {
@@ -38,8 +45,7 @@ const features = [
 export function FeaturedProductsSection() {
   return (
     <section id="why-choose" className="bg-background">
-      {/* Section Title */}
-      <div className="px-6 py-20 text-center md:px-12 md:py-28 lg:px-20 lg:py-32 lg:pb-20">
+      <FadeInUp className="px-6 pt-12 pb-8 text-center md:px-12 md:pt-16 md:pb-10 lg:px-20">
         <h2 className="text-3xl font-serif font-light tracking-tight text-foreground md:text-4xl lg:text-5xl">
           Why Choose
           <br />
@@ -48,44 +54,45 @@ export function FeaturedProductsSection() {
         <p className="mx-auto mt-6 max-w-md text-sm text-secondary font-semibold uppercase tracking-widest">
           What Makes Us Different
         </p>
-      </div>
+      </FadeInUp>
 
-      {/* Features Grid */}
-      <div className="grid grid-cols-1 gap-8 px-6 pb-20 md:grid-cols-3 md:px-12 lg:px-20">
+      <StaggerContainer
+        className="grid grid-cols-1 gap-8 px-6 pb-10 md:grid-cols-3 md:px-12 lg:px-20"
+        stagger={0.12}
+      >
         {features.map((feature) => (
-          <div key={feature.title} className="group">
-            {/* Image */}
-            <div className="relative aspect-[4/3] overflow-hidden rounded-none mb-6">
-              <FadeImage
-                src={feature.image || "/placeholder.svg"}
-                alt={feature.title}
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-300"
-              />
-            </div>
+          <StaggerItem key={feature.title}>
+            <div className="group">
+              <Parallax className="relative aspect-[4/3] overflow-hidden rounded-none mb-6" offset={30}>
+                <FadeImage
+                  src={feature.image || "/placeholder.svg"}
+                  alt={feature.title}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </Parallax>
 
-            {/* Content */}
-            <div className="space-y-3">
-              <h3 className="text-foreground text-xl font-serif font-light">
-                {feature.title}
-              </h3>
-              <p className="text-sm leading-relaxed text-muted-foreground">
-                {feature.description}
-              </p>
+              <div className="space-y-3">
+                <h3 className="text-foreground text-xl font-serif font-light">
+                  {feature.title}
+                </h3>
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  {feature.description}
+                </p>
+              </div>
             </div>
-          </div>
+          </StaggerItem>
         ))}
-      </div>
+      </StaggerContainer>
 
-      {/* CTA Link */}
-      <div className="flex justify-center px-6 pb-28 md:px-12 lg:px-20">
+      <FadeIn className="flex justify-center px-6 pb-12 md:px-12 md:pb-16 lg:px-20" delay={0.2}>
         <a
           href="/about"
           className="border-b border-foreground pb-1 text-sm font-medium text-foreground transition-opacity hover:opacity-70"
         >
           Learn More About Our Craft →
         </a>
-      </div>
+      </FadeIn>
     </section>
   );
 }

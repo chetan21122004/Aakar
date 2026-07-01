@@ -76,8 +76,6 @@ export function HeroSection() {
   const sideTranslateY = -(imageProgress * 15); // Move up by 15% when fully expanded
   const taglineOpacity = Math.max(0, (scrollProgress - 0.45) / 0.55);
   const taglineVisible = scrollProgress > 0.45;
-  const sidePadding = imageProgress * 16;
-  const bottomPadding = taglineVisible ? imageProgress * 8 : 0;
 
   return (
     <section ref={sectionRef} className="relative bg-background">
@@ -87,13 +85,7 @@ export function HeroSection() {
           {/* Bento Grid — top area only, cannot overlap content below */}
           <div
             className="relative flex h-full min-h-0 flex-1 items-stretch justify-center"
-            style={{
-              gap: `${gap}px`,
-              paddingTop: `${sidePadding}px`,
-              paddingRight: `${sidePadding}px`,
-              paddingBottom: `${bottomPadding}px`,
-              paddingLeft: `${sidePadding}px`,
-            }}
+            style={{ gap: `${gap}px` }}
           >
             
             {/* Left Column */}
@@ -205,7 +197,7 @@ export function HeroSection() {
               maxHeight: taglineVisible ? "440px" : "0px",
             }}
           >
-            <div className="px-6 pb-6 pt-2 md:px-12 md:pb-8 lg:px-20">
+            <div className="px-6 pb-4 pt-1 md:px-12 md:pb-5 lg:px-20">
             <h2 className="mx-auto max-w-3xl text-center font-serif text-2xl font-light leading-snug text-foreground md:text-3xl lg:text-4xl">
               Contemporary Form. Rooted in Craft.
             </h2>

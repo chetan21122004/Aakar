@@ -91,7 +91,7 @@ export function GallerySection() {
   return (
     <>
       {/* Section Title */}
-      <div className="bg-background px-6 pt-20 pb-10 md:px-12 md:pt-28 lg:px-20">
+      <div className="bg-background px-6 pt-12 pb-6 md:px-12 md:pt-16 lg:px-20">
         <h2 className="text-3xl font-serif font-light tracking-tight text-foreground md:text-4xl">
           Spaces, Details and Finished Pieces
         </h2>
