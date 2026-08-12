@@ -1,12 +1,36 @@
+"use client"
+
 import Image from "next/image"
 import Link from "next/link"
+import { toast } from "sonner"
+import { useCart } from "@/contexts/cart-context"
 import type { Product } from "@/lib/data"
+import { getDefaultVariant, getProductBySlug } from "@/lib/products"
 
 type CollectionProductCardProps = {
   product: Product
 }
 
 export function CollectionProductCard({ product }: CollectionProductCardProps) {
+  const { addItem } = useCart()
+  const catalogProduct = getProductBySlug(product.slug)
+  const defaultVariant = catalogProduct ? getDefaultVariant(catalogProduct) : null
+
+  const handleAddToCart = () => {
+    if (!catalogProduct || !defaultVariant) return
+    addItem({
+      variantId: defaultVariant.id,
+      productSlug: catalogProduct.slug,
+      name: catalogProduct.name,
+      image: catalogProduct.images[0],
+      options: defaultVariant.options,
+      pricePaise: defaultVariant.pricePaise,
+    })
+    toast.success("Added to cart", {
+      description: catalogProduct.name,
+    })
+  }
+
   return (
     <article className="flex flex-col">
       <Link href={`/products/${product.slug}`} className="group block">
@@ -52,9 +76,14 @@ export function CollectionProductCard({ product }: CollectionProductCardProps) {
         <p className="type-price mb-6 mt-auto">{product.price}</p>
 
         <div className="flex flex-col gap-3 sm:flex-row">
-          <Link href="/contact" className="btn-primary flex-1 text-center">
-            Enquire
-          </Link>
+          <button
+            type="button"
+            className="btn-primary flex-1 text-center"
+            onClick={handleAddToCart}
+            disabled={!defaultVariant}
+          >
+            Add to Cart
+          </button>
           <Link href={`/products/${product.slug}`} className="btn-outline-sm flex-1 text-center">
             View Details
           </Link>

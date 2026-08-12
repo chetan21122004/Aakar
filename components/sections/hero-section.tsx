@@ -1,233 +1,167 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
-const word = "AAKAR";
+const slides = [
+  {
+    src: "/images/hero/hero-objects-spaces.png",
+    alt: "Stone arched courtyard with a circular craft table at center",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=2400&auto=format&fit=crop",
+    alt: "Dark dining room with solid wood table and low light",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1618220179428-22790b461013?q=80&w=2400&auto=format&fit=crop",
+    alt: "Moody modern interior with deep wood tones",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=2400&auto=format&fit=crop",
+    alt: "Dim architectural lounge with walnut furniture",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=2400&auto=format&fit=crop",
+    alt: "Dark teal sofa and deep wood living room",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1513694203232-719a280e022f?q=80&w=2400&auto=format&fit=crop",
+    alt: "Dim bedroom with dark wood accents",
+  },
+] as const;
 
-const sideImages = [
-  {
-    src: "https://images.unsplash.com/photo-1581428982868-e410dd047a90?q=80&w=1000&auto=format&fit=crop",
-    alt: "Wooden coffee table beside a sofa",
-    position: "left",
-    span: 1,
-  },
-  {
-    src: "https://images.unsplash.com/photo-1736506159893-22cca29b8018?q=80&w=1000&auto=format&fit=crop",
-    alt: "Close-up of dark wood grain texture",
-    position: "left",
-    span: 1,
-  },
-  {
-    src: "https://images.unsplash.com/photo-1758977403438-1b8546560d31?q=80&w=1000&auto=format&fit=crop",
-    alt: "Modern dining table with upholstered chairs",
-    position: "right",
-    span: 1,
-  },
-  {
-    src: "https://images.unsplash.com/photo-1685612213152-b995e1641013?q=80&w=1000&auto=format&fit=crop",
-    alt: "Handcrafted wooden lounge chair",
-    position: "right",
-    span: 1,
-  },
-];
+const AUTO_MS = 6500;
 
 export function HeroSection() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const [scrollProgress, setScrollProgress] = useState(0);
+  const [index, setIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const [reduceMotion, setReduceMotion] = useState(false);
+  const [entered, setEntered] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      if (!sectionRef.current) return;
-      
-      const rect = sectionRef.current.getBoundingClientRect();
-      const scrollableHeight = window.innerHeight * 0.9;
-      const scrolled = -rect.top;
-      const progress = Math.max(0, Math.min(1, scrolled / scrollableHeight));
-      
-      setScrollProgress(progress);
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-    
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const sync = () => setReduceMotion(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
   }, []);
 
-  // Text fades out first (0 to 0.2)
-  const textOpacity = Math.max(0, 1 - (scrollProgress / 0.2));
-  
-  // Image transforms start after text fades (0.2 to 1)
-  const imageProgress = Math.max(0, Math.min(1, (scrollProgress - 0.2) / 0.8));
-  
-  // Smooth interpolations
-  const centerWidth = 100 - (imageProgress * 58); // 100% to 42%
-  const centerHeight = 100 - (imageProgress * 30); // 100% to 70%
-  const sideWidth = imageProgress * 22; // 0% to 22%
-  const sideOpacity = imageProgress;
-  const sideTranslateLeft = -100 + (imageProgress * 100); // -100% to 0%
-  const sideTranslateRight = 100 - (imageProgress * 100); // 100% to 0%
-  const borderRadius = imageProgress * 24; // 0px to 24px
-  const gap = imageProgress * 16; // 0px to 16px
-  
-  // Vertical offset for side columns to move them up on mobile
-  const sideTranslateY = -(imageProgress * 15); // Move up by 15% when fully expanded
-  const taglineOpacity = Math.max(0, (scrollProgress - 0.45) / 0.55);
-  const taglineVisible = scrollProgress > 0.45;
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setEntered(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
+
+  useEffect(() => {
+    if (paused || reduceMotion) return;
+    const id = window.setInterval(() => {
+      setIndex((i) => (i + 1) % slides.length);
+    }, AUTO_MS);
+    return () => window.clearInterval(id);
+  }, [paused, reduceMotion]);
+
+  const goPrev = useCallback(() => {
+    setIndex((i) => (i - 1 + slides.length) % slides.length);
+  }, []);
+
+  const goNext = useCallback(() => {
+    setIndex((i) => (i + 1) % slides.length);
+  }, []);
 
   return (
-    <section ref={sectionRef} className="relative bg-background">
-      {/* Sticky container for scroll animation */}
-      <div className="sticky top-0 h-screen overflow-hidden">
-        <div className="relative flex h-full flex-col">
-          {/* Bento Grid — top area only, cannot overlap content below */}
-          <div
-            className="relative flex h-full min-h-0 flex-1 items-stretch justify-center"
-            style={{ gap: `${gap}px` }}
-          >
-            
-            {/* Left Column */}
-            <div 
-              className="relative z-[1] flex flex-col will-change-transform"
+    <section
+      className="relative h-[100svh] min-h-[560px] overflow-hidden bg-[#2a241f]"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      aria-roledescription="carousel"
+      aria-label="Featured spaces"
+    >
+      {/* Slides */}
+      <div className="absolute inset-0">
+        {slides.map((slide, i) => {
+          const active = i === index;
+          return (
+            <div
+              key={slide.src}
+              className="absolute inset-0 transition-opacity duration-[1200ms] ease-in-out"
               style={{
-                width: `${sideWidth}%`,
-                gap: `${gap}px`,
-                transform: `translateX(${sideTranslateLeft}%) translateY(${sideTranslateY}%)`,
-                opacity: sideOpacity,
+                opacity: active ? 1 : 0,
+                pointerEvents: active ? "auto" : "none",
               }}
-            >
-              {sideImages.filter(img => img.position === "left").map((img, idx) => (
-                <div 
-                  key={idx} 
-                  className="relative overflow-hidden will-change-transform"
-                  style={{
-                    flex: img.span,
-                    borderRadius: `${borderRadius}px`,
-                  }}
-                >
-                  <Image
-                    src={img.src || "/placeholder.svg"}
-                    alt={img.alt}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-              ))}
-            </div>
-
-            {/* Main Hero Image - Center */}
-            <div 
-              className="relative z-[2] overflow-hidden will-change-transform"
-              style={{
-                width: `${centerWidth}%`,
-                height: `${centerHeight}%`,
-                flex: "0 0 auto",
-                borderRadius: `${borderRadius}px`,
-              }}
+              aria-hidden={!active}
             >
               <Image
-                src="https://images.unsplash.com/photo-1762529716272-b316f61502e7?q=80&w=2000&auto=format&fit=crop"
-                alt="Modern living room styled with handcrafted wooden furniture"
+                src={slide.src}
+                alt={slide.alt}
                 fill
-                className="object-cover"
-                priority
+                priority={i === 0}
+                quality={95}
+                sizes="100vw"
+                className="object-cover object-center brightness-[0.62] contrast-[1.08] saturate-[0.95]"
               />
-              
-              {/* Overlay Text - Fades out first */}
-              <div 
-                className="absolute inset-0 flex items-end overflow-hidden"
-                style={{ opacity: textOpacity }}
-              >
-                <h1 className="w-full font-sans text-[22vw] font-medium leading-[0.8] tracking-tighter text-white">
-                  {word.split("").map((letter, index) => (
-                    <span
-                      key={index}
-                      className="inline-block animate-[slideUp_0.8s_ease-out_forwards] opacity-0"
-                      style={{
-                        animationDelay: `${index * 0.08}s`,
-                        transition: 'all 1.5s',
-                        transitionTimingFunction: 'cubic-bezier(0.86, 0, 0.07, 1)',
-                      }}
-                    >
-                      {letter}
-                    </span>
-                  ))}
-                </h1>
-              </div>
             </div>
-
-            {/* Right Column */}
-            <div 
-              className="relative z-[1] flex flex-col will-change-transform"
-              style={{
-                width: `${sideWidth}%`,
-                gap: `${gap}px`,
-                transform: `translateX(${sideTranslateRight}%) translateY(${sideTranslateY}%)`,
-                opacity: sideOpacity,
-              }}
-            >
-              {sideImages.filter(img => img.position === "right").map((img, idx) => (
-                <div 
-                  key={idx} 
-                  className="relative overflow-hidden will-change-transform"
-                  style={{
-                    flex: img.span,
-                    borderRadius: `${borderRadius}px`,
-                  }}
-                >
-                  <Image
-                    src={img.src || "/placeholder.svg"}
-                    alt={img.alt}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-              ))}
-            </div>
-
-          </div>
-
-          {/* Tagline + CTAs — only reserves space once visible */}
-          <div
-            className="relative z-20 shrink-0 overflow-hidden bg-background transition-[max-height] duration-300 ease-out"
-            style={{
-              opacity: taglineOpacity,
-              maxHeight: taglineVisible ? "440px" : "0px",
-            }}
-          >
-            <div className="px-6 pb-4 pt-1 md:px-12 md:pb-5 lg:px-20">
-            <h2 className="mx-auto max-w-3xl text-center font-serif text-2xl font-light leading-snug text-foreground md:text-3xl lg:text-4xl">
-              Contemporary Form. Rooted in Craft.
-            </h2>
-            <p className="mx-auto mt-3 max-w-xl text-center text-sm leading-relaxed text-muted-foreground md:mt-4 md:text-base">
-              We design contemporary forms rooted in traditional craft. Every piece is made to order in our controlled workshop environment. No mass production. No shortcuts.
-            </p>
-            <p className="mx-auto mt-4 max-w-xl text-center font-serif text-lg font-light leading-relaxed text-foreground md:text-xl">
-              Solid wood. Traditional joinery. Hand finishing. Furniture built to last generations.
-            </p>
-            <div className="mt-4 flex flex-col items-center justify-center gap-3 sm:mt-5 sm:flex-row sm:gap-4">
-              <a
-                href="/collections"
-                className="w-full bg-foreground px-8 py-3.5 text-center text-sm font-medium text-background transition-opacity hover:opacity-85 sm:w-auto"
-              >
-                Explore the Collection
-              </a>
-              <a
-                href="/contact"
-                className="w-full border border-border px-8 py-3.5 text-center text-sm font-medium text-foreground transition-colors hover:bg-muted sm:w-auto"
-              >
-                Request a Quote
-              </a>
-            </div>
-            </div>
-          </div>
-        </div>
+          );
+        })}
+        {/* Darken for white nav / headline contrast */}
+        <div
+          className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-black/50"
+          aria-hidden
+        />
       </div>
 
-      {/* Scroll space to enable animation */}
-      <div className="h-[90vh]" />
+      {/* Bottom: headline left · arrow counter right */}
+      <div className="absolute inset-x-0 bottom-0 z-20 flex items-end justify-between gap-8 px-5 pb-8 md:px-10 md:pb-10 lg:px-16 lg:pb-12">
+        <div
+          className={`min-w-0 transition-all duration-700 ease-out ${
+            entered && !reduceMotion
+              ? "translate-y-0 opacity-100"
+              : reduceMotion
+                ? "opacity-100"
+                : "translate-y-4 opacity-0"
+          }`}
+        >
+          <h1 className="whitespace-nowrap font-hero text-[clamp(1.5rem,4.2vw,2.85rem)] font-normal leading-[1.05] tracking-[-0.015em] text-white">
+            Objects. Spaces. Stories.
+          </h1>
+          <p className="mt-2 font-hero text-[clamp(0.8rem,1.15vw,0.95rem)] font-light leading-snug tracking-[0.01em] text-white/85 md:mt-2.5">
+            Contemporary Form. Rooted in Craft.
+          </p>
+        </div>
+
+        <div
+          className="mb-1 flex shrink-0 items-center gap-5 md:gap-6"
+          role="group"
+          aria-label="Carousel controls"
+        >
+          <button
+            type="button"
+            onClick={goPrev}
+            aria-label="Previous slide"
+            className="flex h-8 w-8 items-center justify-center text-white/90 transition-opacity hover:text-white"
+          >
+            <svg width="22" height="12" viewBox="0 0 22 12" fill="none" aria-hidden>
+              <path d="M7 1L1 6l6 5M1.5 6H21" stroke="currentColor" strokeWidth="1.25" />
+            </svg>
+          </button>
+
+          <p
+            className="min-w-[3.5rem] text-center font-hero text-[13px] font-light tracking-[0.08em] text-white tabular-nums md:text-[14px]"
+            aria-live="polite"
+          >
+            {index + 1} / {slides.length}
+          </p>
+
+          <button
+            type="button"
+            onClick={goNext}
+            aria-label="Next slide"
+            className="flex h-8 w-8 items-center justify-center text-white/90 transition-opacity hover:text-white"
+          >
+            <svg width="22" height="12" viewBox="0 0 22 12" fill="none" aria-hidden>
+              <path d="M15 1l6 5-6 5M20.5 6H1" stroke="currentColor" strokeWidth="1.25" />
+            </svg>
+          </button>
+        </div>
+      </div>
     </section>
   );
 }

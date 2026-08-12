@@ -85,8 +85,8 @@ function CTAButton({
 
   const className = isPrimary
     ? dark
-      ? "bg-accent text-accent-foreground hover:-translate-y-px hover:shadow-[0_6px_20px_rgba(194,161,90,0.25)]"
-      : "bg-primary text-primary-foreground hover:-translate-y-px hover:shadow-[0_6px_20px_rgba(23,63,53,0.15)]"
+      ? "bg-accent text-accent-foreground hover:-translate-y-px hover:shadow-[0_6px_20px_rgba(168,111,71,0.25)]"
+      : "bg-primary text-primary-foreground hover:-translate-y-px hover:shadow-[0_6px_20px_rgba(48,42,38,0.15)]"
     : dark
       ? "border border-primary-foreground/25 text-primary-foreground hover:-translate-y-px hover:border-primary-foreground/45 hover:bg-primary-foreground/5"
       : "border border-border text-foreground hover:-translate-y-px hover:bg-muted"
@@ -173,8 +173,8 @@ export function CTASection({
 
   return (
     <section
-      className={`px-6 py-14 md:px-12 md:py-16 lg:px-20 ${
-        dark ? "bg-primary text-primary-foreground" : "bg-muted/40 text-foreground"
+      className={`border-t border-border px-6 py-16 md:px-12 md:py-20 lg:px-20 ${
+        dark ? "bg-umber text-primary-foreground" : "bg-sand text-foreground"
       }`}
     >
       <div ref={revealRef as React.RefObject<HTMLDivElement>} className="mx-auto max-w-7xl">

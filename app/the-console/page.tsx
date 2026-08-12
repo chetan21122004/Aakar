@@ -182,7 +182,7 @@ export default function TheConsolePage() {
                 <div className="relative aspect-[4/3] overflow-hidden mb-6">
                   <Image src={detail.image} alt={detail.alt} fill className="object-cover" />
                   <div className="absolute bottom-6 left-6">
-                    <span className="rounded-none bg-[rgba(23,63,53,0.9)] px-4 py-2 text-sm font-medium text-white backdrop-blur-md">
+                    <span className="rounded-none bg-ink/90 px-4 py-2 text-sm font-medium text-sand backdrop-blur-md">
                       {detail.badge}
                     </span>
                   </div>

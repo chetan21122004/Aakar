@@ -2,7 +2,9 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { type CatalogProduct } from "@/lib/products"
+import { toast } from "sonner"
+import { useCart } from "@/contexts/cart-context"
+import { getDefaultVariant, type CatalogProduct } from "@/lib/products"
 import { formatStartingPrice } from "@/lib/format"
 
 interface ProductCardProps {
@@ -10,7 +12,25 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+  const { addItem } = useCart()
+  const defaultVariant = getDefaultVariant(product)
   const href = `/products/${product.slug}`
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    addItem({
+      variantId: defaultVariant.id,
+      productSlug: product.slug,
+      name: product.name,
+      image: product.images[0],
+      options: defaultVariant.options,
+      pricePaise: defaultVariant.pricePaise,
+    })
+    toast.success("Added to cart", {
+      description: product.name,
+    })
+  }
 
   return (
     <div className="group">
@@ -30,9 +50,9 @@ export function ProductCard({ product }: ProductCardProps) {
         </div>
       </Link>
       <div className="mt-4 flex items-center gap-3">
-        <Link href="/contact" className="btn-primary flex-1 py-2.5 text-xs text-center">
-          Enquire
-        </Link>
+        <button type="button" className="btn-primary flex-1 py-2.5 text-xs" onClick={handleAddToCart}>
+          Add to Cart
+        </button>
         <Link href={href} className="btn-outline-sm shrink-0 py-2.5">
           Details
         </Link>

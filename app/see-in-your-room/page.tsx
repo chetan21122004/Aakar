@@ -80,7 +80,7 @@ export default function SeeInYourRoomPage() {
               </div>
               <a
                 href="/contact"
-                className="mt-3 block w-full text-center bg-primary text-white font-semibold py-3 hover:bg-primary-light transition-colors"
+                className="mt-3 block w-full text-center bg-primary text-primary-foreground font-semibold py-3 hover:bg-umber transition-colors"
               >
                 Request a Quote
               </a>

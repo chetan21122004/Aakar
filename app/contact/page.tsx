@@ -38,7 +38,7 @@ export default function ContactPage() {
                 <h3 className="font-semibold text-foreground mb-2">Email</h3>
                 <a
                   href={`mailto:${contactInfo.email}`}
-                  className="text-primary hover:text-primary-light transition-colors"
+                  className="text-primary hover:text-umber transition-colors"
                 >
                   {contactInfo.email}
                 </a>
@@ -50,7 +50,7 @@ export default function ContactPage() {
                   href={whatsappHref}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-primary hover:text-primary-light transition-colors"
+                  className="text-primary hover:text-umber transition-colors"
                 >
                   {contactInfo.phone}
                 </a>
@@ -62,7 +62,7 @@ export default function ContactPage() {
                   href={contactInfo.instagramUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-primary hover:text-primary-light transition-colors"
+                  className="text-primary hover:text-umber transition-colors"
                 >
                   {contactInfo.instagram}
                 </a>

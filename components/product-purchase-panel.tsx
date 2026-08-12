@@ -2,8 +2,9 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react"
 import Image from "next/image"
-import Link from "next/link"
+import { useRouter } from "next/navigation"
 import useEmblaCarousel from "embla-carousel-react"
+import { toast } from "sonner"
 import { WhatsAppIcon } from "@/components/whatsapp-icon"
 import {
   Accordion,
@@ -12,6 +13,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 import { EnquiryForm } from "@/components/enquiry-form"
+import { useCart } from "@/contexts/cart-context"
 import { contactInfo } from "@/lib/data"
 import { formatINR, formatOptionsLabel } from "@/lib/format"
 import {
@@ -61,6 +63,8 @@ function OptionGroup({
 }
 
 export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
+  const router = useRouter()
+  const { addItem } = useCart()
   const defaultVariant = getDefaultVariant(product)
 
   const [selected, setSelected] = useState({
@@ -94,6 +98,22 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
       emblaApi.off("select", onSelect)
     }
   }, [emblaApi])
+
+  const handleAddToCart = (redirectToCheckout = false) => {
+    if (!activeVariant) return
+    addItem({
+      variantId: activeVariant.id,
+      productSlug: product.slug,
+      name: product.name,
+      image: product.images[0],
+      options: activeVariant.options,
+      pricePaise: activeVariant.pricePaise,
+    })
+    toast.success("Added to cart", {
+      description: `${product.name} — ${formatINR(activeVariant.pricePaise)}`,
+    })
+    if (redirectToCheckout) router.push("/checkout")
+  }
 
   return (
     <>
@@ -148,11 +168,16 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
             />
           </div>
 
-          <div className="hidden sm:block mb-4">
-            <Link href="/contact" className="btn-primary w-full text-center">
-              Enquire
-            </Link>
+          <div className="hidden sm:flex flex-col sm:flex-row gap-3 mb-4">
+            <button type="button" className="btn-primary flex-1" onClick={() => handleAddToCart(false)}>
+              Add to Cart
+            </button>
+            <button type="button" className="btn-secondary flex-1" onClick={() => handleAddToCart(true)}>
+              Buy Now
+            </button>
           </div>
+
+          <p className="type-body text-sm mb-4">Free delivery on orders over ₹1,00,000</p>
 
           <a
             href={whatsappHref}
@@ -217,9 +242,9 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
           <div className="flex-1">
             <p className="type-price-sm">{formatINR(activeVariant.pricePaise)}</p>
           </div>
-          <Link href="/contact" className="btn-primary px-5 py-3">
-            Enquire
-          </Link>
+          <button type="button" className="btn-primary px-5 py-3" onClick={() => handleAddToCart(false)}>
+            Add to Cart
+          </button>
         </div>
       </div>
     </>
