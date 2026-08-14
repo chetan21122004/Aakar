@@ -124,7 +124,7 @@ export function JournalVoicesSection() {
   };
 
   return (
-    <section className="bg-[#F3EFE9] px-5 py-10 md:px-10 md:py-12 lg:px-16">
+    <section className="bg-background px-5 py-10 md:px-10 md:py-12 lg:px-16">
       <div>
         {/* Journal / Stories */}
         <motion.div
@@ -146,9 +146,9 @@ export function JournalVoicesSection() {
             <motion.div key={story.title} custom={i} variants={cardVariants}>
               <Link
                 href={story.href}
-                className="group flex h-full flex-col overflow-hidden rounded-[1.75rem] bg-[#EDE6DC] p-3 transition-shadow duration-300 hover:shadow-[0_16px_40px_rgba(48,42,38,0.08)] md:rounded-[2rem] md:p-3.5"
+                className="group flex h-full flex-col overflow-hidden rounded-[1.75rem] bg-stone p-3 transition-shadow duration-300 hover:shadow-[0_16px_40px_rgba(48,42,38,0.08)] md:rounded-[2rem] md:p-3.5"
               >
-                <div className="relative aspect-[4/3] overflow-hidden rounded-[1.35rem] bg-[#F3EFE9] md:rounded-[1.5rem]">
+                <div className="relative aspect-[4/3] overflow-hidden rounded-[1.35rem] bg-background md:rounded-[1.5rem]">
                   <Image
                     src={story.image}
                     alt={story.alt}
@@ -178,7 +178,7 @@ export function JournalVoicesSection() {
           >
             <Link
               href="/about"
-              className="inline-flex rounded-full bg-[#6B4A35] px-7 py-3.5 font-condensed text-[0.78rem] font-semibold uppercase tracking-[0.16em] text-white transition-colors hover:bg-[#5C3A28] md:text-[0.8rem]"
+              className="inline-flex rounded-full bg-primary px-7 py-3.5 font-condensed text-[0.78rem] font-semibold uppercase tracking-[0.16em] text-white transition-colors hover:bg-secondary md:text-[0.8rem]"
             >
               Read More Stories
             </Link>
@@ -193,7 +193,7 @@ export function JournalVoicesSection() {
           viewport={{ once: true, amount: 0.25 }}
           transition={{ duration: 0.8, ease }}
         >
-          <div className="relative overflow-hidden rounded-[2rem] bg-[#EDE6DC] px-6 py-10 md:rounded-[2.5rem] md:px-12 md:py-12 lg:px-16">
+          <div className="relative overflow-hidden rounded-[2rem] bg-stone px-6 py-10 md:rounded-[2.5rem] md:px-12 md:py-12 lg:px-16">
             <h2 className={SECTION_HEADING}>Testimonials</h2>
 
             <div className="relative">

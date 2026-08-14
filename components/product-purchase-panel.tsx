@@ -22,6 +22,7 @@ import {
   type CatalogProduct,
 } from "@/lib/products"
 import { cn } from "@/lib/utils"
+import { getConceptForProduct } from "@/lib/concepts"
 
 type ProductPurchasePanelProps = {
   product: CatalogProduct
@@ -48,7 +49,7 @@ function OptionGroup({
             type="button"
             onClick={() => onChange(option)}
             className={cn(
-              "border px-4 py-2 font-sans text-sm transition-colors",
+              "rounded-full border px-4 py-2 font-sans text-sm transition-colors",
               value === option
                 ? "border-foreground bg-foreground text-background"
                 : "border-border text-foreground hover:border-foreground/50"
@@ -66,6 +67,7 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
   const router = useRouter()
   const { addItem } = useCart()
   const defaultVariant = getDefaultVariant(product)
+  const collection = getConceptForProduct(product.slug)
 
   const [selected, setSelected] = useState({
     finish: defaultVariant.options.finish,
@@ -120,7 +122,7 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
       <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-16">
         {/* Gallery */}
         <div className="space-y-4">
-          <div className="relative aspect-square w-full overflow-hidden bg-muted" ref={emblaRef}>
+          <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[2rem] bg-stone" ref={emblaRef}>
             <div className="flex h-full">
               {product.images.map((src, i) => (
                 <div key={src} className="relative min-w-0 flex-[0_0_100%]">
@@ -142,7 +144,7 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
                 type="button"
                 onClick={() => onThumbClick(i)}
                 className={cn(
-                  "relative aspect-square overflow-hidden bg-muted ring-2 ring-transparent transition-all",
+                  "relative aspect-[4/3] overflow-hidden rounded-xl bg-stone ring-2 ring-transparent transition-all",
                   selectedIndex === i && "ring-foreground"
                 )}
               >
@@ -153,8 +155,9 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
         </div>
 
         {/* Buy box */}
-        <div className="lg:sticky lg:top-28 lg:self-start">
-          <p className="type-label mb-3">{product.category}</p>
+        <div className="rounded-[2rem] border border-ink/10 bg-stone p-6 lg:sticky lg:top-28 lg:self-start lg:p-8">
+          <p className="font-condensed text-xs font-semibold uppercase tracking-[.18em] text-umber">{collection?.name ?? product.category}</p>
+          <p className="mt-2 text-xs uppercase tracking-[.12em] text-muted-foreground">{product.category}</p>
           <h1 className="type-display mb-3">{product.name}</h1>
 
           <p className="type-price mb-6">{formatINR(activeVariant.pricePaise)}</p>

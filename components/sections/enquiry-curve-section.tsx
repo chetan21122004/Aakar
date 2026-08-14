@@ -30,7 +30,7 @@ export function EnquiryCurveSection() {
   return (
     <section
       ref={ref}
-      className="bg-[#F3EFE9] px-5 py-8 md:px-10 md:py-10 lg:px-16"
+      className="bg-background px-5 py-8 md:px-10 md:py-10 lg:px-16"
     >
       <motion.div
         className="relative overflow-hidden rounded-[1.75rem] md:rounded-[2rem]"
@@ -53,7 +53,7 @@ export function EnquiryCurveSection() {
 
           {/* Soft readability washes — left dark wood / right linen */}
           <div
-            className="absolute inset-0 bg-gradient-to-r from-black/45 via-black/10 to-[#F3EFE9]/35"
+            className="absolute inset-0 bg-gradient-to-r from-black/45 via-black/10 to-background/35"
             aria-hidden
           />
           <div
@@ -78,7 +78,7 @@ export function EnquiryCurveSection() {
               >
                 <Link
                   href="/contact"
-                  className="inline-flex rounded-full bg-[#F3EFE9] px-7 py-3 font-condensed text-[0.78rem] font-semibold uppercase tracking-[0.18em] text-[#3D2A1F] shadow-[0_8px_24px_rgba(0,0,0,0.2)] transition-opacity hover:opacity-95 md:text-[0.82rem]"
+                  className="inline-flex rounded-full bg-background px-7 py-3 font-condensed text-[0.78rem] font-semibold uppercase tracking-[0.18em] text-foreground shadow-[0_8px_24px_rgba(0,0,0,0.2)] transition-opacity hover:opacity-95 md:text-[0.82rem]"
                 >
                   Furniture Enquiry
                 </Link>
@@ -87,10 +87,10 @@ export function EnquiryCurveSection() {
 
             {/* Right — over linen */}
             <div className="flex flex-col justify-center md:ml-auto md:max-w-[22rem] md:text-right">
-              <h2 className="font-condensed text-[1.75rem] font-semibold uppercase tracking-[0.1em] text-[#3D2A1F] md:text-[2rem] md:tracking-[0.12em] lg:text-[2.25rem]">
+              <h2 className="font-condensed text-[1.75rem] font-semibold uppercase tracking-[0.1em] text-foreground md:text-[2rem] md:tracking-[0.12em] lg:text-[2.25rem]">
                 Home Consultation
               </h2>
-              <p className="mt-3 max-w-[18rem] font-hero text-[1.02rem] font-light leading-relaxed text-[#3D2A1F]/80 md:ml-auto md:text-[1.08rem]">
+              <p className="mt-3 max-w-[18rem] font-hero text-[1.02rem] font-light leading-relaxed text-foreground/80 md:ml-auto md:text-[1.08rem]">
                 Plan rooms end-to-end with material guidance, layouts, and
                 made-to-order furniture for your space.
               </p>
@@ -101,7 +101,7 @@ export function EnquiryCurveSection() {
               >
                 <Link
                   href="/contact"
-                  className="inline-flex rounded-full bg-[#6B4A35] px-7 py-3 font-condensed text-[0.78rem] font-semibold uppercase tracking-[0.18em] text-white shadow-[0_8px_24px_rgba(107,74,53,0.35)] transition-colors hover:bg-[#5C3A28] md:text-[0.82rem]"
+                  className="inline-flex rounded-full bg-primary px-7 py-3 font-condensed text-[0.78rem] font-semibold uppercase tracking-[0.18em] text-white shadow-[0_8px_24px_rgba(168,111,71,0.35)] transition-colors hover:bg-secondary md:text-[0.82rem]"
                 >
                   Home Consultation
                 </Link>

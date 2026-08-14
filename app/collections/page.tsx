@@ -6,7 +6,7 @@ import { CollectionsHub } from "@/components/collections-hub"
 export const metadata = {
   title: "Collections | Aakar Woodcraft",
   description:
-    "Explore our console, dining, and living collections — contemporary solid wood furniture made to order in Indian walnut.",
+    "Explore Still Mandu, Hampi Rift, Fatehpur Sikri, and Bishnupur Temples.",
 }
 
 export default function CollectionsPage() {
@@ -21,8 +21,7 @@ export default function CollectionsPage() {
             Our Collections
           </h1>
           <p className="text-lg leading-relaxed text-muted-foreground">
-            Contemporary forms crafted in solid wood. Each piece is made to order with meticulous
-            attention to detail.
+            Four furniture studies rooted in Indian architecture, memory, landscape, and material.
           </p>
         </div>
       </section>

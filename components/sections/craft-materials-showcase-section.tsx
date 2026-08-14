@@ -73,7 +73,7 @@ export function CraftMaterialsShowcaseSection() {
   const reduceMotion = useReducedMotion();
 
   return (
-    <section className="overflow-x-clip bg-[#F3EFE9] px-5 py-10 md:px-10 md:py-12 lg:px-16">
+    <section className="overflow-x-clip bg-background px-5 py-10 md:px-10 md:py-12 lg:px-16">
       <motion.div
         initial="hidden"
         whileInView="visible"
@@ -186,7 +186,7 @@ export function CraftMaterialsShowcaseSection() {
               >
                 <Link
                   href="/contact"
-                  className="inline-flex rounded-full bg-[#6B4A35] px-6 py-3 font-condensed text-[0.75rem] font-semibold uppercase tracking-[0.16em] text-white transition-colors hover:bg-[#5C3A28] md:px-7 md:text-[0.8rem]"
+                  className="inline-flex rounded-full bg-primary px-6 py-3 font-condensed text-[0.75rem] font-semibold uppercase tracking-[0.16em] text-white transition-colors hover:bg-secondary md:px-7 md:text-[0.8rem]"
                 >
                   Consult With Us
                 </Link>

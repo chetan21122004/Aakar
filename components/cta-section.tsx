@@ -96,7 +96,7 @@ function CTAButton({
       href={href}
       target={external ? "_blank" : undefined}
       rel={external ? "noopener noreferrer" : undefined}
-      className={`inline-flex items-center justify-center gap-2 px-6 py-3.5 font-sans text-sm font-semibold uppercase tracking-wide transition-all duration-300 ease-out ${className}`}
+      className={`inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 font-condensed text-sm font-semibold uppercase tracking-[.12em] transition-all duration-300 ease-out ${className}`}
       style={revealStyle(visible, delay)}
     >
       {children}
@@ -174,7 +174,7 @@ export function CTASection({
   return (
     <section
       className={`border-t border-border px-6 py-16 md:px-12 md:py-20 lg:px-20 ${
-        dark ? "bg-umber text-primary-foreground" : "bg-sand text-foreground"
+        dark ? "bg-ink text-primary-foreground" : "bg-sand text-foreground"
       }`}
     >
       <div ref={revealRef as React.RefObject<HTMLDivElement>} className="mx-auto max-w-7xl">

@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { Analytics } from '@vercel/analytics/next'
 import { WhatsAppButton } from '@/components/whatsapp-button'
 import { Providers } from '@/components/providers'
+import { RouteTheme } from '@/components/route-theme'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -23,7 +24,7 @@ export default function RootLayout({
     <html lang="en" className="bg-background">
       <body className="font-sans antialiased bg-background text-foreground">
         <Providers>
-          {children}
+          <RouteTheme>{children}</RouteTheme>
           <WhatsAppButton />
         </Providers>
         <Analytics />

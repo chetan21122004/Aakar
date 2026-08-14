@@ -3,36 +3,37 @@
 import { useState } from "react"
 import { ProductCard } from "@/components/product-card"
 import { catalogProducts } from "@/lib/products"
+import { conceptCollections } from "@/lib/concepts"
 
-const filters = ["All", "Consoles", "Dining Tables", "Coffee Tables", "Chairs"]
+const filters = [{ label: "All pieces", slug: "all" }, ...conceptCollections.map((collection) => ({ label: collection.name, slug: collection.slug }))]
 
 export function ShopGrid() {
-  const [activeFilter, setActiveFilter] = useState("All")
+  const [activeFilter, setActiveFilter] = useState("all")
 
-  const filteredProducts =
-    activeFilter === "All"
-      ? catalogProducts
-      : catalogProducts.filter((p) => p.category === activeFilter)
+  const activeCollection = conceptCollections.find((collection) => collection.slug === activeFilter)
+  const filteredProducts = activeCollection
+    ? catalogProducts.filter((product) => activeCollection.productSlugs.includes(product.slug))
+    : catalogProducts
 
   return (
     <div>
-      <div className="flex flex-wrap gap-3 mb-12">
+      <div className="mb-12 flex flex-wrap gap-3 rounded-[1.5rem] border border-ink/10 bg-stone p-3">
         {filters.map((filter) => (
           <button
-            key={filter}
-            onClick={() => setActiveFilter(filter)}
-            className={`px-5 py-2 font-sans text-sm font-medium uppercase tracking-wide transition-colors border ${
-              activeFilter === filter
+            key={filter.slug}
+            onClick={() => setActiveFilter(filter.slug)}
+            className={`rounded-full border px-5 py-2 font-condensed text-sm font-semibold uppercase tracking-[.08em] transition-colors ${
+              activeFilter === filter.slug
                 ? "bg-primary text-white border-primary"
                 : "border-border text-muted-foreground hover:text-foreground hover:border-foreground"
             }`}
           >
-            {filter}
+            {filter.label}
           </button>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {filteredProducts.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}

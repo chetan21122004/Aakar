@@ -1,93 +1,64 @@
 "use client"
 
-import { useState } from "react"
+import Image from "next/image"
 import Link from "next/link"
-import { CollectionProductCard } from "@/components/collection-product-card"
-import {
-  collectionHubCategories,
-  materialSpecifications,
-  products,
-} from "@/lib/data"
+import { useState } from "react"
+import { ProductCard } from "@/components/product-card"
+import { conceptCollections } from "@/lib/concepts"
+import { catalogProducts } from "@/lib/products"
 
 export function CollectionsHub() {
-  const [activeCategory, setActiveCategory] = useState(collectionHubCategories[0].id)
-
-  const currentCategory = collectionHubCategories.find((c) => c.id === activeCategory)!
-  const categoryProducts = products.filter((p) =>
-    currentCategory.categorySlugs.includes(p.categorySlug)
-  )
+  const [activeSlug, setActiveSlug] = useState(conceptCollections[0].slug)
+  const active = conceptCollections.find((collection) => collection.slug === activeSlug) ?? conceptCollections[0]
+  const products = catalogProducts.filter((product) => active.productSlugs.includes(product.slug))
 
   return (
     <>
-      <section className="border-y border-border bg-muted/30 px-6 md:px-12 lg:px-20">
-        <div className="mx-auto flex max-w-7xl flex-wrap justify-center gap-2 py-6 md:gap-4">
-          {collectionHubCategories.map((category) => (
+      <section className="px-5 pb-16 md:px-10 lg:px-16">
+        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {conceptCollections.map((collection) => (
             <button
-              key={category.id}
+              key={collection.slug}
               type="button"
-              onClick={() => setActiveCategory(category.id)}
-              className={`px-6 py-2.5 text-xs font-semibold uppercase tracking-widest transition-colors ${
-                activeCategory === category.id
-                  ? "bg-foreground text-background"
-                  : "border border-border bg-background text-muted-foreground hover:text-foreground"
-              }`}
+              onClick={() => setActiveSlug(collection.slug)}
+              className={`group relative aspect-[4/5] overflow-hidden rounded-[1.75rem] text-left transition-all ${activeSlug === collection.slug ? "ring-2 ring-ink ring-offset-4 ring-offset-sand" : "opacity-80 hover:opacity-100"}`}
             >
-              {category.label}
+              <Image src={collection.image} alt={collection.name} fill sizes="(max-width: 640px) 100vw, 25vw" className="object-cover transition-transform duration-700 group-hover:scale-105" />
+              <span className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+              <span className="absolute inset-x-0 bottom-0 p-5 text-white">
+                <span className="block font-condensed text-[.68rem] font-semibold uppercase tracking-[.2em] text-white/70">{collection.eyebrow}</span>
+                <span className="mt-1 block font-serif text-3xl font-light">{collection.name}</span>
+              </span>
             </button>
           ))}
         </div>
       </section>
 
-      <section className="px-6 pb-20 pt-16 md:px-12 lg:px-20">
+      <section className="bg-stone px-5 py-16 md:px-10 lg:px-16">
         <div className="mx-auto max-w-7xl">
-          <h2 className="type-h3 mb-12 text-center">{currentCategory.label}</h2>
-          <div
-            className={`grid grid-cols-1 gap-12 ${
-              categoryProducts.length === 1
-                ? "mx-auto max-w-md"
-                : categoryProducts.length === 2
-                  ? "md:grid-cols-2 md:max-w-4xl md:mx-auto"
-                  : "md:grid-cols-3"
-            }`}
-          >
-            {categoryProducts.map((product) => (
-              <CollectionProductCard key={product.slug} product={product} />
-            ))}
+          <div className="grid gap-8 lg:grid-cols-[.72fr_1.28fr] lg:items-end">
+            <div>
+              <p className="font-condensed text-xs font-semibold uppercase tracking-[.2em] text-umber">{active.eyebrow}</p>
+              <h2 className="mt-3 font-serif text-5xl font-light leading-none text-ink">{active.name}</h2>
+            </div>
+            <p className="max-w-2xl font-hero text-lg font-light leading-relaxed text-ink/68">{active.narrative}</p>
+          </div>
+
+          <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {products.map((product) => <ProductCard key={product.slug} product={product} />)}
+          </div>
+
+          <div className="mt-10 flex justify-center">
+            <Link href={`/shop?collection=${active.slug}`} className="rounded-full bg-clay px-7 py-3.5 font-condensed text-sm font-semibold uppercase tracking-[.14em] text-sand transition-colors hover:bg-umber">Shop the collection</Link>
           </div>
         </div>
       </section>
 
-      <section className="bg-muted/40 px-6 py-20 md:px-12 lg:px-20">
-        <div className="mx-auto max-w-3xl text-center">
-          <h2 className="mb-4 font-serif text-2xl text-foreground md:text-3xl">
-            Custom Sizing Available
-          </h2>
-          <p className="mb-8 text-base leading-relaxed text-muted-foreground">
-            All pieces can be customized within the design framework to suit your space.
-            Dimensions, finishes, and material specifications can be discussed during the enquiry
-            process.
-          </p>
-          <Link href="/contact" className="btn-primary">
-            Discuss Your Requirements
-          </Link>
-        </div>
-      </section>
-
-      <section className="border-t border-border px-6 py-20 md:px-12 lg:px-20">
-        <div className="mx-auto max-w-5xl">
-          <h2 className="type-h2 mb-4 text-center">Material Specifications</h2>
-          <p className="type-body mx-auto mb-12 max-w-xl text-center">
-            All furniture is made from solid Indian Walnut
-          </p>
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
-            {materialSpecifications.map((spec) => (
-              <div key={spec.title} className="border border-border bg-background p-8 text-center">
-                <h3 className="type-label mb-3">{spec.title}</h3>
-                <p className="text-sm leading-relaxed text-muted-foreground">{spec.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+      <section className="px-5 py-16 text-center md:px-10 lg:px-16">
+        <p className="font-condensed text-xs font-semibold uppercase tracking-[.2em] text-umber">Made for your space</p>
+        <h2 className="mx-auto mt-3 max-w-2xl font-serif text-4xl font-light text-ink">Custom sizing within each collection&apos;s design language.</h2>
+        <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground">Dimensions, finishes and material specifications can be discussed during the enquiry process.</p>
+        <Link href="/contact" className="mt-7 inline-flex rounded-full border border-ink px-6 py-3 font-condensed text-sm font-semibold uppercase tracking-[.12em] text-ink">Discuss your requirements</Link>
       </section>
     </>
   )

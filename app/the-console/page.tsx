@@ -1,243 +1,174 @@
 import Image from "next/image"
 import Link from "next/link"
+import { ArrowRight, Check } from "lucide-react"
 import { Header } from "@/components/header"
 import { FooterSection } from "@/components/sections/footer-section"
 import { CTASection } from "@/components/cta-section"
 import { ConsoleSpecifications } from "@/components/console-specifications"
+import { FadeInUp } from "@/components/motion/scroll-motion"
 import { products } from "@/lib/data"
 
 export const metadata = {
-  title: "The Signature Fluted Console | Aakar Woodcraft",
+  title: "Hampi Rift Console | Aakar Woodcraft",
   description:
-    "Our most celebrated console — vertical fluting, rounded edges, solid Indian walnut, and brushed brass hardware. Made to order with pan-India white-glove delivery.",
+    "Discover the Hampi Rift Console—an architectural composition of divided forms, grounded proportions, and quiet utility.",
 }
 
-const consoleProduct = products.find((p) => p.slug === "fluted-console")!
+const consoleProduct = products.find((product) => product.slug === "fluted-console")!
 
-const designFeatures = [
-  "Vertical fluting detail across front panel",
-  "Soft rounded edges on all surfaces",
-  "Two interior shelves",
-  "Solid wood construction (no veneers)",
-  "Mortise and tenon joinery",
-  "Hand-finished to museum standards",
-]
-
-const materials = [
+const designNotes = [
   {
-    label: "Primary Wood",
-    value: "Solid Indian Walnut",
+    title: "Monolithic Presence",
+    description: "A grounded silhouette inspired by the strength and stillness of Hampi's stone landscape.",
+    image: "/catalog/hampi-rift-console.webp",
   },
   {
-    label: "Hardware",
-    value: "Brushed Brass",
+    title: "Divided Form",
+    description: "Separate volumes create rhythm and visual tension while remaining balanced as a whole.",
+    image: "/catalog/hampi-rift-media-unit.webp",
   },
   {
-    label: "Finish",
-    value: "Hand-rubbed Natural Oil",
+    title: "Quiet Utility",
+    description: "A restrained object designed to work comfortably in entryways, living rooms, and dining spaces.",
+    image: "/catalog/hampi-rift-sofa.webp",
   },
 ]
 
 const finishOptions = [
-  {
-    title: "Natural Oil",
-    description: "Matte, tactile finish that enhances grain",
-  },
-  {
-    title: "Matte Lacquer",
-    description: "Smooth, protective surface with subtle sheen",
-  },
-  {
-    title: "Dark Stain",
-    description: "Deep, rich tone with natural variation",
-  },
-]
-
-const craftDetails = [
-  {
-    title: "Hand-Carved Fluting",
-    description:
-      "Vertical grooves carved and refined by hand for consistent depth and rhythm.",
-    image:
-      "https://images.unsplash.com/photo-1631510390389-c1e4fb20ff31?q=80&w=1200&auto=format&fit=crop",
-    alt: "Close-up of fluted wood detailing on a console",
-    badge: "Fluting",
-  },
-  {
-    title: "Rounded Edges",
-    description:
-      "All edges hand-sanded through multiple grits for a soft, inviting touch.",
-    image:
-      "https://images.unsplash.com/photo-1568347760450-1ef7874c5f5f?q=80&w=1200&auto=format&fit=crop",
-    alt: "Wooden console with softly rounded edges in an entryway",
-    badge: "Rounded Edges",
-  },
-  {
-    title: "Brass Hardware",
-    description:
-      "Brushed brass handles that develop a beautiful patina with use over time.",
-    image:
-      "https://images.unsplash.com/photo-1736506159893-22cca29b8018?q=80&w=1200&auto=format&fit=crop",
-    alt: "Close-up of brushed brass hardware on solid walnut",
-    badge: "Brass Hardware",
-  },
+  { title: "Natural Oil", description: "A tactile, low-sheen finish that keeps the grain present." },
+  { title: "Matte Lacquer", description: "A smooth protective finish with a restrained surface sheen." },
+  { title: "Dark Stain", description: "A deeper tonal option that emphasizes the console's silhouette." },
 ]
 
 export default function TheConsolePage() {
   return (
-    <main className="min-h-screen bg-background">
+    <main className="min-h-screen bg-sand">
       <Header />
 
-      {/* Hero */}
-      <section className="pt-32 pb-16 px-6 md:px-12 lg:px-20">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          <div className="text-center lg:text-left">
-            <p className="type-label mb-4">Signature Piece</p>
-            <h1 className="type-h1 mb-4">The Signature Fluted Console</h1>
-            <p className="font-serif text-xl text-foreground mb-6">
-              A study in restraint and detail.
+      <section className="px-5 pb-14 pt-32 md:px-10 md:pb-20 lg:px-16 lg:pt-36">
+        <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[.85fr_1.15fr] lg:gap-16">
+          <FadeInUp>
+            <p className="type-label mb-5">Hampi Rift Collection</p>
+            <h1 className="text-[clamp(3.2rem,7vw,6.75rem)] leading-[.9]">Hampi Rift Console</h1>
+            <p className="mt-6 max-w-xl text-xl font-light leading-snug text-ink/80 md:text-2xl">
+              Strength, division, and balance in one grounded form.
             </p>
-            <p className="type-body mb-8">{consoleProduct.longDescription}</p>
-            <p className="type-price mb-8">{consoleProduct.price}</p>
-            <Link href="/contact" className="btn-primary">
-              Enquire Now
-            </Link>
-          </div>
-          <div className="relative aspect-[4/3] w-full overflow-hidden">
+            <p className="mt-5 max-w-xl text-base leading-relaxed text-ink/60">
+              Inspired by Hampi's broken yet powerful landscape, the console brings together solid volumes and intentional separations—complete without appearing perfect.
+            </p>
+            <div className="mt-8 flex items-center gap-5">
+              <p className="type-price">{consoleProduct.price}</p>
+              <span className="h-8 w-px bg-umber/20" />
+              <p className="text-sm text-ink/55">Made to order</p>
+            </div>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <Link href="/contact" className="inline-flex items-center justify-center gap-2 rounded-full bg-clay px-7 py-3.5 font-condensed text-sm font-semibold uppercase tracking-[.14em] text-sand transition-colors hover:bg-umber">
+                Enquire about this piece <ArrowRight size={16} />
+              </Link>
+              <Link href="/products/fluted-console" className="inline-flex items-center justify-center rounded-full border border-ink/25 px-7 py-3.5 font-condensed text-sm font-semibold uppercase tracking-[.14em] text-ink transition-colors hover:bg-stone">
+                View product
+              </Link>
+            </div>
+          </FadeInUp>
+
+          <FadeInUp delay={0.08} className="relative aspect-[4/3] overflow-hidden rounded-[2rem] bg-stone md:rounded-[2.5rem]">
             <Image
-              src={consoleProduct.image}
-              alt="The Signature Fluted Console in solid Indian walnut"
+              src="/catalog/hampi-rift-console.webp"
+              alt="Hampi Rift Console composed from divided architectural forms"
               fill
-              className="object-cover"
               priority
+              sizes="(max-width: 1024px) 100vw, 58vw"
+              className="object-cover"
             />
-          </div>
+          </FadeInUp>
         </div>
       </section>
 
-      {/* Design Features */}
-      <section className="bg-muted/40 px-6 md:px-12 lg:px-20 py-20">
-        <div className="max-w-3xl mx-auto">
-          <h2 className="type-h2 mb-10 text-center">Design Features</h2>
-          <ul className="space-y-3">
-            {designFeatures.map((feature) => (
-              <li key={feature} className="type-body text-sm flex gap-3">
-                <span className="text-accent shrink-0">—</span>
-                {feature}
-              </li>
-            ))}
-          </ul>
+      <section className="border-y border-umber/15 bg-stone px-5 py-8 md:px-10 lg:px-16">
+        <div className="mx-auto grid max-w-7xl gap-6 sm:grid-cols-3">
+          {["Architectural silhouette", "Custom sizing available", consoleProduct.productionTime ?? "Made to order"].map((item) => (
+            <div key={item} className="flex items-center justify-center gap-3 border-umber/20 py-2 sm:border-r sm:last:border-r-0">
+              <Check size={16} className="text-clay" />
+              <p className="font-condensed text-sm font-semibold uppercase tracking-[.12em] text-ink/75">{item}</p>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* Specifications */}
-      <section className="px-6 md:px-12 lg:px-20 py-20">
-        <div className="max-w-3xl mx-auto">
-          <h2 className="type-h2 mb-3 text-center">Specifications</h2>
-          <p className="type-label mb-10 text-center">Dimensions</p>
-          <ConsoleSpecifications />
-        </div>
-      </section>
-
-      {/* Materials */}
-      <section className="bg-muted/40 px-6 md:px-12 lg:px-20 py-20">
-        <div className="max-w-5xl mx-auto">
-          <h2 className="type-h2 mb-12 text-center">Materials</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
-            {materials.map((material) => (
-              <div key={material.label} className="text-center">
-                <p className="type-label mb-2">{material.label}</p>
-                <p className="font-serif text-lg text-foreground">{material.value}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Finish Options */}
-      <section className="px-6 md:px-12 lg:px-20 py-20">
-        <div className="max-w-5xl mx-auto">
-          <h2 className="type-h2 mb-4 text-center">Available Finishes</h2>
-          <p className="type-body text-center mb-12">
-            Choose the finish that best suits your space and aesthetic
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
-            {finishOptions.map((finish) => (
-              <div key={finish.title} className="text-center sm:text-left border border-border p-8">
-                <h3 className="font-serif text-lg text-foreground mb-2">{finish.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{finish.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Craft Detail Callouts */}
-      <section className="px-6 md:px-12 lg:px-20 py-20 border-t border-border">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="type-h2 mb-12 text-center">Craft Details</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {craftDetails.map((detail) => (
-              <div key={detail.title}>
-                <div className="relative aspect-[4/3] overflow-hidden mb-6">
-                  <Image src={detail.image} alt={detail.alt} fill className="object-cover" />
-                  <div className="absolute bottom-6 left-6">
-                    <span className="rounded-none bg-ink/90 px-4 py-2 text-sm font-medium text-sand backdrop-blur-md">
-                      {detail.badge}
-                    </span>
-                  </div>
+      <section className="px-5 py-16 md:px-10 md:py-24 lg:px-16">
+        <div className="mx-auto max-w-7xl">
+          <FadeInUp className="mb-10 max-w-2xl md:mb-14">
+            <p className="type-label mb-3">Design language</p>
+            <h2 className="text-3xl md:text-4xl">A complete form, shaped by incompleteness.</h2>
+          </FadeInUp>
+          <div className="grid gap-6 md:grid-cols-3">
+            {designNotes.map((note, index) => (
+              <FadeInUp key={note.title} delay={index * 0.06} className="group rounded-[1.75rem] bg-stone p-4 md:p-5">
+                <div className="relative aspect-[4/3] overflow-hidden rounded-[1.25rem] bg-sand">
+                  <Image src={note.image} alt={note.title} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition-transform duration-700 group-hover:scale-[1.03]" />
                 </div>
-                <h3 className="font-serif text-lg text-foreground mb-2">{detail.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{detail.description}</p>
-              </div>
+                <div className="px-2 pb-2 pt-6">
+                  <h3 className="text-xl">{note.title}</h3>
+                  <p className="mt-3 text-sm leading-relaxed text-ink/65">{note.description}</p>
+                </div>
+              </FadeInUp>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Production & Delivery */}
-      <section className="bg-muted/40 px-6 md:px-12 lg:px-20 py-20">
-        <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-12">
-          <div className="text-center sm:text-left">
-            <p className="type-label mb-3">Production</p>
-            <h3 className="font-serif text-3xl text-foreground mb-4">{consoleProduct.productionTime}</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Each console is made to order. Production begins after final approval of dimensions
-              and finish.
+      <section className="px-5 pb-16 md:px-10 md:pb-24 lg:px-16">
+        <div className="mx-auto grid max-w-7xl overflow-hidden rounded-[2rem] border border-umber/10 bg-stone lg:grid-cols-2 md:rounded-[2.5rem]">
+          <FadeInUp className="p-8 md:p-12 lg:p-14">
+            <p className="type-label mb-3">Dimensions</p>
+            <h2 className="mb-10 text-3xl md:text-4xl">Specifications</h2>
+            <ConsoleSpecifications />
+          </FadeInUp>
+          <div className="border-t border-umber/15 bg-sand p-8 md:p-12 lg:border-l lg:border-t-0 lg:p-14">
+            <p className="type-label mb-3">Finish palette</p>
+            <h2 className="text-3xl md:text-4xl">Made for your interior.</h2>
+            <p className="mt-5 text-sm leading-relaxed text-ink/60">
+              Select a tonal direction during the enquiry process. Final material and finish specifications are confirmed before production.
             </p>
-          </div>
-          <div className="text-center sm:text-left">
-            <p className="type-label mb-3">Delivery &amp; Installation</p>
-            <h3 className="font-serif text-xl text-foreground mb-4">
-              Pan-India white-glove delivery included
-            </h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Carefully packed and delivered by our trusted partners. Installation assistance
-              included.
-            </p>
+            <div className="mt-8 space-y-3">
+              {finishOptions.map((finish) => (
+                <div key={finish.title} className="rounded-[1.25rem] border border-umber/15 bg-stone p-5">
+                  <h3 className="text-lg">{finish.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-ink/60">{finish.description}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Care Instructions */}
-      <section className="px-6 md:px-12 lg:px-20 py-20">
-        <div className="max-w-3xl mx-auto text-center">
-          <h2 className="type-h2 mb-6">Care Instructions</h2>
-          <p className="type-body mb-4">
-            Wipe with a soft dry cloth. Apply wood conditioner every 6 months. Avoid direct
-            sunlight and moisture.
-          </p>
-          <p className="text-sm text-muted-foreground">
-            Detailed care guide provided with delivery.
-          </p>
+      <section className="bg-ink px-5 py-16 text-sand md:px-10 md:py-20 lg:px-16">
+        <div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-3">
+          <FadeInUp>
+            <p className="font-condensed text-xs font-semibold uppercase tracking-[.2em] text-clay">01 / Production</p>
+            <h3 className="mt-4 text-2xl text-sand">{consoleProduct.productionTime}</h3>
+            <p className="mt-4 text-sm leading-relaxed text-sand/60">Production begins after dimensions and finish are approved.</p>
+          </FadeInUp>
+          <FadeInUp delay={0.05}>
+            <p className="font-condensed text-xs font-semibold uppercase tracking-[.2em] text-clay">02 / Delivery</p>
+            <h3 className="mt-4 text-2xl text-sand">Planned with your space</h3>
+            <p className="mt-4 text-sm leading-relaxed text-sand/60">Delivery requirements are discussed and confirmed with the order.</p>
+          </FadeInUp>
+          <FadeInUp delay={0.1}>
+            <p className="font-condensed text-xs font-semibold uppercase tracking-[.2em] text-clay">03 / Care</p>
+            <h3 className="mt-4 text-2xl text-sand">Simple, regular care</h3>
+            <p className="mt-4 text-sm leading-relaxed text-sand/60">Use a soft dry cloth and protect the surface from prolonged moisture and direct sunlight.</p>
+          </FadeInUp>
         </div>
       </section>
 
       <CTASection
-        title="Ready to Order?"
-        subtitle="Start your enquiry and we will guide you through material selection, dimensions, and finishes."
+        title="Make the Hampi Rift Console yours"
+        subtitle="Share your space, preferred dimensions, and finish direction. We will guide you through the next step."
         primaryText="Start Your Enquiry"
         primaryHref="/contact"
+        secondaryText="Shop the Collection"
+        secondaryHref="/collections/hampi-rift"
         dark
       />
 

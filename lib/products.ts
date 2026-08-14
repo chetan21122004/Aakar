@@ -1,5 +1,6 @@
 import { products as rawProducts, type Product as BaseProduct } from "@/lib/data"
 import { formatStartingPrice } from "@/lib/format"
+import { getConceptForProduct } from "@/lib/concepts"
 
 export type ProductVariant = {
   id: string
@@ -20,12 +21,12 @@ export type CatalogProduct = BaseProduct & {
 
 export type StockStatus = "in_stock" | "low_stock" | "made_to_order"
 
-const EXTRA_IMAGES = [
-  "https://images.unsplash.com/photo-1736506159893-22cca29b8018?q=80&w=1200&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1687422810663-c316494f725a?q=80&w=1200&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1560449752-3fd4bdbe7df0?q=80&w=1200&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1758977403438-1b8546560d31?q=80&w=1200&auto=format&fit=crop",
-]
+const COLLECTION_GALLERIES: Record<string, string[]> = {
+  "still-mandu": ["/catalog/still-mandu-bed.webp", "/catalog/still-mandu-lounge-chair.webp", "/catalog/still-mandu-coffee-table.webp", "/catalog/still-mandu-dining-table.webp"],
+  "hampi-rift": ["/catalog/hampi-rift-console.webp", "/catalog/hampi-rift-media-unit.webp", "/catalog/hampi-rift-sofa.webp"],
+  "fatehpur-sikri": ["/catalog/fatehpur-sikri-armchair.webp", "/catalog/fatehpur-sikri-sofa.webp", "/catalog/fatehpur-sikri-media-unit.webp"],
+  "bishnupur-temples": ["/catalog/bishnupur-bed.webp", "/catalog/bishnupur-armchair.webp", "/catalog/bishnupur-dining-table.webp", "/catalog/bishnupur-console.webp"],
+}
 
 function parsePricePaise(price: string): number {
   const match = price.match(/[\d,]+/)
@@ -58,14 +59,11 @@ function buildVariants(product: BaseProduct, productIndex: number): ProductVaria
   }))
 }
 
-function buildImages(product: BaseProduct, index: number): string[] {
-  const pool = [product.image, ...EXTRA_IMAGES]
-  return [
-    product.image,
-    pool[(index + 1) % pool.length],
-    pool[(index + 2) % pool.length],
-    pool[(index + 3) % pool.length],
-  ]
+function buildImages(product: BaseProduct, _index: number): string[] {
+  const collection = getConceptForProduct(product.slug)
+  const pool = [product.image, ...(collection ? COLLECTION_GALLERIES[collection.slug] : [])]
+  const unique = [...new Set(pool)]
+  return Array.from({ length: 4 }, (_, offset) => unique[offset % unique.length])
 }
 
 function enrichProduct(product: BaseProduct, index: number): CatalogProduct {

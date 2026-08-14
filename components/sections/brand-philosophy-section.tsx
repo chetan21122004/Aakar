@@ -7,7 +7,7 @@ const SECTION_HEADING =
 
 export function BrandPhilosophySection() {
   return (
-    <section className="bg-[#F3EFE9] px-5 py-8 md:px-10 md:py-10 lg:px-16">
+    <section className="bg-background px-5 py-8 md:px-10 md:py-10 lg:px-16">
       <FadeInUp className="mx-auto max-w-3xl text-center">
         <h2 className={SECTION_HEADING}>Brand Philosophy</h2>
         <p className="mt-4 font-hero text-[1.15rem] font-light leading-relaxed text-ink/70 md:mt-5 md:text-[1.35rem] lg:text-[1.45rem]">

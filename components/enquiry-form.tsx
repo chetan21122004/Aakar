@@ -12,9 +12,10 @@ export function EnquiryForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-5">
+      <div className="grid gap-5 sm:grid-cols-2">
       <div>
-        <label htmlFor="name" className="block text-sm font-semibold text-foreground mb-2">
+        <label htmlFor="name" className="mb-2 block font-condensed text-xs font-semibold uppercase tracking-[.12em] text-ink">
           Name <span className="text-primary">*</span>
         </label>
         <input
@@ -22,13 +23,12 @@ export function EnquiryForm() {
           id="name"
           name="name"
           required
-          className="w-full px-4 py-3 border border-border bg-white text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+          className="w-full border border-umber/20 bg-sand px-4 py-3.5 text-sm text-ink outline-none transition-shadow placeholder:text-ink/35 focus:border-clay focus:ring-2 focus:ring-clay/15"
           placeholder="Your name"
         />
       </div>
-
       <div>
-        <label htmlFor="email" className="block text-sm font-semibold text-foreground mb-2">
+        <label htmlFor="email" className="mb-2 block font-condensed text-xs font-semibold uppercase tracking-[.12em] text-ink">
           Email <span className="text-primary">*</span>
         </label>
         <input
@@ -36,32 +36,33 @@ export function EnquiryForm() {
           id="email"
           name="email"
           required
-          className="w-full px-4 py-3 border border-border bg-white text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+          className="w-full border border-umber/20 bg-sand px-4 py-3.5 text-sm text-ink outline-none transition-shadow placeholder:text-ink/35 focus:border-clay focus:ring-2 focus:ring-clay/15"
           placeholder="your@email.com"
         />
       </div>
+      </div>
 
+      <div className="grid gap-5 sm:grid-cols-2">
       <div>
-        <label htmlFor="phone" className="block text-sm font-semibold text-foreground mb-2">
+        <label htmlFor="phone" className="mb-2 block font-condensed text-xs font-semibold uppercase tracking-[.12em] text-ink">
           Phone
         </label>
         <input
           type="tel"
           id="phone"
           name="phone"
-          className="w-full px-4 py-3 border border-border bg-white text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+          className="w-full border border-umber/20 bg-sand px-4 py-3.5 text-sm text-ink outline-none transition-shadow placeholder:text-ink/35 focus:border-clay focus:ring-2 focus:ring-clay/15"
           placeholder="+91 98765 43210"
         />
       </div>
-
       <div>
-        <label htmlFor="projectType" className="block text-sm font-semibold text-foreground mb-2">
+        <label htmlFor="projectType" className="mb-2 block font-condensed text-xs font-semibold uppercase tracking-[.12em] text-ink">
           Project Type
         </label>
         <select
           id="projectType"
           name="projectType"
-          className="w-full px-4 py-3 border border-border bg-white text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+          className="w-full border border-umber/20 bg-sand px-4 py-3.5 text-sm text-ink outline-none transition-shadow focus:border-clay focus:ring-2 focus:ring-clay/15"
           defaultValue=""
         >
           <option value="" disabled>
@@ -77,9 +78,10 @@ export function EnquiryForm() {
           <option value="other">Other</option>
         </select>
       </div>
+      </div>
 
       <div>
-        <label htmlFor="message" className="block text-sm font-semibold text-foreground mb-2">
+        <label htmlFor="message" className="mb-2 block font-condensed text-xs font-semibold uppercase tracking-[.12em] text-ink">
           Message <span className="text-primary">*</span>
         </label>
         <textarea
@@ -87,14 +89,14 @@ export function EnquiryForm() {
           name="message"
           rows={5}
           required
-          className="w-full px-4 py-3 border border-border bg-white text-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+          className="w-full resize-none border border-umber/20 bg-sand px-4 py-3.5 text-sm text-ink outline-none transition-shadow placeholder:text-ink/35 focus:border-clay focus:ring-2 focus:ring-clay/15"
           placeholder="Tell us about your requirements, preferred pieces, timelines, or any specific questions..."
         ></textarea>
       </div>
 
       <button
         type="submit"
-        className="w-full bg-primary text-primary-foreground font-semibold py-3 hover:bg-umber transition-colors"
+        className="w-full rounded-full bg-clay py-3.5 font-condensed text-sm font-semibold uppercase tracking-[.14em] text-sand transition-colors hover:bg-umber"
       >
         {submitted ? 'Enquiry Sent!' : 'Send Enquiry'}
       </button>

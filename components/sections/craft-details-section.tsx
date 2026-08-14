@@ -28,9 +28,8 @@ const journeys = [
   {
     title: "Premium Furniture",
     href: "/shop",
-    image:
-      "https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?q=80&w=1600&auto=format&fit=crop",
-    alt: "Rich brown leather folds in warm light",
+    image: "/catalog/still-mandu-dining-table.webp",
+    alt: "Still Mandu dining table in an architectural interior",
   },
   {
     title: "Modular Homes",
@@ -220,7 +219,7 @@ function JourneyCard({
           <p className="font-condensed text-[1.15rem] font-semibold uppercase tracking-[0.1em] text-white md:text-[1.35rem]">
             {item.title}
           </p>
-          <span className="mt-3 inline-flex rounded-full bg-[#6B4A35] px-5 py-2 font-condensed text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-white transition-colors duration-300 group-hover:bg-[#5a3d2c] md:mt-3.5 md:px-6 md:text-[0.78rem]">
+          <span className="mt-3 inline-flex rounded-full bg-primary px-5 py-2 font-condensed text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-white transition-colors duration-300 group-hover:bg-secondary md:mt-3.5 md:px-6 md:text-[0.78rem]">
             Explore
           </span>
         </div>
@@ -354,10 +353,10 @@ function FeaturedProductCard({ product }: { product: CatalogProduct }) {
   };
 
   return (
-    <article className="group flex h-full flex-col rounded-2xl border border-[#c9b8a8]/60 bg-[#FFFBF7] p-3.5 pb-3.5 shadow-[0_1px_0_rgba(48,42,38,0.04)] transition-shadow duration-300 hover:shadow-[0_10px_28px_rgba(48,42,38,0.07)] md:p-4">
+    <article className="group flex h-full flex-col rounded-2xl border border-border/60 bg-card p-3.5 pb-3.5 shadow-[0_1px_0_rgba(48,42,38,0.04)] transition-shadow duration-300 hover:shadow-[0_10px_28px_rgba(48,42,38,0.07)] md:p-4">
       <Link
         href={href}
-        className="relative mb-3 block aspect-[4/5] overflow-hidden rounded-xl bg-[#F6EFE5]"
+        className="relative mb-3 block aspect-[4/5] overflow-hidden rounded-xl bg-background"
       >
         <Image
           src={image}
@@ -394,7 +393,7 @@ function FeaturedProductCard({ product }: { product: CatalogProduct }) {
         <button
           type="button"
           onClick={handleAddToCart}
-          className="mt-3.5 w-full rounded-full bg-ink py-2.5 font-condensed text-[0.8rem] font-semibold uppercase tracking-[0.14em] text-[#F6EFE5] transition-opacity hover:opacity-90 md:mt-4 md:py-3 md:text-[0.85rem]"
+          className="mt-3.5 w-full rounded-full bg-primary py-2.5 font-condensed text-[0.8rem] font-semibold uppercase tracking-[0.14em] text-primary-foreground transition-colors hover:bg-secondary md:mt-4 md:py-3 md:text-[0.85rem]"
         >
           Add to Cart
         </button>
@@ -409,7 +408,7 @@ export function CraftDetailsSection() {
   ).filter(Boolean) as CatalogProduct[];
 
   return (
-    <section className="overflow-x-clip bg-[#F3EFE9] px-5 py-10 md:px-10 md:py-12 lg:px-16">
+    <section className="overflow-x-clip bg-background px-5 py-10 md:px-10 md:py-12 lg:px-16">
       <JourneySplit />
 
       {/* Featured Furniture — Echoes of Mandu */}

@@ -42,62 +42,101 @@ export type Category = {
   startingPrice: string
 }
 
+export type Collection = {
+  slug: string
+  name: string
+  tagline: string
+  image: string
+  pieceCount: number
+}
+
+export const collections: Collection[] = [
+  {
+    slug: "still-mandu",
+    name: "Still Mandu",
+    tagline: "Quiet architectural forms shaped by Mandu's arches and measured repetition.",
+    image: "/catalog/still-mandu-bed.webp",
+    pieceCount: 5,
+  },
+  {
+    slug: "hampi-rift",
+    name: "Hampi Rift",
+    tagline: "Sculptural volumes inspired by Hampi's weathered stone landscape.",
+    image: "/catalog/hampi-rift-sofa.webp",
+    pieceCount: 7,
+  },
+  {
+    slug: "fatehpur-sikri",
+    name: "Fatehpur Sikri",
+    tagline: "Carved detail and ceremonial proportions translated into contemporary furniture.",
+    image: "/catalog/fatehpur-sikri-sofa.webp",
+    pieceCount: 4,
+  },
+  {
+    slug: "bishnupur-temples",
+    name: "Bishnupur Temples",
+    tagline: "Warm timber forms informed by Bishnupur's terracotta reliefs and temple geometry.",
+    image: "/catalog/bishnupur-bed.webp",
+    pieceCount: 6,
+  },
+]
+
 // ---------- Shop categories (no dedicated category pages — links to /shop) ----------
 export const categories: Category[] = [
   {
     slug: "consoles",
     name: "Consoles",
     description: "Contemporary console tables with fluted detailing, rounded edges, and heritage joinery.",
-    image: "https://images.unsplash.com/photo-1568347760450-1ef7874c5f5f?q=80&w=1600&auto=format&fit=crop",
+    image: "/catalog/hampi-rift-console.webp",
     startingPrice: "Starting at ₹98,000",
   },
   {
     slug: "dining-tables",
     name: "Dining Tables",
     description: "Live-edge solid wood dining tables with tapered legs, built to seat and gather.",
-    image: "https://images.unsplash.com/photo-1758977403438-1b8546560d31?q=80&w=1600&auto=format&fit=crop",
+    image: "/catalog/still-mandu-dining-table.webp",
     startingPrice: "Starting at ₹2,85,000",
   },
   {
     slug: "coffee-tables",
     name: "Coffee Tables",
     description: "Solid walnut coffee tables designed as quiet centrepieces for living spaces.",
-    image: "https://images.unsplash.com/photo-1581428982868-e410dd047a90?q=80&w=1600&auto=format&fit=crop",
+    image: "/catalog/still-mandu-coffee-table.webp",
     startingPrice: "Starting at ₹75,000",
   },
   {
     slug: "chairs",
     name: "Chairs",
     description: "Ergonomic solid wood dining chairs with subtle backrest detailing.",
-    image: "https://images.unsplash.com/photo-1685612213152-b995e1641013?q=80&w=1600&auto=format&fit=crop",
+    image: "/catalog/still-mandu-lounge-chair.webp",
     startingPrice: "Starting at ₹42,000",
   },
   {
     slug: "beds",
     name: "Beds",
     description: "Solid wood bed frames with quiet proportions for restful bedrooms.",
-    image: "/images/product-bed.png",
+    image: "/catalog/bishnupur-bed.webp",
     startingPrice: "Starting at ₹1,65,000",
   },
   {
     slug: "sofas",
     name: "Sofas",
     description: "Crafted seating with solid wood frames and tailored upholstery.",
-    image: "/images/product-sofa.png",
+    image: "/catalog/hampi-rift-sofa.webp",
     startingPrice: "Starting at ₹1,85,000",
   },
   {
     slug: "wardrobes",
     name: "Wardrobes",
     description: "Made-to-order wardrobes with solid wood fronts and precise joinery.",
-    image: "/images/product-wardrobe.png",
+    image: "/catalog/fatehpur-sikri-media-unit.webp",
     startingPrice: "Starting at ₹2,20,000",
   },
   {
     slug: "cabinets",
     name: "Cabinets",
     description: "Storage cabinets with warm wood grain and refined hardware.",
-    image: "/images/product-cabinet.png",
+    image: "/catalog/bishnupur-console.webp",
     startingPrice: "Starting at ₹1,10,000",
   },
 ]
@@ -107,12 +146,12 @@ export const products: Product[] = [
   {
     id: "1",
     slug: "fluted-console",
-    name: "Fluted Console",
+    name: "Hampi Rift Console",
     category: "Consoles",
     categorySlug: "consoles",
     price: "Starting at ₹1,25,000",
-    image: "https://images.unsplash.com/photo-1568347760450-1ef7874c5f5f?q=80&w=1200&auto=format&fit=crop",
-    description: "Contemporary form with vertical fluting detail and brass accents.",
+    image: "/catalog/hampi-rift-console.webp",
+    description: "A grounded console composed from divided monolithic volumes.",
     longDescription:
       "Our most celebrated piece. Vertical fluting across the facade creates subtle rhythm and texture. Rounded edges soften the form. Brass handles add a jewel-like accent. Each console is hand-finished to reveal the natural grain of solid walnut.",
     materials: ["Solid Indian Walnut", "Brushed brass hardware"],
@@ -131,12 +170,12 @@ export const products: Product[] = [
   {
     id: "2",
     slug: "signature-dining-table",
-    name: "Signature Dining Table",
+    name: "Still Mandu Dining Table",
     category: "Dining Tables",
     categorySlug: "dining-tables",
     price: "Starting at ₹2,85,000",
-    image: "https://images.unsplash.com/photo-1585128903994-9788298932a6?q=80&w=1200&auto=format&fit=crop",
-    description: "Live edge solid wood with tapered legs.",
+    image: "/catalog/still-mandu-dining-table.webp",
+    description: "Repeated arch forms create a quiet rhythm beneath an oval top.",
     longDescription:
       "A signature dining table built from solid Indian walnut with a live-edge top and elegantly tapered legs. Traditional mortise-and-tenon joinery gives it the weight and presence of an heirloom piece, while proportions can be adjusted to match your dining space.",
     materials: ["Solid Indian Walnut"],
@@ -153,12 +192,12 @@ export const products: Product[] = [
   {
     id: "3",
     slug: "coffee-table",
-    name: "Coffee Table",
+    name: "Mandu Oval Coffee Table",
     category: "Coffee Tables",
     categorySlug: "coffee-tables",
     price: "Starting at ₹75,000",
-    image: "https://images.unsplash.com/photo-1581428982868-e410dd047a90?q=80&w=1200&auto=format&fit=crop",
-    description: "A solid walnut coffee table for contemporary living spaces.",
+    image: "/catalog/still-mandu-coffee-table.webp",
+    description: "A low oval centrepiece shaped by repetition, openness and stillness.",
     longDescription:
       "Designed as a quiet centrepiece for living rooms, this coffee table is built from solid Indian walnut with soft, hand-finished edges and traditional joinery. Proportions and finish can be tailored to your space.",
     materials: ["Solid Indian Walnut"],
@@ -174,12 +213,12 @@ export const products: Product[] = [
   {
     id: "4",
     slug: "dining-chair",
-    name: "Dining Chair",
+    name: "Mandu Arch Lounge Chair",
     category: "Chairs",
     categorySlug: "chairs",
     price: "Starting at ₹42,000",
-    image: "https://images.unsplash.com/photo-1685612213152-b995e1641013?q=80&w=1200&auto=format&fit=crop",
-    description: "Ergonomic curve with subtle backrest detailing.",
+    image: "/catalog/still-mandu-lounge-chair.webp",
+    description: "An enveloping lounge chair framed by Mandu's repeated arches.",
     longDescription:
       "An ergonomic dining chair with a subtle curved backrest, built from solid Indian walnut. Designed for everyday comfort at the dining table, with hand-finished surfaces and traditional joinery throughout.",
     materials: ["Solid Indian Walnut"],
@@ -196,12 +235,12 @@ export const products: Product[] = [
   {
     id: "5",
     slug: "rounded-edge-console",
-    name: "Rounded Edge Console",
+    name: "Hampi Rift Media Unit",
     category: "Consoles",
     categorySlug: "consoles",
     price: "Starting at ₹98,000",
-    image: "https://images.unsplash.com/photo-1631510390389-c1e4fb20ff31?q=80&w=1200&auto=format&fit=crop",
-    description: "Minimalist design with soft rounded edges and drawer storage.",
+    image: "/catalog/hampi-rift-media-unit.webp",
+    description: "A long media unit built from separated stone-like volumes.",
     longDescription:
       "A minimalist console with soft, tactile rounded edges and integrated drawer storage. Built from solid Indian walnut with hand-sanded surfaces through multiple grits — no sharp corners, just a quiet, inviting form for entryways and hallways.",
     materials: ["Solid Indian Walnut"],
@@ -218,12 +257,12 @@ export const products: Product[] = [
   {
     id: "6",
     slug: "heritage-console",
-    name: "Heritage Console",
+    name: "Bishnupur Story Console",
     category: "Consoles",
     categorySlug: "consoles",
     price: "Starting at ₹1,40,000",
-    image: "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?q=80&w=1200&auto=format&fit=crop",
-    description: "Subtle traditional joinery meets modern proportions.",
+    image: "/catalog/bishnupur-console.webp",
+    description: "Narrative terracotta reliefs translated into carved timber panels.",
     longDescription:
       "Where subtle traditional joinery meets modern proportions. This console draws on centuries-old woodworking methods — mortise and tenon construction, hand-finished surfaces — in a form suited to contemporary Indian homes.",
     materials: ["Solid Indian Walnut"],
@@ -240,12 +279,12 @@ export const products: Product[] = [
   {
     id: "7",
     slug: "teak-platform-bed",
-    name: "Teak Platform Bed",
+    name: "Bishnupur Story Bed",
     category: "Beds",
     categorySlug: "beds",
     price: "Starting at ₹1,65,000",
-    image: "/images/product-bed.png",
-    description: "Low solid-wood platform bed with quiet, grounded proportions.",
+    image: "/catalog/bishnupur-bed.webp",
+    description: "A carved bed where temple stories become texture and material.",
     longDescription:
       "A low platform bed in solid wood with clean lines and a calm presence. Built for Indian bedrooms that need durable craft without visual noise.",
     materials: ["Solid Teak"],
@@ -262,12 +301,12 @@ export const products: Product[] = [
   {
     id: "8",
     slug: "lounge-sofa",
-    name: "Lounge Sofa",
+    name: "Fatehpur Sikri Sofa",
     category: "Sofas",
     categorySlug: "sofas",
     price: "Starting at ₹1,85,000",
-    image: "/images/product-sofa.png",
-    description: "Deep lounge sofa with solid wood frame and tailored upholstery.",
+    image: "/catalog/fatehpur-sikri-sofa.webp",
+    description: "Ceremonial arches and carved surfaces balanced with everyday comfort.",
     longDescription:
       "A lounge sofa built on a solid wood frame with tailored upholstery. Soft seating, firm structure, and proportions suited to modern living rooms.",
     materials: ["Solid Indian Walnut", "Upholstery fabric"],
@@ -284,12 +323,12 @@ export const products: Product[] = [
   {
     id: "9",
     slug: "linear-wardrobe",
-    name: "Linear Wardrobe",
+    name: "Fatehpur Sikri Media Unit",
     category: "Wardrobes",
     categorySlug: "wardrobes",
     price: "Starting at ₹2,20,000",
-    image: "/images/product-wardrobe.png",
-    description: "Floor-to-ceiling wardrobe with solid wood fronts and precise storage.",
+    image: "/catalog/fatehpur-sikri-media-unit.webp",
+    description: "An architectural media unit exploring beauty that remains functional.",
     longDescription:
       "A linear wardrobe with solid wood fronts and made-to-order interiors. Designed for calm bedrooms that need storage without cluttered hardware.",
     materials: ["Solid Indian Walnut"],
@@ -306,12 +345,12 @@ export const products: Product[] = [
   {
     id: "10",
     slug: "storage-cabinet",
-    name: "Storage Cabinet",
+    name: "Bishnupur Story Cabinet",
     category: "Cabinets",
     categorySlug: "cabinets",
     price: "Starting at ₹1,10,000",
-    image: "/images/product-cabinet.png",
-    description: "Versatile storage cabinet with warm grain and refined hardware.",
+    image: "/catalog/bishnupur-console.webp",
+    description: "A storage cabinet with carved panels inspired by terracotta storytelling.",
     longDescription:
       "A versatile storage cabinet for living rooms and dining spaces. Solid wood construction with refined hardware and balanced proportions.",
     materials: ["Solid Indian Walnut", "Brushed brass hardware"],
@@ -440,13 +479,13 @@ export const architectCaseStudies = [
     title: "Private Villa, Bangalore",
     description: "Custom dining set and console for contemporary villa.",
     image:
-      "https://images.unsplash.com/photo-1585128903994-9788298932a6?q=80&w=1600&auto=format&fit=crop",
+      "/catalog/still-mandu-dining-table.webp",
   },
   {
     title: "Boutique Hotel, Goa",
     description: "Furniture suite for 12 rooms and common areas.",
     image:
-      "https://images.unsplash.com/photo-1560184897-67f4a3f9a7fa?q=80&w=1600&auto=format&fit=crop",
+      "/catalog/hampi-rift-sofa.webp",
   },
 ]
 
@@ -500,14 +539,14 @@ export const testimonials = [
 
 // ---------- Gallery images ----------
 export const galleryImages = [
-  { src: "https://images.unsplash.com/photo-1762529716272-b316f61502e7?q=80&w=1600&auto=format&fit=crop", alt: "Modern living room styled with handcrafted wooden furniture" },
-  { src: "https://images.unsplash.com/photo-1585128903994-9788298932a6?q=80&w=1600&auto=format&fit=crop", alt: "Solid wood dining table with chairs" },
-  { src: "https://images.unsplash.com/photo-1736506159893-22cca29b8018?q=80&w=1600&auto=format&fit=crop", alt: "Close-up of dark wood grain texture" },
-  { src: "https://images.unsplash.com/photo-1581428982868-e410dd047a90?q=80&w=1600&auto=format&fit=crop", alt: "Wooden coffee table beside a sofa" },
-  { src: "https://images.unsplash.com/photo-1687422810663-c316494f725a?q=80&w=1600&auto=format&fit=crop", alt: "Craftsman shaping a piece of wood by hand" },
-  { src: "https://images.unsplash.com/photo-1568347760450-1ef7874c5f5f?q=80&w=1600&auto=format&fit=crop", alt: "Wooden console table in an entryway" },
-  { src: "https://images.unsplash.com/photo-1631510390389-c1e4fb20ff31?q=80&w=1600&auto=format&fit=crop", alt: "Minimal wooden console with rounded edges" },
-  { src: "https://images.unsplash.com/photo-1685612213152-b995e1641013?q=80&w=1600&auto=format&fit=crop", alt: "Wooden dining chair" },
+  { src: "/catalog/still-mandu-bed.webp", alt: "Still Mandu bed in an architectural bedroom" },
+  { src: "/catalog/still-mandu-dining-table.webp", alt: "Still Mandu dining table" },
+  { src: "/catalog/hampi-rift-console.webp", alt: "Hampi Rift console" },
+  { src: "/catalog/hampi-rift-sofa.webp", alt: "Hampi Rift modular sofa" },
+  { src: "/catalog/fatehpur-sikri-armchair.webp", alt: "Fatehpur Sikri inspired armchair" },
+  { src: "/catalog/fatehpur-sikri-sofa.webp", alt: "Fatehpur Sikri inspired sofa" },
+  { src: "/catalog/bishnupur-console.webp", alt: "Bishnupur Temples console" },
+  { src: "/catalog/bishnupur-armchair.webp", alt: "Bishnupur Temples armchair" },
 ]
 
 // ---------- Home page sections (from Website Pages Pdfs.md) ----------
@@ -561,22 +600,28 @@ export const footerLinks = {
 
 export const collectionHubCategories = [
   {
-    id: "consoles",
-    label: "Console Collection",
-    slug: "consoles",
-    categorySlugs: ["consoles"],
+    id: "still-mandu",
+    label: "Still Mandu",
+    slug: "still-mandu",
+    productSlugs: ["signature-dining-table", "coffee-table", "dining-chair"],
   },
   {
-    id: "dining",
-    label: "Dining Collection",
-    slug: "dining",
-    categorySlugs: ["dining-tables"],
+    id: "hampi-rift",
+    label: "Hampi Rift",
+    slug: "hampi-rift",
+    productSlugs: ["fluted-console", "rounded-edge-console"],
   },
   {
-    id: "living",
-    label: "Living Collection",
-    slug: "living",
-    categorySlugs: ["coffee-tables", "chairs"],
+    id: "fatehpur-sikri",
+    label: "Fatehpur Sikri",
+    slug: "fatehpur-sikri",
+    productSlugs: ["lounge-sofa", "linear-wardrobe"],
+  },
+  {
+    id: "bishnupur-temples",
+    label: "Bishnupur Temples",
+    slug: "bishnupur-temples",
+    productSlugs: ["heritage-console", "teak-platform-bed", "storage-cabinet"],
   },
 ]
 
@@ -660,7 +705,7 @@ export const blogPosts: BlogPost[] = [
     category: "Buying Guide",
     excerpt:
       "A practical guide to spotting genuine solid wood, understanding finishes, and choosing pieces that last for years rather than seasons.",
-    image: "https://images.unsplash.com/photo-1585128903994-9788298932a6?q=80&w=1600&auto=format&fit=crop",
+    image: "/catalog/still-mandu-bed.webp",
     sections: [
       {
         heading: "Why solid wood matters",
@@ -694,7 +739,7 @@ export const blogPosts: BlogPost[] = [
     category: "Furniture Guide",
     excerpt:
       "From compact 4-seaters to large family tables — how to pick the right dining table dimensions for your room and household size.",
-    image: "https://images.unsplash.com/photo-1758977403438-1b8546560d31?q=80&w=1600&auto=format&fit=crop",
+    image: "/catalog/bishnupur-dining-table.webp",
     sections: [
       {
         heading: "Start with your room, not the table",
@@ -728,7 +773,7 @@ export const blogPosts: BlogPost[] = [
     category: "Custom Furniture",
     excerpt:
       "Weighing the trade-offs between off-the-shelf convenience and made-to-order furniture built around your space and needs.",
-    image: "https://images.unsplash.com/photo-1560449752-3fd4bdbe7df0?q=80&w=1600&auto=format&fit=crop",
+    image: "/catalog/hampi-rift-sofa.webp",
     sections: [
       {
         heading: "Why solid wood matters",
@@ -762,7 +807,7 @@ export const blogPosts: BlogPost[] = [
     category: "Interior Design",
     excerpt:
       "Practical tips on pairing solid wood furniture — tones, textures, and silhouettes — with clean, contemporary interior styling.",
-    image: "https://images.unsplash.com/photo-1560184897-67f4a3f9a7fa?q=80&w=1600&auto=format&fit=crop",
+    image: "/catalog/fatehpur-sikri-sofa.webp",
     sections: [
       {
         heading: "Why solid wood matters",

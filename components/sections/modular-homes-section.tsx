@@ -141,7 +141,7 @@ const woodRailStyle: CSSProperties = {
       rgba(0,0,0,0) 3px,
       rgba(0,0,0,0) 7px
     ),
-    linear-gradient(90deg, #8B6A4A 0%, #6B4A35 50%, #5C3A28 100%)
+    linear-gradient(90deg, #A86F47 0%, #A86F47 50%, #76513D 100%)
   `,
   backgroundBlendMode: "overlay, multiply, normal",
   boxShadow: "inset 0 2px 0 rgba(255,255,255,0.10), inset 0 -2px 0 rgba(0,0,0,0.20)",
@@ -171,11 +171,11 @@ function ProcessStep({
     >
       <div className="relative mb-5">
         <motion.span
-          className="absolute -inset-3 rounded-full bg-[#6B4A35]/12 opacity-0 blur-md transition-opacity duration-300 group-hover:opacity-100"
+          className="absolute -inset-3 rounded-full bg-primary/12 opacity-0 blur-md transition-opacity duration-300 group-hover:opacity-100"
           aria-hidden
         />
         <motion.span
-          className="relative flex h-14 w-14 items-center justify-center rounded-full bg-[#6B4A35] text-white shadow-[0_8px_24px_rgba(48,42,38,0.12)] md:h-16 md:w-16"
+          className="relative flex h-14 w-14 items-center justify-center rounded-full bg-primary text-white shadow-[0_8px_24px_rgba(48,42,38,0.12)] md:h-16 md:w-16"
           whileHover={
             reduceMotion
               ? undefined
@@ -184,7 +184,7 @@ function ProcessStep({
         >
           <Icon size={22} strokeWidth={1.6} className="md:h-6 md:w-6" />
         </motion.span>
-        <span className="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full border border-[#F3EFE9] bg-ink font-condensed text-[0.65rem] font-semibold text-[#F3EFE9]">
+        <span className="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full border border-background bg-foreground font-condensed text-[0.65rem] font-semibold text-background">
           {n}
         </span>
       </div>
@@ -219,17 +219,17 @@ export function ModularHomesSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative overflow-hidden bg-[#F3EFE9] px-5 py-10 md:px-10 md:py-12 lg:px-16"
+      className="relative overflow-hidden bg-background px-5 py-10 md:px-10 md:py-12 lg:px-16"
     >
       {/* Soft animated atmosphere */}
       <motion.div
         style={{ y: bgY }}
-        className="pointer-events-none absolute -left-24 top-10 h-72 w-72 rounded-full bg-[#6B4A35]/8 blur-3xl"
+        className="pointer-events-none absolute -left-24 top-10 h-72 w-72 rounded-full bg-primary/8 blur-3xl"
         aria-hidden
       />
       <motion.div
         style={{ y: blobY }}
-        className="pointer-events-none absolute -right-16 bottom-24 h-80 w-80 rounded-full bg-[#C4A882]/14 blur-3xl"
+        className="pointer-events-none absolute -right-16 bottom-24 h-80 w-80 rounded-full bg-stone/40 blur-3xl"
         aria-hidden
       />
 
@@ -256,7 +256,7 @@ export function ModularHomesSection() {
             >
               <div className="h-full w-full" style={woodRailStyle} />
               <motion.div
-                className="absolute inset-0 origin-left rounded-full bg-gradient-to-r from-[#8B6A4A]/90 via-[#6B4A35]/85 to-[#5C3A28]/90"
+                className="absolute inset-0 origin-left rounded-full bg-gradient-to-r from-clay/90 via-primary/85 to-secondary/90"
                 style={{ scaleX: lineProgress }}
               />
             </div>
@@ -285,7 +285,7 @@ export function ModularHomesSection() {
                 ? undefined
                 : { y: -4, transition: { type: "spring", stiffness: 320, damping: 24 } }
             }
-            className="group relative flex flex-col overflow-hidden rounded-[2rem] border border-[#c9b8a8]/55 bg-[#F3EFE9] p-5 shadow-[0_12px_40px_rgba(48,42,38,0.06)] md:rounded-[2.5rem] md:p-6 lg:p-7"
+            className="group relative flex flex-col overflow-hidden rounded-[2rem] border border-border/55 bg-background p-5 shadow-[0_12px_40px_rgba(48,42,38,0.06)] md:rounded-[2.5rem] md:p-6 lg:p-7"
           >
             <div className="mb-5 grid grid-cols-2 gap-2.5 md:mb-6 md:gap-3">
               {partnerImages.map((img, i) => (
@@ -341,14 +341,14 @@ export function ModularHomesSection() {
             >
               <Link
                 href="/for-architects"
-                className="inline-flex rounded-full bg-[#6B4A35] px-8 py-3.5 font-condensed text-[0.78rem] font-semibold uppercase tracking-[0.16em] text-[#F7F1E8] shadow-[0_10px_28px_rgba(107,74,53,0.28)] transition-colors hover:bg-[#5C3A28] md:text-[0.8rem]"
+                className="inline-flex rounded-full bg-primary px-8 py-3.5 font-condensed text-[0.78rem] font-semibold uppercase tracking-[0.16em] text-primary-foreground shadow-[0_10px_28px_rgba(168,111,71,0.28)] transition-colors hover:bg-secondary md:text-[0.8rem]"
               >
                 Join Our Trade Program
               </Link>
             </motion.div>
           </motion.div>
 
-          {/* AR card */}
+          {/* Visualize in your space */}
           <motion.div
             variants={cardVariants}
             initial="hidden"
@@ -360,105 +360,35 @@ export function ModularHomesSection() {
                 ? undefined
                 : { y: -4, transition: { type: "spring", stiffness: 320, damping: 24 } }
             }
-            className="relative flex min-h-[480px] flex-col overflow-hidden rounded-[2rem] md:min-h-full md:rounded-[2.5rem]"
+            className="relative min-h-[480px] overflow-hidden rounded-[2rem] md:min-h-full md:rounded-[2.5rem]"
           >
-            <motion.div
-              className="absolute inset-0"
-              initial={reduceMotion ? false : { scale: 1.1 }}
-              whileInView={{ scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 1.3, ease }}
+            <Link
+              href="/see-in-your-room"
+              className="group relative flex h-full min-h-[480px] flex-col overflow-hidden"
             >
               <Image
-                src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=1600&auto=format&fit=crop"
-                alt="Living room ready for AR furniture visualization"
+                src="/images/see-in-your-space/visualize-in-space.png"
+                alt="Hand holding a phone previewing furniture in a living room"
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
-                className="object-cover"
+                className="object-cover object-[center_20%] transition-transform duration-700 group-hover:scale-[1.02]"
               />
-            </motion.div>
-            <div
-              className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/20"
-              aria-hidden
-            />
-
-            {/* Centered phone in hand */}
-            <motion.div
-              className="relative z-10 mx-auto mt-10 w-[42%] max-w-[170px] sm:mt-12 sm:w-[38%] md:mt-14"
-              initial={reduceMotion ? false : { opacity: 0, y: 36 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.85, delay: 0.25, ease }}
-              animate={
-                reduceMotion
-                  ? undefined
-                  : {
-                      y: [0, -8, 0],
-                      transition: {
-                        duration: 4.5,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                      },
-                    }
-              }
-            >
-              <div className="overflow-hidden rounded-[1.6rem] border-[3px] border-white/95 shadow-[0_28px_60px_rgba(0,0,0,0.45)]">
-                <div className="relative aspect-[9/19] bg-ink">
-                  <Image
-                    src="https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?q=80&w=600&auto=format&fit=crop"
-                    alt="AR preview of a wooden lounge chair"
-                    fill
-                    sizes="170px"
-                    className="object-cover"
-                  />
-                  <span className="absolute inset-x-2.5 bottom-2.5 rounded-md bg-white/95 px-1.5 py-1 text-center font-condensed text-[0.55rem] font-semibold uppercase tracking-[0.14em] text-ink">
-                    Live AR
-                  </span>
-                </div>
-              </div>
-              {/* Soft hand silhouette under phone */}
               <div
-                className="mx-auto -mt-1 h-8 w-[72%] rounded-b-[2rem] bg-gradient-to-b from-[#c4a484]/90 to-transparent blur-[1px]"
+                className="absolute inset-0 bg-gradient-to-t from-black/92 via-black/55 via-35% to-transparent"
                 aria-hidden
               />
-            </motion.div>
-
-            <div className="relative z-10 mt-auto flex flex-col items-center px-6 pb-7 pt-8 text-center md:px-8 md:pb-9">
-              <motion.h3
-                initial={reduceMotion ? false : { opacity: 0, y: 18 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.28, duration: 0.55, ease }}
-                className="font-condensed text-[1.25rem] font-semibold uppercase tracking-[0.06em] text-white md:text-[1.4rem]"
-              >
-                Visualize in Your Space
-              </motion.h3>
-              <motion.p
-                initial={reduceMotion ? false : { opacity: 0, y: 14 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.36, duration: 0.5, ease }}
-                className="mt-2 max-w-xs font-hero text-[0.92rem] font-light leading-relaxed text-white/80 md:text-[0.98rem]"
-              >
-                Try our AR feature — place Aakar pieces in your room before you order.
-              </motion.p>
-              <motion.div
-                initial={reduceMotion ? false : { opacity: 0, y: 14 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.44, duration: 0.5, ease }}
-                whileHover={reduceMotion ? undefined : { scale: 1.03 }}
-                whileTap={reduceMotion ? undefined : { scale: 0.98 }}
-                className="mt-6"
-              >
-                <Link
-                  href="/see-in-your-room"
-                  className="inline-flex rounded-full bg-[#6B4A35] px-8 py-3.5 font-condensed text-[0.78rem] font-semibold uppercase tracking-[0.16em] text-white transition-colors hover:bg-[#5C3A28] md:text-[0.8rem]"
-                >
-                  Get Now
-                </Link>
-              </motion.div>
-            </div>
+              <div className="relative z-10 mt-auto px-6 pb-7 pt-16 text-center md:px-8 md:pb-9">
+                <h3 className="font-condensed text-[1.25rem] font-semibold uppercase tracking-[0.06em] text-white md:text-[1.4rem]">
+                  See It in Your Space
+                </h3>
+                <p className="mx-auto mt-2 max-w-xs font-hero text-[0.92rem] font-light leading-relaxed text-white/80 md:text-[0.98rem]">
+                  Preview how Aakar pieces look in your room before you order.
+                </p>
+                <span className="mt-6 inline-flex rounded-full bg-primary px-8 py-3.5 font-condensed text-[0.78rem] font-semibold uppercase tracking-[0.16em] text-white transition-colors group-hover:bg-secondary md:text-[0.8rem]">
+                  Try Now
+                </span>
+              </div>
+            </Link>
           </motion.div>
         </div>
       </div>

@@ -1,149 +1,154 @@
+import Image from "next/image"
+import Link from "next/link"
+import { ArrowRight } from "lucide-react"
 import { Header } from "@/components/header"
 import { FooterSection } from "@/components/sections/footer-section"
 import { CTASection } from "@/components/cta-section"
+import { FadeInUp } from "@/components/motion/scroll-motion"
 
 export const metadata = {
   title: "About Aakar Woodcraft | Form. Crafted. Timeless.",
   description:
-    "We design contemporary forms rooted in traditional woodworking craft. Every piece is made to order with no mass production, no compromise on materials, and no shortcuts in construction.",
+    "Contemporary furniture rooted in material honesty, architectural form, and enduring Indian craft.",
 }
 
 const beliefs = [
   {
+    number: "01",
     title: "Quality Over Quantity",
     description:
-      "We work slowly, deliberately, and with absolute precision. Our goal is not to make more—it is to make better.",
+      "We work slowly and deliberately, with attention placed on proportion, material, and the way every detail meets.",
   },
   {
-    title: "Transparency",
+    number: "02",
+    title: "Material Honesty",
     description:
-      "We openly share our methods, materials, and timelines. No hidden processes. No marketing language.",
+      "The character of wood is never treated as a surface effect. Grain, tone, and natural variation remain part of the design.",
   },
   {
-    title: "Longevity",
+    number: "03",
+    title: "Designed For Time",
     description:
-      "Furniture designed to be passed down. Built to last decades. Made to age beautifully.",
+      "Our pieces are conceived beyond seasonal trends—quiet forms intended to live comfortably in a home for years.",
   },
 ]
 
 const principles = [
-  {
-    title: "No Mass Production",
-    description:
-      "Every piece is made to order. We control the entire process from wood selection to final finishing.",
-  },
-  {
-    title: "Traditional Joinery",
-    description:
-      "Mortise and tenon joints. Dovetails. Time-tested methods that ensure structural integrity for generations.",
-  },
-  {
-    title: "Hand Finishing",
-    description:
-      "Every surface hand-sanded through 7 grits. Hand-rubbed finishes that enhance the natural beauty of wood.",
-  },
+  "Made to order, with considered production",
+  "Architectural forms balanced by everyday function",
+  "Details that reward touch and close observation",
+  "Clear communication from enquiry to delivery",
 ]
 
 export default function AboutPage() {
   return (
-    <main className="min-h-screen bg-background">
+    <main className="min-h-screen bg-sand">
       <Header />
 
-      {/* Hero */}
-      <section className="pt-32 pb-20 px-6 md:px-12 lg:px-20">
-        <div className="max-w-3xl mx-auto text-center">
-          <h1 className="font-serif text-4xl font-light text-foreground md:text-5xl mb-6">
-            About Aakar
-          </h1>
-          <p className="font-serif text-2xl md:text-3xl text-foreground font-light mb-6">
-            Form. Crafted. Timeless.
-          </p>
-          <p className="text-lg text-muted-foreground leading-relaxed">
-            We design contemporary forms rooted in traditional woodworking craft. Every piece is made
-            to order in our controlled workshop environment. No mass production. No compromise on
-            materials. No shortcuts in construction.
-          </p>
+      <section className="px-5 pb-14 pt-32 md:px-10 md:pb-20 lg:px-16 lg:pt-36">
+        <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[0.88fr_1.12fr] lg:gap-16">
+          <FadeInUp>
+            <p className="type-label mb-5">The Studio</p>
+            <h1 className="max-w-xl text-[clamp(3rem,7vw,6.5rem)] leading-[.92]">
+              Form shaped by story and craft.
+            </h1>
+            <p className="mt-7 max-w-xl text-lg font-light leading-relaxed text-ink/70 md:text-xl">
+              Aakar Woodcraft creates contemporary furniture for modern Indian spaces—rooted in architecture, natural material, and a quieter way of making.
+            </p>
+            <Link
+              href="/collections"
+              className="mt-8 inline-flex items-center gap-2 rounded-full bg-clay px-7 py-3.5 font-condensed text-sm font-semibold uppercase tracking-[.14em] text-sand transition-colors hover:bg-umber"
+            >
+              Explore our collections
+              <ArrowRight size={16} />
+            </Link>
+          </FadeInUp>
+
+          <FadeInUp delay={0.08} className="relative aspect-[4/3] overflow-hidden rounded-[2rem] bg-stone md:rounded-[2.5rem]">
+            <Image
+              src="/catalog/bishnupur-bed.webp"
+              alt="Bishnupur-inspired bed by Aakar Woodcraft"
+              fill
+              priority
+              sizes="(max-width: 1024px) 100vw, 55vw"
+              className="object-cover transition-transform duration-700 hover:scale-[1.02]"
+            />
+          </FadeInUp>
         </div>
       </section>
 
-      {/* Our Philosophy */}
-      <section className="bg-muted/40 px-6 md:px-12 lg:px-20 py-20">
-        <div className="max-w-3xl mx-auto text-center">
-          <h2 className="font-serif text-2xl md:text-3xl text-foreground mb-6">Our Philosophy</h2>
-          <p className="text-base leading-relaxed text-muted-foreground">
-            We believe in restraint. In letting the material speak. In forms that endure. Our
-            furniture is designed for homes that value quality over trends—pieces built to last, not
-            to be replaced.
-          </p>
-        </div>
-      </section>
-
-      {/* Our Approach */}
-      <section className="px-6 md:px-12 lg:px-20 py-20">
-        <div className="max-w-3xl mx-auto text-center">
-          <h2 className="font-serif text-2xl md:text-3xl text-foreground mb-6">Our Approach</h2>
-          <p className="text-base leading-relaxed text-muted-foreground">
-            Each piece begins with careful material selection. Solid wood. Traditional joinery. Hand
-            finishing. We work slowly, deliberately, and with absolute precision. Our goal is not
-            to make more—it is to make better.
-          </p>
-        </div>
-      </section>
-
-      {/* What We Believe In */}
-      <section className="bg-muted/40 px-6 md:px-12 lg:px-20 py-20">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="font-serif text-2xl md:text-3xl text-foreground mb-12 text-center">
-            What We Believe In
+      <section className="border-y border-umber/15 bg-stone px-5 py-16 md:px-10 md:py-20 lg:px-16">
+        <FadeInUp className="mx-auto max-w-5xl text-center">
+          <p className="type-label mb-5">Our Philosophy</p>
+          <h2 className="text-[clamp(2rem,5vw,4.5rem)] leading-[1.02]">
+            Furniture should hold presence without demanding attention.
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
-            {beliefs.map((belief) => (
-              <div key={belief.title} className="text-center sm:text-left">
-                <h3 className="font-serif text-lg text-foreground mb-2">{belief.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{belief.description}</p>
-              </div>
+          <p className="mx-auto mt-6 max-w-3xl text-base font-light leading-relaxed text-ink/70 md:text-lg">
+            We believe in restraint, useful beauty, and forms that become more familiar with time. Every collection begins with a place, a memory, or an architectural idea, then becomes an object made for everyday life.
+          </p>
+        </FadeInUp>
+      </section>
+
+      <section className="px-5 py-16 md:px-10 md:py-24 lg:px-16">
+        <div className="mx-auto max-w-7xl">
+          <FadeInUp className="mb-10 flex flex-col gap-4 md:mb-14 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="type-label mb-3">What guides us</p>
+              <h2 className="text-3xl md:text-4xl">Three enduring beliefs</h2>
+            </div>
+            <p className="max-w-md text-sm leading-relaxed text-ink/60">
+              A simple framework for every object we design and every project we take on.
+            </p>
+          </FadeInUp>
+
+          <div className="grid gap-5 md:grid-cols-3">
+            {beliefs.map((belief, index) => (
+              <FadeInUp key={belief.title} delay={index * 0.06} className="rounded-[1.75rem] border border-umber/10 bg-stone p-7 md:p-8">
+                <p className="font-condensed text-xs font-semibold tracking-[.2em] text-clay">{belief.number}</p>
+                <h3 className="mt-8 text-xl">{belief.title}</h3>
+                <p className="mt-4 text-sm leading-relaxed text-ink/65">{belief.description}</p>
+              </FadeInUp>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Founder story */}
-      <section className="px-6 md:px-12 lg:px-20 py-20">
-        <div className="max-w-3xl mx-auto text-center">
-          <p className="text-base leading-relaxed text-muted-foreground mb-8">
-            Founded by craftspeople and designers who believe modern Indian homes deserve furniture
-            that reflects both contemporary sensibility and enduring craft.
-          </p>
-          <blockquote className="font-serif text-xl md:text-2xl text-foreground font-light leading-relaxed">
-            &ldquo;We design for homes that value substance over trends.&rdquo;
-          </blockquote>
-        </div>
-      </section>
-
-      {/* Our Principles */}
-      <section className="bg-muted/40 px-6 md:px-12 lg:px-20 py-20">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="font-serif text-2xl md:text-3xl text-foreground mb-12 text-center">
-            Our Principles
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
-            {principles.map((principle) => (
-              <div key={principle.title} className="text-center sm:text-left">
-                <h3 className="font-serif text-lg text-foreground mb-2">{principle.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {principle.description}
-                </p>
-              </div>
-            ))}
+      <section className="px-5 pb-16 md:px-10 md:pb-24 lg:px-16">
+        <div className="mx-auto grid max-w-7xl overflow-hidden rounded-[2rem] bg-ink text-sand lg:grid-cols-2 md:rounded-[2.5rem]">
+          <div className="relative min-h-[360px] lg:min-h-[560px]">
+            <Image
+              src="/catalog/hampi-rift-console.webp"
+              alt="Hampi Rift console from Aakar Woodcraft"
+              fill
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              className="object-cover"
+            />
           </div>
+          <FadeInUp className="flex flex-col justify-center p-8 md:p-12 lg:p-16">
+            <p className="font-condensed text-xs font-semibold uppercase tracking-[.22em] text-clay">Our approach</p>
+            <h2 className="mt-4 text-3xl text-sand md:text-4xl">From an idea to an object with purpose.</h2>
+            <p className="mt-6 text-base font-light leading-relaxed text-sand/70">
+              We study proportion, silhouette, and how a piece sits within a room. The final object should feel resolved from every angle and remain intuitive in use.
+            </p>
+            <ul className="mt-8 space-y-4">
+              {principles.map((principle) => (
+                <li key={principle} className="flex items-start gap-3 border-t border-sand/15 pt-4 text-sm text-sand/80">
+                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-clay" />
+                  {principle}
+                </li>
+              ))}
+            </ul>
+          </FadeInUp>
         </div>
       </section>
 
       <CTASection
-        title="Visit Our Workshop"
-        subtitle="See how we work. Understand our process. Experience the materials firsthand. Workshop visits available by appointment."
-        primaryText="Schedule a Visit"
-        primaryHref="/contact"
+        title="Visit the world of Aakar"
+        subtitle="Explore the collections or speak with us about a piece made for your space."
+        primaryText="Explore Collections"
+        primaryHref="/collections"
+        secondaryText="Start a Conversation"
+        secondaryHref="/contact"
         dark
       />
 
