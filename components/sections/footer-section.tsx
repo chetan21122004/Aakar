@@ -90,7 +90,7 @@ export function FooterSection() {
                 </h2>
               </div>
               <p className="max-w-sm font-hero text-[1rem] font-light leading-relaxed text-[#302A26]/75 lg:pb-2 lg:text-right">
-                Contemporary wooden furniture and modular spaces — designed in India, shaped by hand.
+                Contemporary wooden furniture and modular spaces - designed in India, shaped by hand.
               </p>
             </div>
             <ArchLine className="mt-10 h-10 w-full max-w-md text-[#76513D]/35 md:mt-12" />

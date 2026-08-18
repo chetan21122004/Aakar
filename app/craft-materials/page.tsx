@@ -19,7 +19,7 @@ const craftProcessSteps = [
     step: "02",
     title: "Joinery",
     description:
-      "Precision joinery forms the backbone of every piece. No screws — just time-tested woodworking methods adapted for modern forms.",
+      "Precision joinery forms the backbone of every piece. No screws - just time-tested woodworking methods adapted for modern forms.",
   },
   {
     step: "03",
@@ -114,12 +114,12 @@ export default function CraftMaterialsPage() {
         </div>
       </section>
 
-      {/* Our Process — reuses editorial-section 4-column step grid */}
+      {/* Our Process - reuses editorial-section 4-column step grid */}
       <section className="border-t border-border">
         <div className="px-6 pt-16 pb-12 text-center md:px-12 md:pt-20 md:pb-16 lg:px-20">
           <h2 className="font-serif text-2xl md:text-3xl text-foreground">Our Process</h2>
           <p className="mx-auto mt-4 max-w-lg text-sm text-muted-foreground leading-relaxed">
-            From raw timber to finished furniture — four stages of careful craftsmanship.
+            From raw timber to finished furniture - four stages of careful craftsmanship.
           </p>
         </div>
 

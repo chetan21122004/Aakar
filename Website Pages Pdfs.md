@@ -444,7 +444,7 @@ AAKAR
 
 AAKAR 
 
-— 
+- 
 
 WOODCRAFT 
 
@@ -744,7 +744,7 @@ Furniture suite for 12 rooms and common areas
 
 "AAKAR understands the balance between flexibility and design discipline. Theirfurniture elevated our project without compromising the overall vision." 
 
-— PRINCIPAL ARCHITECT, DESIGN STUDIO 
+- PRINCIPAL ARCHITECT, DESIGN STUDIO 
 
 ## Technical Information 
 

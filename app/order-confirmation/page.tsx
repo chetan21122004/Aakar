@@ -71,7 +71,7 @@ function OrderConfirmationContent() {
             </p>
 
             <div className="mb-6 rounded border border-amber-200 bg-amber-50 px-4 py-3 font-sans text-sm text-amber-900">
-              Status: {order.status.replace("_", " ")} — Razorpay payment integration coming soon.
+              Status: {order.status.replace("_", " ")} - Razorpay payment integration coming soon.
             </div>
 
             <div className="border border-border bg-card p-6 text-left mb-8">
@@ -99,7 +99,7 @@ function OrderConfirmationContent() {
                 <p className="font-medium text-foreground mb-1">Shipping to</p>
                 <p>{order.shipping_address}</p>
                 <p>
-                  {order.shipping_city}, {order.shipping_state} — {order.shipping_pincode}
+                  {order.shipping_city}, {order.shipping_state} - {order.shipping_pincode}
                 </p>
                 <p className="mt-1">{order.shipping_phone}</p>
               </div>

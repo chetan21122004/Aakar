@@ -47,7 +47,7 @@ const voiceSets = [
   [
     {
       quote:
-        "Aakar turned our brief into a calm teak living space — quiet, solid, and made for how we actually live.",
+        "Aakar turned our brief into a calm teak living space - quiet, solid, and made for how we actually live.",
       name: "Sarah Simona",
       role: "Client",
       image:
@@ -73,7 +73,7 @@ const voiceSets = [
   [
     {
       quote:
-        "The console proportions and oil finish were exactly right for our entry — it feels like it has always belonged.",
+        "The console proportions and oil finish were exactly right for our entry - it feels like it has always belonged.",
       name: "Meera Kapoor",
       role: "Client",
       image:

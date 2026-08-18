@@ -110,7 +110,7 @@ export function getStockStatus(qty: number): StockStatus {
 
 export function getStockLabel(qty: number): string {
   const status = getStockStatus(qty)
-  if (status === "made_to_order") return "Made to Order — ships in 4–6 weeks"
+  if (status === "made_to_order") return "Made to Order - ships in 4–6 weeks"
   if (status === "low_stock") return `Only ${qty} left in stock`
   return "In Stock"
 }

@@ -41,11 +41,20 @@ function BrandLogo() {
 const NAV_BAR =
   "border border-[#D9C8B7]/50 bg-[#F6EFE5]/95 shadow-sm backdrop-blur-md"
 
+const NAV_BAR_HOME =
+  "border border-[#C4B5A5] bg-[#F6EFE5] shadow-[0_8px_32px_rgba(48,42,38,0.16)] backdrop-blur-xl"
+
 const NAV_LINK_ACTIVE =
-  "font-sans text-sm xl:text-base whitespace-nowrap text-[#302A26] transition-colors"
+  "font-sans text-sm xl:text-base whitespace-nowrap font-medium text-[#1F1A17] transition-colors"
 
 const NAV_LINK =
-  "font-sans text-sm xl:text-base whitespace-nowrap text-[#6B5E54] transition-colors hover:text-[#302A26]"
+  "font-sans text-sm xl:text-base whitespace-nowrap text-[#4A4038] transition-colors hover:text-[#1F1A17]"
+
+const NAV_LINK_HOME_ACTIVE =
+  "font-sans text-sm xl:text-base whitespace-nowrap font-semibold text-[#1F1A17] transition-colors"
+
+const NAV_LINK_HOME =
+  "font-sans text-sm xl:text-base whitespace-nowrap font-medium text-[#3D342F] transition-colors hover:text-[#1F1A17]"
 
 const NAV_ICON =
   "relative flex h-10 w-10 items-center justify-center text-[#302A26] transition-colors hover:text-[#A86F47]"
@@ -55,8 +64,10 @@ export function Header() {
   const { itemCount } = useCart()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [cartOpen, setCartOpen] = useState(false)
+  const isHome = pathname === "/"
 
   const barRadius = isMenuOpen ? "rounded-t-2xl" : "rounded-full"
+  const barStyle = isHome ? NAV_BAR_HOME : NAV_BAR
 
   useEffect(() => {
     setIsMenuOpen(false)
@@ -65,6 +76,9 @@ export function Header() {
   const linkClass = (href: string) => {
     const isActive =
       href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`)
+    if (isHome) {
+      return isActive ? NAV_LINK_HOME_ACTIVE : NAV_LINK_HOME
+    }
     return isActive ? NAV_LINK_ACTIVE : NAV_LINK
   }
 
@@ -78,7 +92,7 @@ export function Header() {
     <>
       <header className="site-header fixed top-4 left-1/2 z-50 w-[96%] max-w-7xl -translate-x-1/2">
         <div
-          className={`site-header__bar grid grid-cols-[auto_1fr_auto] items-center gap-3 px-4 py-2 transition-all duration-300 xl:gap-4 xl:px-5 ${barRadius} ${NAV_BAR}`}
+          className={`site-header__bar grid grid-cols-[auto_1fr_auto] items-center gap-3 px-4 py-2 transition-all duration-300 xl:gap-4 xl:px-5 ${barRadius} ${barStyle}`}
         >
           <BrandLogo />
 
@@ -127,7 +141,7 @@ export function Header() {
         </div>
 
         {isMenuOpen && (
-          <div className={`max-h-[80vh] overflow-y-auto rounded-b-2xl border border-t-0 px-6 py-6 xl:hidden ${NAV_BAR}`}>
+          <div className={`max-h-[80vh] overflow-y-auto rounded-b-2xl border border-t-0 px-6 py-6 xl:hidden ${barStyle}`}>
             <nav className="flex flex-col gap-4" aria-label="Mobile">
               {navLinks.map((link) => {
                 const isActive =

@@ -411,7 +411,7 @@ export function CraftDetailsSection() {
     <section className="overflow-x-clip bg-background px-5 py-10 md:px-10 md:py-12 lg:px-16">
       <JourneySplit />
 
-      {/* Featured Furniture — Echoes of Mandu */}
+      {/* Featured Furniture - Echoes of Mandu */}
       <FadeInUp>
         <h2 className={SECTION_HEADING}>Echoes of Mandu</h2>
 
@@ -422,8 +422,8 @@ export function CraftDetailsSection() {
               Featured Furniture
             </p>
             <p className="max-w-md font-hero text-[0.98rem] font-normal leading-[1.65] text-ink/68 md:text-[1.05rem]">
-              Inspired by Mandu — once a city of step-wells, reservoirs, and
-              arched repetition — restated as quiet, minimal architectural form
+              Inspired by Mandu - once a city of step-wells, reservoirs, and
+              arched repetition - restated as quiet, minimal architectural form
               for contemporary living.
             </p>
 

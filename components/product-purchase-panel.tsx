@@ -112,7 +112,7 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
       pricePaise: activeVariant.pricePaise,
     })
     toast.success("Added to cart", {
-      description: `${product.name} — ${formatINR(activeVariant.pricePaise)}`,
+      description: `${product.name} - ${formatINR(activeVariant.pricePaise)}`,
     })
     if (redirectToCheckout) router.push("/checkout")
   }

@@ -51,7 +51,7 @@ export function EnquiryCurveSection() {
             />
           </motion.div>
 
-          {/* Soft readability washes — left dark wood / right linen */}
+          {/* Soft readability washes - left dark wood / right linen */}
           <div
             className="absolute inset-0 bg-gradient-to-r from-black/45 via-black/10 to-background/35"
             aria-hidden
@@ -62,13 +62,13 @@ export function EnquiryCurveSection() {
           />
 
           <div className="relative z-10 grid h-full min-h-[280px] grid-cols-1 gap-8 px-6 py-8 sm:px-8 md:min-h-[300px] md:grid-cols-2 md:items-center md:gap-8 md:px-10 md:py-10 lg:min-h-[320px] lg:px-14 lg:py-12">
-            {/* Left — over carved wood */}
+            {/* Left - over carved wood */}
             <div className="flex flex-col justify-center md:max-w-[22rem]">
               <h2 className="font-condensed text-[1.75rem] font-semibold uppercase tracking-[0.1em] text-white md:text-[2rem] md:tracking-[0.12em] lg:text-[2.25rem]">
                 Furniture Enquiry
               </h2>
               <p className="mt-3 max-w-[18rem] font-hero text-[1.02rem] font-light leading-relaxed text-white/90 md:text-[1.08rem]">
-                Share dimensions, finish preferences, and timeline — we&apos;ll
+                Share dimensions, finish preferences, and timeline - we&apos;ll
                 craft a tailored quote for your piece.
               </p>
               <motion.div
@@ -85,7 +85,7 @@ export function EnquiryCurveSection() {
               </motion.div>
             </div>
 
-            {/* Right — over linen */}
+            {/* Right - over linen */}
             <div className="flex flex-col justify-center md:ml-auto md:max-w-[22rem] md:text-right">
               <h2 className="font-condensed text-[1.75rem] font-semibold uppercase tracking-[0.1em] text-foreground md:text-[2rem] md:tracking-[0.12em] lg:text-[2.25rem]">
                 Home Consultation

@@ -20,13 +20,10 @@ const tileVariants: Variants = {
 };
 
 const images = {
-  grain: "/images/craft/timber.jpg",
-  joinery: "/images/craft/process.jpg",
   plank: "/images/craft/woodstack.jpg",
   fluted: "/images/craft/detail.jpg",
   leg: "/images/craft/chair.jpg",
   featured: "/images/craft/featured.jpg",
-  copyBg: "/images/featured/material-wood.jpg",
 } as const;
 
 function Tile({
@@ -79,62 +76,12 @@ export function CraftMaterialsShowcaseSection() {
         whileInView="visible"
         viewport={{ once: true, amount: 0.15 }}
       >
-        {/* Top: grain | copy | joinery */}
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-12 md:gap-4 lg:gap-5">
-          <Tile
-            src={images.grain}
-            alt="Close-up of hardwood grain with a natural knot"
-            index={0}
-            reduceMotion={reduceMotion}
-            className="aspect-[16/11] sm:col-span-2 md:col-span-5 md:aspect-auto md:min-h-[220px] lg:min-h-[260px]"
-            sizes="(max-width: 768px) 100vw, 42vw"
-          />
-
-          {/* Text column — dark wood background, hierarchy from reference */}
-          <motion.div
-            custom={1}
-            variants={tileVariants}
-            className="group relative flex min-h-[220px] flex-col justify-center overflow-hidden rounded-[1.75rem] md:col-span-4 md:min-h-[260px] md:rounded-[2rem]"
-          >
-            <Image
-              src={images.copyBg}
-              alt=""
-              fill
-              sizes="(max-width: 768px) 100vw, 33vw"
-              className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
-              aria-hidden
-            />
-            <div className="absolute inset-0 bg-[#1a120e]/75" aria-hidden />
-            <div className="relative z-10 px-5 py-6 md:px-6 md:py-7 lg:px-7">
-              <h2 className="font-condensed text-[1.15rem] font-semibold uppercase tracking-[0.14em] text-white md:text-[1.35rem] md:tracking-[0.14em]">
-                Craft &amp; Materials
-              </h2>
-              <p className="mt-3 font-hero text-[1.05rem] font-normal leading-snug text-white md:text-[1.15rem]">
-                Celebrating Materiality &amp; Handcraft.
-              </p>
-              <p className="mt-3 max-w-sm font-hero text-[0.9rem] font-light leading-relaxed text-white/70 md:text-[0.95rem]">
-                Celebrating craftsmanship &amp; creative process tailored to
-                high-end living spaces.
-              </p>
-            </div>
-          </motion.div>
-
-          <Tile
-            src={images.joinery}
-            alt="Craftsperson shaping timber by hand"
-            index={2}
-            reduceMotion={reduceMotion}
-            className="aspect-[3/4] md:col-span-3 md:aspect-auto md:min-h-[220px] lg:min-h-[260px]"
-            sizes="(max-width: 768px) 50vw, 25vw"
-          />
-        </div>
-
         {/* Bottom: plank | stack | featured CTA */}
-        <div className="mt-3 grid grid-cols-1 gap-3 md:mt-4 md:grid-cols-12 md:gap-4 lg:mt-5 lg:gap-5">
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-12 md:gap-4 lg:gap-5">
           <Tile
             src={images.plank}
             alt="Stacked timber planks with natural grain"
-            index={3}
+            index={0}
             reduceMotion={reduceMotion}
             className="aspect-[3/4] md:col-span-3 md:aspect-auto md:min-h-[320px] lg:min-h-[360px]"
             sizes="(max-width: 768px) 50vw, 25vw"
@@ -144,7 +91,7 @@ export function CraftMaterialsShowcaseSection() {
             <Tile
               src={images.fluted}
               alt="Wood cabinet surface detail"
-              index={4}
+              index={1}
               reduceMotion={reduceMotion}
               className="aspect-square md:aspect-[4/3] md:min-h-0"
               sizes="(max-width: 768px) 45vw, 20vw"
@@ -152,7 +99,7 @@ export function CraftMaterialsShowcaseSection() {
             <Tile
               src={images.leg}
               alt="Solid wood furniture leg and joinery"
-              index={5}
+              index={2}
               reduceMotion={reduceMotion}
               className="aspect-square md:aspect-[4/3] md:min-h-0"
               sizes="(max-width: 768px) 45vw, 20vw"
@@ -162,7 +109,7 @@ export function CraftMaterialsShowcaseSection() {
           <Tile
             src={images.featured}
             alt="Solid wood dining table in a warm interior"
-            index={6}
+            index={3}
             reduceMotion={reduceMotion}
             className="aspect-[4/3] md:col-span-6 md:aspect-auto md:min-h-[320px] lg:min-h-[360px]"
             sizes="(max-width: 768px) 100vw, 50vw"
@@ -176,7 +123,7 @@ export function CraftMaterialsShowcaseSection() {
                 Your Vision, Our Craft: Bespoke Commissions.
               </h3>
               <p className="mt-2 max-w-sm font-hero text-[0.88rem] font-light leading-relaxed text-white/80 md:text-[0.95rem]">
-                Custom-designed creations made to mark your space — form,
+                Custom-designed creations made to mark your space - form,
                 finish, and fit.
               </p>
               <motion.div

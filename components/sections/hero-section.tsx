@@ -26,7 +26,7 @@ export function HeroSection() {
   }, []);
 
   return (
-    <section className="relative h-[100svh] min-h-[560px] overflow-hidden bg-[#2a241f]">
+    <section className="relative h-[100svh] min-h-[560px] overflow-hidden">
       <div className="absolute inset-0">
         <Image
           src={heroImage.src}
@@ -35,7 +35,7 @@ export function HeroSection() {
           priority
           quality={95}
           sizes="100vw"
-          className="object-cover object-center brightness-[0.62] contrast-[1.08] saturate-[0.95]"
+          className="object-cover object-center"
         />
       </div>
 
@@ -49,10 +49,10 @@ export function HeroSection() {
                 : "translate-y-4 opacity-0"
           }`}
         >
-          <h1 className="whitespace-nowrap font-hero text-[clamp(1.5rem,4.2vw,2.85rem)] font-normal leading-[1.05] tracking-[-0.015em] text-white">
+          <h1 className="whitespace-nowrap font-hero text-[clamp(1.5rem,4.2vw,2.85rem)] font-normal leading-[1.05] tracking-[-0.015em] text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.55)]">
             Objects. Spaces. Stories.
           </h1>
-          <p className="mt-2 font-hero text-[clamp(0.8rem,1.15vw,0.95rem)] font-light leading-snug tracking-[0.01em] text-white/85 md:mt-2.5">
+          <p className="mt-2 font-hero text-[clamp(0.8rem,1.15vw,0.95rem)] font-light leading-snug tracking-[0.01em] text-white/90 drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)] md:mt-2.5">
             Contemporary Form. Rooted in Craft.
           </p>
         </div>

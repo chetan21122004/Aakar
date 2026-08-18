@@ -135,7 +135,7 @@ export default function CheckoutPage() {
                 </div>
               </div>
               <button type="submit" className="btn-primary w-full" disabled={paying}>
-                {paying ? "Placing order..." : `Place Order — ${formatINR(totalPaise)}`}
+                {paying ? "Placing order..." : `Place Order - ${formatINR(totalPaise)}`}
               </button>
               <p className="font-sans text-xs text-muted-foreground text-center">
                 Payment via Razorpay coming soon. Your order will be saved as pending payment.

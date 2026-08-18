@@ -1,4 +1,4 @@
-// Aakar Woodcraft — shared static data for Milestone 1 (static UI only).
+// Aakar Woodcraft - shared static data for Milestone 1 (static UI only).
 // Product copy sourced from Website Pages Pdfs.md.
 
 export const FINISH_OPTIONS = ["Natural Oil", "Matte Lacquer", "Dark Stain"] as const
@@ -81,7 +81,7 @@ export const collections: Collection[] = [
   },
 ]
 
-// ---------- Shop categories (no dedicated category pages — links to /shop) ----------
+// ---------- Shop categories (no dedicated category pages - links to /shop) ----------
 export const categories: Category[] = [
   {
     slug: "consoles",
@@ -242,7 +242,7 @@ export const products: Product[] = [
     image: "/catalog/hampi-rift-media-unit.webp",
     description: "A long media unit built from separated stone-like volumes.",
     longDescription:
-      "A minimalist console with soft, tactile rounded edges and integrated drawer storage. Built from solid Indian walnut with hand-sanded surfaces through multiple grits — no sharp corners, just a quiet, inviting form for entryways and hallways.",
+      "A minimalist console with soft, tactile rounded edges and integrated drawer storage. Built from solid Indian walnut with hand-sanded surfaces through multiple grits - no sharp corners, just a quiet, inviting form for entryways and hallways.",
     materials: ["Solid Indian Walnut"],
     dimensions: "W 120 × D 35 × H 70 cm",
     specs: [
@@ -264,7 +264,7 @@ export const products: Product[] = [
     image: "/catalog/bishnupur-console.webp",
     description: "Narrative terracotta reliefs translated into carved timber panels.",
     longDescription:
-      "Where subtle traditional joinery meets modern proportions. This console draws on centuries-old woodworking methods — mortise and tenon construction, hand-finished surfaces — in a form suited to contemporary Indian homes.",
+      "Where subtle traditional joinery meets modern proportions. This console draws on centuries-old woodworking methods - mortise and tenon construction, hand-finished surfaces - in a form suited to contemporary Indian homes.",
     materials: ["Solid Indian Walnut"],
     dimensions: "W 180 × D 45 × H 75 cm",
     specs: [
@@ -376,7 +376,7 @@ export const whyChooseFeatures = [
   {
     title: "Traditional Joinery",
     description:
-      "Mortise-and-tenon joints used by generations of Indian carpenters — no screws, no shortcuts.",
+      "Mortise-and-tenon joints used by generations of Indian carpenters - no screws, no shortcuts.",
   },
   {
     title: "Made to Your Space",
@@ -396,7 +396,7 @@ export const whyChooseFeatures = [
   {
     title: "Pan-India Delivery & Installation",
     description:
-      "From our workshop to your home — white-glove delivery and on-site assembly across India.",
+      "From our workshop to your home - white-glove delivery and on-site assembly across India.",
   },
 ]
 
@@ -709,11 +709,11 @@ export const blogPosts: BlogPost[] = [
     sections: [
       {
         heading: "Why solid wood matters",
-        body: "Solid wood furniture is built to last for generations rather than a few years. Unlike particleboard or plywood pieces wrapped in a wood-look laminate, solid wood can be repaired, refinished, and passed down — and it ages with character instead of wearing out.",
+        body: "Solid wood furniture is built to last for generations rather than a few years. Unlike particleboard or plywood pieces wrapped in a wood-look laminate, solid wood can be repaired, refinished, and passed down - and it ages with character instead of wearing out.",
       },
       {
         heading: "How to check wood quality",
-        body: "Look at the grain on the edges and underside of a piece, not just the visible top surface — genuine solid wood shows consistent grain all the way through. Check joints for traditional joinery such as mortise-and-tenon rather than just glue and staples, and gently test for weight and stability.",
+        body: "Look at the grain on the edges and underside of a piece, not just the visible top surface - genuine solid wood shows consistent grain all the way through. Check joints for traditional joinery such as mortise-and-tenon rather than just glue and staples, and gently test for weight and stability.",
       },
       {
         heading: "Choosing the right finish",
@@ -738,7 +738,7 @@ export const blogPosts: BlogPost[] = [
     title: "Dining Table Size Guide for Indian Homes",
     category: "Furniture Guide",
     excerpt:
-      "From compact 4-seaters to large family tables — how to pick the right dining table dimensions for your room and household size.",
+      "From compact 4-seaters to large family tables - how to pick the right dining table dimensions for your room and household size.",
     image: "/catalog/bishnupur-dining-table.webp",
     sections: [
       {
@@ -747,7 +747,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         heading: "Sizing for seating count",
-        body: "As a general guide, a 4-seater table needs roughly 4 feet in length, a 6-seater around 6 feet, and an 8-seater closer to 8 feet — though shape and chair style can shift this.",
+        body: "As a general guide, a 4-seater table needs roughly 4 feet in length, a 6-seater around 6 feet, and an 8-seater closer to 8 feet - though shape and chair style can shift this.",
       },
       {
         heading: "Shape considerations",
@@ -785,7 +785,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         heading: "What custom furniture offers",
-        body: "Custom furniture is built to your exact dimensions, wood, finish, and design preferences — ideal for unusual room sizes, specific style requirements, or pieces meant to last a lifetime.",
+        body: "Custom furniture is built to your exact dimensions, wood, finish, and design preferences - ideal for unusual room sizes, specific style requirements, or pieces meant to last a lifetime.",
       },
       {
         heading: "Matching furniture with your space",
@@ -797,7 +797,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         heading: "Final buying checklist",
-        body: "Weigh your timeline, budget, and how closely your space matches standard furniture sizes — then decide whether ready-made convenience or custom precision suits you better.",
+        body: "Weigh your timeline, budget, and how closely your space matches standard furniture sizes - then decide whether ready-made convenience or custom precision suits you better.",
       },
     ],
   },
@@ -806,7 +806,7 @@ export const blogPosts: BlogPost[] = [
     title: "How to Match Wood Furniture with Modern Interiors",
     category: "Interior Design",
     excerpt:
-      "Practical tips on pairing solid wood furniture — tones, textures, and silhouettes — with clean, contemporary interior styling.",
+      "Practical tips on pairing solid wood furniture - tones, textures, and silhouettes - with clean, contemporary interior styling.",
     image: "/catalog/fatehpur-sikri-sofa.webp",
     sections: [
       {
@@ -819,7 +819,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         heading: "Matching furniture with your space",
-        body: "Stick to one or two dominant wood tones across a room to keep the palette cohesive, and let one statement piece — like a dining table or console — anchor the space.",
+        body: "Stick to one or two dominant wood tones across a room to keep the palette cohesive, and let one statement piece - like a dining table or console - anchor the space.",
       },
       {
         heading: "Balancing silhouettes",

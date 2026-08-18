@@ -37,7 +37,7 @@ export function CategoryPageTemplate({ category, heroTitle, intro, ctaLabel }: C
             </div>
           ) : (
             <p className="type-body text-center">
-              New pieces in this category are being added soon — share your requirement and we&apos;ll build one for you.
+              New pieces in this category are being added soon - share your requirement and we&apos;ll build one for you.
             </p>
           )}
         </div>
