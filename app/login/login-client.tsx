@@ -2,37 +2,47 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { Header } from "@/components/header"
 import { FooterSection } from "@/components/sections/footer-section"
 import { createClient } from "@/lib/supabase/client"
+import { getGuestToken } from "@/lib/guest-token"
 
-export default function SignupPage() {
+export default function LoginPage() {
   const router = useRouter()
-  const { register, handleSubmit } = useForm<{ name: string; email: string; password: string }>()
+  const searchParams = useSearchParams()
+  const redirect = searchParams.get("redirect") ?? "/account"
+  const { register, handleSubmit } = useForm<{ email: string; password: string }>()
   const [loading, setLoading] = useState(false)
 
-  const onSubmit = async (data: { name: string; email: string; password: string }) => {
+  const onSubmit = async (data: { email: string; password: string }) => {
     setLoading(true)
     const supabase = createClient()
-    const { error } = await supabase.auth.signUp({
+    const { error } = await supabase.auth.signInWithPassword({
       email: data.email,
       password: data.password,
-      options: { data: { full_name: data.name } },
     })
 
     if (error) {
-      toast.error("Registration failed", { description: error.message })
+      toast.error("Sign in failed", { description: error.message })
       setLoading(false)
       return
     }
 
-    toast.success("Account created", {
-      description: "Check your email to confirm your account, or sign in now.",
-    })
-    router.push("/login")
+    const guestToken = getGuestToken()
+    if (guestToken) {
+      await fetch("/api/cart/merge", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ guestToken }),
+      })
+    }
+
+    toast.success("Welcome back")
+    router.push(redirect)
+    router.refresh()
   }
 
   return (
@@ -40,17 +50,9 @@ export default function SignupPage() {
       <Header />
       <section className="pt-32 pb-20 px-6 md:px-12 lg:px-20">
         <div className="max-w-md mx-auto">
-          <h1 className="type-h1 mb-2 text-center">Create Account</h1>
-          <p className="type-body text-center mb-10">Save your details for faster checkout.</p>
+          <h1 className="type-h1 mb-2 text-center">Sign In</h1>
+          <p className="type-body text-center mb-10">Access your orders and saved details.</p>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-            <div>
-              <label className="type-label block mb-2">Full Name</label>
-              <input
-                {...register("name")}
-                required
-                className="w-full border border-border bg-input px-4 py-3 font-sans text-sm"
-              />
-            </div>
             <div>
               <label className="type-label block mb-2">Email</label>
               <input
@@ -58,6 +60,7 @@ export default function SignupPage() {
                 type="email"
                 required
                 className="w-full border border-border bg-input px-4 py-3 font-sans text-sm"
+                placeholder="you@example.com"
               />
             </div>
             <div>
@@ -66,18 +69,17 @@ export default function SignupPage() {
                 {...register("password")}
                 type="password"
                 required
-                minLength={6}
                 className="w-full border border-border bg-input px-4 py-3 font-sans text-sm"
               />
             </div>
             <button type="submit" className="btn-primary w-full" disabled={loading}>
-              {loading ? "Creating..." : "Create Account"}
+              {loading ? "Signing in..." : "Sign In"}
             </button>
           </form>
           <p className="font-sans text-sm text-center text-muted-foreground mt-6">
-            Already have an account?{" "}
-            <Link href="/login" className="text-foreground underline underline-offset-2">
-              Sign in
+            Don&apos;t have an account?{" "}
+            <Link href="/signup" className="text-foreground underline underline-offset-2">
+              Create one
             </Link>
           </p>
         </div>

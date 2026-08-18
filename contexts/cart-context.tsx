@@ -6,10 +6,12 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react"
 import { CART_STORAGE_KEY } from "@/lib/constants"
+import { getOrCreateGuestToken } from "@/lib/guest-token"
 
 export type CartItem = {
   variantId: string
@@ -30,34 +32,103 @@ type CartContextValue = {
   updateQty: (variantId: string, qty: number) => void
   removeItem: (variantId: string) => void
   clearCart: () => void
+  syncToServer: () => Promise<void>
 }
 
 const CartContext = createContext<CartContextValue | null>(null)
 
-function loadCart(): CartItem[] {
+function isCartItem(value: unknown): value is CartItem {
+  if (!value || typeof value !== "object") return false
+  const item = value as CartItem
+  return (
+    typeof item.variantId === "string" &&
+    typeof item.productSlug === "string" &&
+    typeof item.name === "string" &&
+    typeof item.pricePaise === "number" &&
+    typeof item.qty === "number"
+  )
+}
+
+function normalizeCart(raw: unknown): CartItem[] {
+  if (!Array.isArray(raw)) return []
+  return raw.filter(isCartItem)
+}
+
+function loadLocalCart(): CartItem[] {
   if (typeof window === "undefined") return []
   try {
     const raw = localStorage.getItem(CART_STORAGE_KEY)
     if (!raw) return []
-    return JSON.parse(raw) as CartItem[]
+    return normalizeCart(JSON.parse(raw))
   } catch {
     return []
   }
 }
 
+async function fetchServerCart(guestToken: string): Promise<CartItem[]> {
+  const res = await fetch("/api/cart", {
+    headers: { "x-guest-token": guestToken },
+  })
+  if (!res.ok) return []
+  const data = (await res.json()) as { items: CartItem[] }
+  return normalizeCart(data.items)
+}
+
+async function pushServerCart(guestToken: string, items: CartItem[]) {
+  await fetch("/api/cart", {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "x-guest-token": guestToken,
+    },
+    body: JSON.stringify({ items }),
+  })
+}
+
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([])
   const [isReady, setIsReady] = useState(false)
+  const syncTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const syncToServer = useCallback(async (nextItems?: CartItem[]) => {
+    const guestToken = getOrCreateGuestToken()
+    if (!guestToken) return
+    await pushServerCart(guestToken, nextItems ?? items)
+  }, [items])
 
   useEffect(() => {
-    setItems(loadCart())
-    setIsReady(true)
+    let cancelled = false
+    async function init() {
+      const guestToken = getOrCreateGuestToken()
+      const local = loadLocalCart()
+      let server: CartItem[] = []
+      try {
+        server = await fetchServerCart(guestToken)
+      } catch {
+        server = []
+      }
+      if (!cancelled) {
+        setItems(server.length ? server : local)
+        setIsReady(true)
+      }
+    }
+    init()
+    return () => {
+      cancelled = true
+    }
   }, [])
 
   useEffect(() => {
     if (!isReady) return
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items))
-  }, [items, isReady])
+    if (syncTimer.current) clearTimeout(syncTimer.current)
+    syncTimer.current = setTimeout(() => {
+      void syncToServer(items)
+    }, 400)
+    return () => {
+      if (syncTimer.current) clearTimeout(syncTimer.current)
+    }
+  }, [items, isReady, syncToServer])
 
   const addItem = useCallback((item: Omit<CartItem, "qty">, qty = 1) => {
     setItems((prev) => {
@@ -107,8 +178,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
       updateQty,
       removeItem,
       clearCart,
+      syncToServer,
     }),
-    [items, itemCount, subtotalPaise, isReady, addItem, updateQty, removeItem, clearCart]
+    [items, itemCount, subtotalPaise, isReady, addItem, updateQty, removeItem, clearCart, syncToServer]
   )
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>

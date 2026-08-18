@@ -1,6 +1,7 @@
 import { Header } from "@/components/header"
 import { FooterSection } from "@/components/sections/footer-section"
 import { ShopGrid } from "@/components/shop-grid"
+import { getCatalogProducts } from "@/lib/catalog"
 
 export const metadata = {
   title: "Shop Custom Wooden Furniture | Aakar Woodcraft",
@@ -8,7 +9,9 @@ export const metadata = {
     "Browse furniture from Still Mandu, Hampi Rift, Fatehpur Sikri, and Bishnupur Temples.",
 }
 
-export default function ShopPage() {
+export default async function ShopPage() {
+  const products = await getCatalogProducts()
+
   return (
     <main className="min-h-screen bg-background">
       <Header />
@@ -16,15 +19,13 @@ export default function ShopPage() {
       <section className="pt-32 pb-24 px-6 md:px-12 lg:px-20">
         <div className="max-w-7xl mx-auto">
           <div className="mb-12 max-w-2xl">
-            <h1 className="type-h1 mb-4">
-              Shop Custom Wooden Furniture
-            </h1>
+            <h1 className="type-h1 mb-4">Shop Custom Wooden Furniture</h1>
             <p className="type-body text-lg">
               Explore pieces from four architecture-led collections using the original concept renders.
             </p>
           </div>
 
-          <ShopGrid />
+          <ShopGrid products={products} />
         </div>
       </section>
 

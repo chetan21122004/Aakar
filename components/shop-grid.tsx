@@ -2,18 +2,25 @@
 
 import { useState } from "react"
 import { ProductCard } from "@/components/product-card"
-import { catalogProducts } from "@/lib/products"
 import { conceptCollections } from "@/lib/concepts"
+import type { CatalogProduct } from "@/lib/products"
 
-const filters = [{ label: "All pieces", slug: "all" }, ...conceptCollections.map((collection) => ({ label: collection.name, slug: collection.slug }))]
+const filters = [
+  { label: "All pieces", slug: "all" },
+  ...conceptCollections.map((collection) => ({ label: collection.name, slug: collection.slug })),
+]
 
-export function ShopGrid() {
+type ShopGridProps = {
+  products: CatalogProduct[]
+}
+
+export function ShopGrid({ products }: ShopGridProps) {
   const [activeFilter, setActiveFilter] = useState("all")
 
   const activeCollection = conceptCollections.find((collection) => collection.slug === activeFilter)
   const filteredProducts = activeCollection
-    ? catalogProducts.filter((product) => activeCollection.productSlugs.includes(product.slug))
-    : catalogProducts
+    ? products.filter((product) => activeCollection.productSlugs.includes(product.slug))
+    : products
 
   return (
     <div>

@@ -4,7 +4,7 @@ import { Header } from "@/components/header"
 import { FooterSection } from "@/components/sections/footer-section"
 import { ProductCard } from "@/components/product-card"
 import { conceptCollections, getConceptBySlug } from "@/lib/concepts"
-import { catalogProducts } from "@/lib/products"
+import { getCatalogProducts } from "@/lib/catalog"
 
 export function generateStaticParams() {
   return conceptCollections.map((collection) => ({ slug: collection.slug }))
@@ -21,7 +21,9 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
   const { slug } = await params
   const collection = getConceptBySlug(slug)
   if (!collection) notFound()
-  const products = catalogProducts.filter((product) => collection.productSlugs.includes(product.slug))
+
+  const allProducts = await getCatalogProducts()
+  const products = allProducts.filter((product) => collection.productSlugs.includes(product.slug))
 
   return (
     <main className="min-h-screen bg-sand">

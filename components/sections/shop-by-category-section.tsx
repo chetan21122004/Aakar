@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { categories } from "@/lib/data";
-import { catalogProducts } from "@/lib/products";
+import { catalogProducts, type CatalogProduct } from "@/lib/products";
 import { ProductGridCard } from "@/components/product-grid-card";
 import {
   FadeInUp,
@@ -27,9 +27,16 @@ const shopCategories = categories.map((c) => ({
   image: c.image,
 }));
 
-const newArrivals = catalogProducts.slice(0, 5);
+const newArrivalsFallback = catalogProducts.slice(0, 5);
 
-export function ShopByCategorySection() {  return (
+type ShopByCategorySectionProps = {
+  products?: CatalogProduct[];
+};
+
+export function ShopByCategorySection({ products = newArrivalsFallback }: ShopByCategorySectionProps) {
+  const newArrivals = products.slice(0, 5);
+
+  return (
     <section className="bg-background px-5 py-10 md:px-10 md:py-12 lg:px-16">
       <FadeInUp className="mb-8 md:mb-10">
         <h2 className="mb-5 text-center font-condensed text-[1.35rem] font-semibold uppercase tracking-[0.12em] text-ink md:mb-6 md:text-[1.65rem] md:tracking-[0.14em]">

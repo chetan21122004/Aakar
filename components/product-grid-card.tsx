@@ -2,12 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Heart } from "lucide-react";
 import { toast } from "sonner";
 import { formatINR } from "@/lib/format";
 import { getDefaultVariant, type CatalogProduct } from "@/lib/products";
 import { useCart } from "@/contexts/cart-context";
+import { getOrCreateGuestToken } from "@/lib/guest-token";
 
 type ProductGridCardProps = {
   product: CatalogProduct;
@@ -20,6 +21,16 @@ export function ProductGridCard({ product, image }: ProductGridCardProps) {
   const defaultVariant = getDefaultVariant(product);
   const href = `/products/${product.slug}`;
   const imageSrc = image ?? product.images[0];
+
+  useEffect(() => {
+    const guestToken = getOrCreateGuestToken();
+    fetch("/api/wishlist", { headers: { "x-guest-token": guestToken } })
+      .then((res) => res.json())
+      .then((data: { productIds?: string[] }) => {
+        if (data.productIds?.includes(product.id)) setWishlisted(true);
+      })
+      .catch(() => undefined);
+  }, [product.id]);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -35,10 +46,26 @@ export function ProductGridCard({ product, image }: ProductGridCardProps) {
     toast.success("Added to cart", { description: product.name });
   };
 
-  const handleWishlist = (e: React.MouseEvent) => {
+  const handleWishlist = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setWishlisted((w) => !w);
+    const guestToken = getOrCreateGuestToken();
+    const next = !wishlisted;
+    setWishlisted(next)
+
+    const res = await fetch("/api/wishlist", {
+      method: next ? "POST" : "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        "x-guest-token": guestToken,
+      },
+      body: JSON.stringify({ productId: product.id }),
+    })
+
+    if (!res.ok) {
+      setWishlisted(!next)
+      toast.error("Could not update wishlist")
+    }
   };
 
   return (

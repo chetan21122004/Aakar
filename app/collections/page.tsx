@@ -2,6 +2,7 @@ import { Header } from "@/components/header"
 import { FooterSection } from "@/components/sections/footer-section"
 import { CTASection } from "@/components/cta-section"
 import { CollectionsHub } from "@/components/collections-hub"
+import { getCatalogProducts } from "@/lib/catalog"
 
 export const metadata = {
   title: "Collections | Aakar Woodcraft",
@@ -9,7 +10,9 @@ export const metadata = {
     "Explore Still Mandu, Hampi Rift, Fatehpur Sikri, and Bishnupur Temples.",
 }
 
-export default function CollectionsPage() {
+export default async function CollectionsPage() {
+  const products = await getCatalogProducts()
+
   return (
     <main className="min-h-screen bg-background">
       <Header />
@@ -26,7 +29,7 @@ export default function CollectionsPage() {
         </div>
       </section>
 
-      <CollectionsHub />
+      <CollectionsHub products={products} />
 
       <CTASection
         title="Start Your Enquiry"

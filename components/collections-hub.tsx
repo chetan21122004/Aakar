@@ -5,12 +5,16 @@ import Link from "next/link"
 import { useState } from "react"
 import { ProductCard } from "@/components/product-card"
 import { conceptCollections } from "@/lib/concepts"
-import { catalogProducts } from "@/lib/products"
+import type { CatalogProduct } from "@/lib/products"
 
-export function CollectionsHub() {
+type CollectionsHubProps = {
+  products: CatalogProduct[]
+}
+
+export function CollectionsHub({ products }: CollectionsHubProps) {
   const [activeSlug, setActiveSlug] = useState(conceptCollections[0].slug)
   const active = conceptCollections.find((collection) => collection.slug === activeSlug) ?? conceptCollections[0]
-  const products = catalogProducts.filter((product) => active.productSlugs.includes(product.slug))
+  const productsInCollection = products.filter((product) => active.productSlugs.includes(product.slug))
 
   return (
     <>
@@ -45,7 +49,7 @@ export function CollectionsHub() {
           </div>
 
           <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {products.map((product) => <ProductCard key={product.slug} product={product} />)}
+            {productsInCollection.map((product) => <ProductCard key={product.slug} product={product} />)}
           </div>
 
           <div className="mt-10 flex justify-center">

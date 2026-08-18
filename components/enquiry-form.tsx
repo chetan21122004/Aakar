@@ -1,18 +1,55 @@
 'use client'
 
 import { useState } from 'react'
+import { toast } from 'sonner'
 
-export function EnquiryForm() {
+type EnquiryFormProps = {
+  source?: 'contact' | 'product' | 'architects' | 'see_in_room'
+  productSlug?: string
+}
+
+export function EnquiryForm({ source = 'contact', productSlug }: EnquiryFormProps) {
   const [submitted, setSubmitted] = useState(false)
+  const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setSubmitted(true)
-    setTimeout(() => setSubmitted(false), 3000)
+    setLoading(true)
+    const form = e.currentTarget
+    const formData = new FormData(form)
+
+    try {
+      const res = await fetch('/api/enquiries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.get('name'),
+          email: formData.get('email'),
+          phone: formData.get('phone') || undefined,
+          projectType: formData.get('projectType') || undefined,
+          message: formData.get('message'),
+          source,
+          productSlug,
+          website: formData.get('website') || undefined,
+        }),
+      })
+
+      if (!res.ok) throw new Error('Failed')
+      setSubmitted(true)
+      form.reset()
+      toast.success('Enquiry sent', { description: 'We will respond within 24 hours.' })
+      setTimeout(() => setSubmitted(false), 3000)
+    } catch {
+      toast.error('Could not send enquiry', { description: 'Please try again or email us directly.' })
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
+      <input type="text" name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
+
       <div className="grid gap-5 sm:grid-cols-2">
       <div>
         <label htmlFor="name" className="mb-2 block font-condensed text-xs font-semibold uppercase tracking-[.12em] text-ink">
@@ -96,9 +133,10 @@ export function EnquiryForm() {
 
       <button
         type="submit"
-        className="w-full rounded-full bg-clay py-3.5 font-condensed text-sm font-semibold uppercase tracking-[.14em] text-sand transition-colors hover:bg-umber"
+        disabled={loading}
+        className="w-full rounded-full bg-clay py-3.5 font-condensed text-sm font-semibold uppercase tracking-[.14em] text-sand transition-colors hover:bg-umber disabled:opacity-60"
       >
-        {submitted ? 'Enquiry Sent!' : 'Send Enquiry'}
+        {submitted ? 'Enquiry Sent!' : loading ? 'Sending...' : 'Send Enquiry'}
       </button>
     </form>
   )

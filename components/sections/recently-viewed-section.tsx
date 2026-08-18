@@ -1,6 +1,6 @@
 "use client";
 
-import { catalogProducts, type CatalogProduct } from "@/lib/products";
+import type { CatalogProduct } from "@/lib/products";
 import { ProductGridCard } from "@/components/product-grid-card";
 import {
   FadeInUp,
@@ -27,9 +27,9 @@ const DISPLAY_IMAGE: Record<string, string> = {
 const SECTION_HEADING =
   "mb-5 text-center font-condensed text-[1.35rem] font-semibold uppercase tracking-[0.12em] text-ink md:mb-6 md:text-[1.65rem] md:tracking-[0.14em]";
 
-export function RecentlyViewedSection() {
-  const products = RECENT_SLUGS.map((slug) =>
-    catalogProducts.find((p) => p.slug === slug)
+export function RecentlyViewedSection({ products }: { products: CatalogProduct[] }) {
+  const displayProducts = RECENT_SLUGS.map((slug) =>
+    products.find((p) => p.slug === slug)
   ).filter(Boolean) as CatalogProduct[];
 
   return (
@@ -41,7 +41,7 @@ export function RecentlyViewedSection() {
           className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5 lg:gap-5"
           stagger={0.06}
         >
-          {products.map((product) => (
+          {displayProducts.map((product) => (
             <StaggerItem key={product.id} className="h-full">
               <ProductGridCard
                 product={product}

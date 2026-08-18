@@ -1,6 +1,5 @@
 import { Header } from "@/components/header";
 import { HeroSection } from "@/components/sections/hero-section";
-// import { ModernHeirloomsSection } from "@/components/sections/modern-heirlooms-section";
 import { ShopByCategorySection } from "@/components/sections/shop-by-category-section";
 import { CraftDetailsSection } from "@/components/sections/craft-details-section";
 import { BrandPhilosophySection } from "@/components/sections/brand-philosophy-section";
@@ -10,20 +9,22 @@ import { JournalVoicesSection } from "@/components/sections/journal-voices-secti
 import { RecentlyViewedSection } from "@/components/sections/recently-viewed-section";
 import { EnquiryCurveSection } from "@/components/sections/enquiry-curve-section";
 import { FooterSection } from "@/components/sections/footer-section";
+import { getCatalogProducts } from "@/lib/catalog";
 
-export default function Home() {
+export default async function Home() {
+  const products = await getCatalogProducts();
+
   return (
     <main className="min-h-screen bg-background">
       <Header />
       <HeroSection />
-      {/* <ModernHeirloomsSection /> */}
-      <ShopByCategorySection />
+      <ShopByCategorySection products={products} />
       <CraftDetailsSection />
       <BrandPhilosophySection />
       <CraftMaterialsShowcaseSection />
       <ModularHomesSection />
       <JournalVoicesSection />
-      <RecentlyViewedSection />
+      <RecentlyViewedSection products={products} />
       <EnquiryCurveSection />
       <FooterSection />
     </main>

@@ -4,29 +4,30 @@ import { Header } from "@/components/header"
 import { FooterSection } from "@/components/sections/footer-section"
 import { ProductCard } from "@/components/product-card"
 import { ProductPurchasePanel } from "@/components/product-purchase-panel"
-import { catalogProducts, getProductBySlug } from "@/lib/products"
+import { getCatalogProducts, getProductBySlugFromDb, getProductSlugs } from "@/lib/catalog"
 
-export function generateStaticParams() {
-  return catalogProducts.map((product) => ({ slug: product.slug }))
+export async function generateStaticParams() {
+  const slugs = await getProductSlugs()
+  return slugs.map((slug) => ({ slug }))
 }
 
-export function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
-  return params.then((p) => {
-    const product = getProductBySlug(p.slug)
-    if (!product) return {}
-    return {
-      title: `${product.name} | Aakar Woodcraft`,
-      description: product.description,
-    }
-  })
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
+  const product = await getProductBySlugFromDb(slug)
+  if (!product) return {}
+  return {
+    title: `${product.name} | Aakar Woodcraft`,
+    description: product.description,
+  }
 }
 
 export default async function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const product = getProductBySlug(slug)
+  const product = await getProductBySlugFromDb(slug)
   if (!product) notFound()
 
-  const relatedProducts = catalogProducts
+  const allProducts = await getCatalogProducts()
+  const relatedProducts = allProducts
     .filter((p) => p.categorySlug === product.categorySlug && p.id !== product.id)
     .slice(0, 4)
 
@@ -40,18 +41,14 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             Home
           </Link>
           <span className="mx-2">/</span>
-          <Link href="/collections" className="hover:text-foreground transition-colors">
-            Collections
-          </Link>
-          <span className="mx-2">/</span>
-          <Link href="/collections" className="hover:text-foreground transition-colors">
-            {product.category}
+          <Link href="/shop" className="hover:text-foreground transition-colors">
+            Shop
           </Link>
           <span className="mx-2">/</span>
           <span className="text-foreground">{product.name}</span>
         </div>
 
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-7xl mx-auto grid gap-12 lg:grid-cols-2">
           <ProductPurchasePanel product={product} />
         </div>
       </section>
@@ -59,8 +56,8 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
       {relatedProducts.length > 0 && (
         <section className="px-6 md:px-12 lg:px-20 py-20 border-t border-border">
           <div className="max-w-7xl mx-auto">
-            <h2 className="type-h2 mb-10 text-center">You May Also Like</h2>
-            <div className="grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
+            <h2 className="type-h2 mb-10">You May Also Like</h2>
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
               {relatedProducts.map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))}
