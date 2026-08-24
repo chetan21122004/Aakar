@@ -2,13 +2,21 @@
 
 import { useState } from 'react'
 import { toast } from 'sonner'
+import {
+  parseEnquirySource,
+  projectTypesForSource,
+  type EnquirySource,
+} from '@/lib/enquiries'
 
 type EnquiryFormProps = {
-  source?: 'contact' | 'product' | 'architects' | 'see_in_room'
+  source?: EnquirySource
   productSlug?: string
 }
 
 export function EnquiryForm({ source = 'contact', productSlug }: EnquiryFormProps) {
+  const enquirySource = parseEnquirySource(source)
+  const isConsultation = enquirySource === 'consultation'
+  const projectTypes = projectTypesForSource(enquirySource)
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
 
@@ -28,19 +36,29 @@ export function EnquiryForm({ source = 'contact', productSlug }: EnquiryFormProp
           phone: formData.get('phone') || undefined,
           projectType: formData.get('projectType') || undefined,
           message: formData.get('message'),
-          source,
+          source: enquirySource,
           productSlug,
           website: formData.get('website') || undefined,
         }),
       })
 
-      if (!res.ok) throw new Error('Failed')
+      const payload = (await res.json().catch(() => null)) as { error?: string } | null
+      if (!res.ok) {
+        throw new Error(payload?.error || 'Failed')
+      }
       setSubmitted(true)
       form.reset()
-      toast.success('Enquiry sent', { description: 'We will respond within 24 hours.' })
+      toast.success(isConsultation ? 'Consultation requested' : 'Enquiry sent', {
+        description: 'We will respond within 24 hours.',
+      })
       setTimeout(() => setSubmitted(false), 3000)
-    } catch {
-      toast.error('Could not send enquiry', { description: 'Please try again or email us directly.' })
+    } catch (error) {
+      toast.error(isConsultation ? 'Could not request consultation' : 'Could not send enquiry', {
+        description:
+          error instanceof Error && error.message !== 'Failed'
+            ? error.message
+            : 'Please try again or email us directly.',
+      })
     } finally {
       setLoading(false)
     }
@@ -60,6 +78,7 @@ export function EnquiryForm({ source = 'contact', productSlug }: EnquiryFormProp
           id="name"
           name="name"
           required
+          minLength={2}
           className="w-full border border-umber/20 bg-sand px-4 py-3.5 text-sm text-ink outline-none transition-shadow placeholder:text-ink/35 focus:border-clay focus:ring-2 focus:ring-clay/15"
           placeholder="Your name"
         />
@@ -94,7 +113,7 @@ export function EnquiryForm({ source = 'contact', productSlug }: EnquiryFormProp
       </div>
       <div>
         <label htmlFor="projectType" className="mb-2 block font-condensed text-xs font-semibold uppercase tracking-[.12em] text-ink">
-          Project Type
+          {isConsultation ? 'Consultation focus' : 'Project Type'}
         </label>
         <select
           id="projectType"
@@ -103,16 +122,13 @@ export function EnquiryForm({ source = 'contact', productSlug }: EnquiryFormProp
           defaultValue=""
         >
           <option value="" disabled>
-            Select project type
+            {isConsultation ? 'Select room or scope' : 'Select project type'}
           </option>
-          <option value="console">Console</option>
-          <option value="dining-table">Dining Table</option>
-          <option value="coffee-table">Coffee Table</option>
-          <option value="dining-chair">Dining Chair</option>
-          <option value="custom">Custom Furniture</option>
-          <option value="architect">Architect / Designer Project</option>
-          <option value="workshop-visit">Workshop Visit</option>
-          <option value="other">Other</option>
+          {projectTypes.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
         </select>
       </div>
       </div>
@@ -126,8 +142,15 @@ export function EnquiryForm({ source = 'contact', productSlug }: EnquiryFormProp
           name="message"
           rows={5}
           required
+          minLength={10}
           className="w-full resize-none border border-umber/20 bg-sand px-4 py-3.5 text-sm text-ink outline-none transition-shadow placeholder:text-ink/35 focus:border-clay focus:ring-2 focus:ring-clay/15"
-          placeholder="Tell us about your requirements, preferred pieces, timelines, or any specific questions..."
+          placeholder={
+            enquirySource === "see_in_room"
+              ? "I previewed this piece in my room and would like a quote..."
+              : isConsultation
+                ? "Tell us about your home, rooms to plan, city, and preferred timeline..."
+                : "Tell us about your requirements, preferred pieces, timelines, or any specific questions..."
+          }
         ></textarea>
       </div>
 
@@ -136,7 +159,15 @@ export function EnquiryForm({ source = 'contact', productSlug }: EnquiryFormProp
         disabled={loading}
         className="w-full rounded-full bg-clay py-3.5 font-condensed text-sm font-semibold uppercase tracking-[.14em] text-sand transition-colors hover:bg-umber disabled:opacity-60"
       >
-        {submitted ? 'Enquiry Sent!' : loading ? 'Sending...' : 'Send Enquiry'}
+        {submitted
+          ? isConsultation
+            ? 'Consultation requested'
+            : 'Enquiry Sent!'
+          : loading
+            ? 'Sending...'
+            : isConsultation
+              ? 'Request consultation'
+              : 'Send Enquiry'}
       </button>
     </form>
   )

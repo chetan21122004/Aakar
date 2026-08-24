@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { Header } from "@/components/header"
 import { FooterSection } from "@/components/sections/footer-section"
+import { PasswordInput } from "@/components/password-input"
 import { createClient } from "@/lib/supabase/client"
 import { getGuestToken } from "@/lib/guest-token"
 
@@ -65,12 +66,7 @@ export default function LoginPage() {
             </div>
             <div>
               <label className="type-label block mb-2">Password</label>
-              <input
-                {...register("password")}
-                type="password"
-                required
-                className="w-full border border-border bg-input px-4 py-3 font-sans text-sm"
-              />
+              <PasswordInput {...register("password")} required />
             </div>
             <button type="submit" className="btn-primary w-full" disabled={loading}>
               {loading ? "Signing in..." : "Sign In"}

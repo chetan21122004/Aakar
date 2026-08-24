@@ -36,7 +36,7 @@ export default function ForArchitectsPage() {
               We work with architects and interior designers to adapt our furniture language to residential and hospitality projects.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link href="/contact" className="inline-flex items-center justify-center gap-2 rounded-full bg-clay px-7 py-3.5 font-condensed text-sm font-semibold uppercase tracking-[.14em] text-sand transition-colors hover:bg-umber">
+              <Link href="/contact?source=architects#enquiry" className="inline-flex items-center justify-center gap-2 rounded-full bg-clay px-7 py-3.5 font-condensed text-sm font-semibold uppercase tracking-[.14em] text-sand transition-colors hover:bg-umber">
                 Discuss a project <ArrowRight size={16} />
               </Link>
               <Link href="#project-support" className="inline-flex items-center justify-center rounded-full border border-ink/25 px-7 py-3.5 font-condensed text-sm font-semibold uppercase tracking-[.14em] text-ink transition-colors hover:bg-stone">
@@ -162,7 +162,7 @@ export default function ForArchitectsPage() {
         title="Bring us into the project early"
         subtitle="Share the brief, dimensions, quantities, and timeline. We will respond with the clearest next step."
         primaryText="Book a Consultation"
-        primaryHref="/contact"
+        primaryHref="/contact?source=architects#enquiry"
         secondaryText="Explore Collections"
         secondaryHref="/collections"
         dark

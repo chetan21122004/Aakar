@@ -1,7 +1,7 @@
 import { createStaticClient } from "@/lib/supabase/static"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { formatStartingPrice } from "@/lib/format"
-import type { CatalogProduct, ProductVariant } from "@/lib/products"
+import { expandProductImages, type CatalogProduct, type ProductVariant } from "@/lib/products"
 
 type DbProduct = {
   id: string
@@ -65,7 +65,7 @@ function mapProduct(row: DbProduct): CatalogProduct {
     category: row.categories?.name ?? "",
     categorySlug: row.categories?.slug ?? "",
     price: formatStartingPrice(basePricePaise),
-    image: images[0] ?? "/catalog/hampi-rift-console.webp",
+    image: expandProductImages(row.slug, images)[0] ?? "/catalog/hampi-rift-console.webp",
     description: row.short_description ?? "",
     longDescription: row.long_description ?? undefined,
     materials: row.materials ?? undefined,
@@ -74,7 +74,10 @@ function mapProduct(row: DbProduct): CatalogProduct {
     finishOptions: finishOptions.length ? finishOptions : ["Natural Oil"],
     productionTime: row.production_time_label ?? undefined,
     basePricePaise,
-    images: images.length ? images : ["/catalog/hampi-rift-console.webp"],
+    images: expandProductImages(
+      row.slug,
+      images.length ? images : ["/catalog/hampi-rift-console.webp"]
+    ),
     options: { finish: finishOptions.length ? finishOptions : ["Natural Oil"] },
     variants,
   }

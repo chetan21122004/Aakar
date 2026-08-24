@@ -35,20 +35,20 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
     <main className="min-h-screen bg-background pb-24 sm:pb-0">
       <Header />
 
-      <section className="pt-32 pb-20 px-6 md:px-12 lg:px-20">
-        <div className="max-w-7xl mx-auto mb-10 font-sans text-sm text-muted-foreground">
-          <Link href="/" className="hover:text-foreground transition-colors">
+      <section className="product-detail-hero px-6 pb-20 pt-32 md:px-12 lg:px-20">
+        <div className="mx-auto mb-10 max-w-7xl font-sans text-sm text-muted-foreground">
+          <Link href="/" className="transition-colors hover:text-foreground">
             Home
           </Link>
           <span className="mx-2">/</span>
-          <Link href="/shop" className="hover:text-foreground transition-colors">
+          <Link href="/shop" className="transition-colors hover:text-foreground">
             Shop
           </Link>
           <span className="mx-2">/</span>
           <span className="text-foreground">{product.name}</span>
         </div>
 
-        <div className="max-w-7xl mx-auto grid gap-12 lg:grid-cols-2">
+        <div className="mx-auto max-w-7xl">
           <ProductPurchasePanel product={product} />
         </div>
       </section>

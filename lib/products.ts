@@ -59,11 +59,14 @@ function buildVariants(product: BaseProduct, productIndex: number): ProductVaria
   }))
 }
 
+export function expandProductImages(slug: string, images: string[]): string[] {
+  const collection = getConceptForProduct(slug)
+  const extras = collection ? COLLECTION_GALLERIES[collection.slug] ?? [] : []
+  return [...new Set([...images.filter(Boolean), ...extras])]
+}
+
 function buildImages(product: BaseProduct, _index: number): string[] {
-  const collection = getConceptForProduct(product.slug)
-  const pool = [product.image, ...(collection ? COLLECTION_GALLERIES[collection.slug] : [])]
-  const unique = [...new Set(pool)]
-  return Array.from({ length: 4 }, (_, offset) => unique[offset % unique.length])
+  return expandProductImages(product.slug, [product.image])
 }
 
 function enrichProduct(product: BaseProduct, index: number): CatalogProduct {

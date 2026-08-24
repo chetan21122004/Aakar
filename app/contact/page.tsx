@@ -5,16 +5,27 @@ import { FooterSection } from "@/components/sections/footer-section"
 import { EnquiryForm } from "@/components/enquiry-form"
 import { FadeInUp } from "@/components/motion/scroll-motion"
 import { contactInfo } from "@/lib/data"
+import { parseEnquirySource } from "@/lib/enquiries"
 
 export const metadata = {
   title: "Contact Aakar Woodcraft | Start an Enquiry",
   description:
-    "Tell us about your space, preferred piece, dimensions, and timeline. Start a furniture enquiry with Aakar Woodcraft.",
+    "Tell us about your space, preferred piece, dimensions, and timeline. Start a furniture enquiry or home consultation with Aakar Woodcraft.",
 }
 
-export default function ContactPage() {
+export default async function ContactPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ product?: string; source?: string }>
+}) {
+  const params = await searchParams
+  const productSlug = params.product?.trim() || undefined
+  const source = parseEnquirySource(params.source)
+  const isConsultation = source === "consultation"
   const whatsappHref = `https://wa.me/${contactInfo.whatsapp}?text=${encodeURIComponent(
-    "Hi, I'd like to enquire about furniture from Aakar Woodcraft."
+    isConsultation
+      ? "Hi, I'd like to book a home consultation with Aakar Woodcraft."
+      : "Hi, I'd like to enquire about furniture from Aakar Woodcraft."
   )}`
 
   const contactOptions = [
@@ -47,18 +58,24 @@ export default function ContactPage() {
       <section className="px-5 pb-14 pt-32 md:px-10 md:pb-20 lg:px-16 lg:pt-36">
         <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[.9fr_1.1fr] lg:gap-16">
           <FadeInUp>
-            <p className="type-label mb-5">Contact the Studio</p>
+            <p className="type-label mb-5">
+              {isConsultation ? "Home consultation" : "Contact the Studio"}
+            </p>
             <h1 className="max-w-2xl text-[clamp(3rem,7vw,6.25rem)] leading-[.92]">
-              Let’s shape the right piece for your space.
+              {isConsultation
+                ? "Let’s plan the right rooms for your home."
+                : "Let’s shape the right piece for your space."}
             </h1>
             <p className="mt-7 max-w-xl text-lg font-light leading-relaxed text-ink/70 md:text-xl">
-              Share the room, dimensions, collection, and timeline you have in mind. We will help you understand the clearest way forward.
+              {isConsultation
+                ? "Share the rooms you want to plan, material preferences, and timeline. We will help you map layouts and made-to-order furniture for the space."
+                : "Share the room, dimensions, collection, and timeline you have in mind. We will help you understand the clearest way forward."}
             </p>
             <a
               href="#enquiry"
               className="mt-8 inline-flex items-center gap-2 rounded-full bg-clay px-7 py-3.5 font-condensed text-sm font-semibold uppercase tracking-[.14em] text-sand transition-colors hover:bg-umber"
             >
-              Start your enquiry <ArrowRight size={16} />
+              {isConsultation ? "Book a consultation" : "Start your enquiry"} <ArrowRight size={16} />
             </a>
           </FadeInUp>
 
@@ -105,9 +122,13 @@ export default function ContactPage() {
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[.7fr_1.3fr] lg:gap-16">
           <FadeInUp>
             <p className="type-label mb-3">Your requirements</p>
-            <h2 className="text-3xl md:text-4xl">Tell us what you are considering.</h2>
+            <h2 className="text-3xl md:text-4xl">
+              {isConsultation ? "Tell us about the home." : "Tell us what you are considering."}
+            </h2>
             <p className="mt-5 max-w-md text-sm leading-relaxed text-ink/60 md:text-base">
-              A useful enquiry can be simple. Include the piece or collection you like, approximate dimensions, your city, and any target timeline.
+              {isConsultation
+                ? "A useful consultation brief can be simple. Include the rooms, approximate sizes, your city, and any target timeline."
+                : "A useful enquiry can be simple. Include the piece or collection you like, approximate dimensions, your city, and any target timeline."}
             </p>
 
             <div className="mt-8 space-y-4">
@@ -133,10 +154,14 @@ export default function ContactPage() {
 
           <FadeInUp delay={0.06} className="rounded-[2rem] border border-umber/10 bg-stone p-6 md:p-9 lg:p-10">
             <div className="mb-8 border-b border-umber/15 pb-6">
-              <p className="type-label mb-3">Enquiry form</p>
-              <h2 className="text-2xl md:text-3xl">Start a conversation</h2>
+              <p className="type-label mb-3">
+                {isConsultation ? "Consultation form" : "Enquiry form"}
+              </p>
+              <h2 className="text-2xl md:text-3xl">
+                {isConsultation ? "Request a home consultation" : "Start a conversation"}
+              </h2>
             </div>
-            <EnquiryForm />
+            <EnquiryForm source={source} productSlug={productSlug} />
           </FadeInUp>
         </div>
       </section>

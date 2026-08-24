@@ -77,7 +77,7 @@ export function EnquiryCurveSection() {
                 className="mt-6 inline-flex"
               >
                 <Link
-                  href="/contact"
+                  href="/contact?source=contact#enquiry"
                   className="inline-flex rounded-full bg-background px-7 py-3 font-condensed text-[0.78rem] font-semibold uppercase tracking-[0.18em] text-foreground shadow-[0_8px_24px_rgba(0,0,0,0.2)] transition-opacity hover:opacity-95 md:text-[0.82rem]"
                 >
                   Furniture Enquiry
@@ -100,7 +100,7 @@ export function EnquiryCurveSection() {
                 className="mt-6 inline-flex md:justify-end"
               >
                 <Link
-                  href="/contact"
+                  href="/contact?source=consultation#enquiry"
                   className="inline-flex rounded-full bg-primary px-7 py-3 font-condensed text-[0.78rem] font-semibold uppercase tracking-[0.18em] text-white shadow-[0_8px_24px_rgba(168,111,71,0.35)] transition-colors hover:bg-secondary md:text-[0.82rem]"
                 >
                   Home Consultation

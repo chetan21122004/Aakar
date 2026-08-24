@@ -602,6 +602,18 @@
   }
 }
 
+/* Product pages need the full width for gallery + buy box; skip the faded artwork. */
+.site-route--inner main > section.product-detail-hero {
+  overflow: visible;
+  isolation: auto;
+  background: #F6EFE5;
+}
+
+.site-route--inner main > section.product-detail-hero::before {
+  content: none;
+  display: none;
+}
+
 /* Keep site header identical on home and inner routes. */
 .site-route--inner .site-header button,
 .site-route--inner .site-header a,

@@ -16,6 +16,7 @@ import {
 } from "@/lib/constants"
 import { formatINR, formatOptionsLabel } from "@/lib/format"
 import { getOrCreateGuestToken } from "@/lib/guest-token"
+import { loadRazorpayScript, openRazorpayCheckout } from "@/lib/razorpay-client"
 
 const checkoutSchema = z.object({
   name: z.string().min(2, "Name is required"),
@@ -33,6 +34,7 @@ export default function CheckoutPage() {
   const router = useRouter()
   const { items, subtotalPaise, clearCart, isReady, syncToServer } = useCart()
   const [paying, setPaying] = useState(false)
+  const [paid, setPaid] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const shippingPaise =
@@ -46,20 +48,21 @@ export default function CheckoutPage() {
   } = useForm<CheckoutForm>({ resolver: zodResolver(checkoutSchema) })
 
   useEffect(() => {
-    if (isReady && items.length === 0) {
+    if (isReady && items.length === 0 && !paid && !paying) {
       router.replace("/cart")
     }
-  }, [isReady, items.length, router])
+  }, [isReady, items.length, paid, paying, router])
 
   const onSubmit = async (data: CheckoutForm) => {
     setPaying(true)
     setError(null)
     try {
       await syncToServer()
+      const guestToken = getOrCreateGuestToken()
       const res = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, guestToken: getOrCreateGuestToken() }),
+        body: JSON.stringify({ ...data, guestToken }),
       })
       const result = await res.json()
       if (!res.ok) {
@@ -67,10 +70,65 @@ export default function CheckoutPage() {
         setPaying(false)
         return
       }
-      clearCart()
-      router.push(`/order-confirmation?orderId=${result.orderId}`)
-    } catch {
-      setError("Something went wrong. Please try again.")
+
+      await loadRazorpayScript()
+      const checkout = openRazorpayCheckout({
+        key: result.razorpayKeyId,
+        amount: result.totalPaise,
+        currency: "INR",
+        name: "Aakar Woodcraft",
+        description: `Order ${result.orderNumber}`,
+        order_id: result.razorpayOrderId,
+        prefill: {
+          name: data.name,
+          email: data.email,
+          contact: data.phone,
+        },
+        notes: { orderId: result.orderId },
+        theme: { color: "#5c3d2e" },
+        handler: async (response) => {
+          try {
+            const verifyRes = await fetch("/api/payments/verify", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                orderId: result.orderId,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                guestToken,
+              }),
+            })
+            const verifyResult = await verifyRes.json()
+            if (!verifyRes.ok) {
+              setError(typeof verifyResult.error === "string" ? verifyResult.error : "Payment verification failed")
+              setPaying(false)
+              return
+            }
+            setPaid(true)
+            clearCart()
+            router.push(`/order-confirmation?orderId=${result.orderId}`)
+          } catch {
+            setError("Payment succeeded but could not be verified. Please contact us with your order number.")
+            setPaying(false)
+          }
+        },
+        modal: {
+          ondismiss: () => {
+            setPaying(false)
+            setError("Payment was cancelled. Your cart is still saved — you can try again.")
+          },
+        },
+      })
+
+      checkout.on("payment.failed", (response) => {
+        setPaying(false)
+        setError(response.error.description ?? "Payment failed. Please try another method.")
+      })
+
+      checkout.open()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.")
       setPaying(false)
     }
   }
@@ -135,10 +193,10 @@ export default function CheckoutPage() {
                 </div>
               </div>
               <button type="submit" className="btn-primary w-full" disabled={paying}>
-                {paying ? "Placing order..." : `Place Order - ${formatINR(totalPaise)}`}
+                {paying ? "Opening Razorpay..." : `Pay ${formatINR(totalPaise)}`}
               </button>
               <p className="font-sans text-xs text-muted-foreground text-center">
-                Payment via Razorpay coming soon. Your order will be saved as pending payment.
+                Test payments only. Use Razorpay test cards — no real charge.
               </p>
             </form>
           </div>

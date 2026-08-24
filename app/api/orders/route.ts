@@ -7,6 +7,7 @@ import {
   FREE_SHIPPING_THRESHOLD_PAISE,
   SHIPPING_PAISE,
 } from "@/lib/constants"
+import { assertRazorpayConfigured, createRazorpayOrder, getRazorpayKeyId } from "@/lib/razorpay"
 
 const checkoutSchema = z.object({
   name: z.string().min(2),
@@ -22,6 +23,7 @@ const checkoutSchema = z.object({
 export async function POST(request: Request) {
   try {
     const body = checkoutSchema.parse(await request.json())
+    assertRazorpayConfigured()
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     const admin = createAdminClient()
@@ -114,20 +116,40 @@ export async function POST(request: Request) {
       order_id: order.id,
       status: "pending_payment",
       actor: "customer",
-      note: "Order placed",
+      note: "Order placed, awaiting Razorpay payment",
     })
-    await admin.from("cart_items").delete().eq("cart_id", cartId)
+
+    const razorpayOrder = await createRazorpayOrder({
+      amountPaise: totalPaise,
+      receipt: order.order_number,
+      notes: {
+        order_id: order.id,
+        order_number: order.order_number,
+      },
+    })
+
+    await admin.from("payments").insert({
+      order_id: order.id,
+      provider: "razorpay",
+      provider_order_id: razorpayOrder.id,
+      amount_paise: totalPaise,
+      status: "created",
+      raw_payload: razorpayOrder,
+    })
 
     return NextResponse.json({
       orderId: order.id,
       orderNumber: order.order_number,
       totalPaise,
+      razorpayOrderId: razorpayOrder.id,
+      razorpayKeyId: getRazorpayKeyId(),
     })
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: error.flatten() }, { status: 400 })
     }
+    const message = error instanceof Error ? error.message : "Failed to create order"
     console.error("POST /api/orders", error)
-    return NextResponse.json({ error: "Failed to create order" }, { status: 500 })
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }

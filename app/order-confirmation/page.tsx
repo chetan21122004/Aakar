@@ -70,9 +70,15 @@ function OrderConfirmationContent() {
               Order number: <span className="font-medium text-foreground">{order.order_number}</span>
             </p>
 
-            <div className="mb-6 rounded border border-amber-200 bg-amber-50 px-4 py-3 font-sans text-sm text-amber-900">
-              Status: {order.status.replace("_", " ")} - Razorpay payment integration coming soon.
-            </div>
+            {order.status === "paid" ? (
+              <div className="mb-6 rounded border border-emerald-200 bg-emerald-50 px-4 py-3 font-sans text-sm text-emerald-900">
+                Payment received. We will confirm production shortly.
+              </div>
+            ) : (
+              <div className="mb-6 rounded border border-amber-200 bg-amber-50 px-4 py-3 font-sans text-sm text-amber-900">
+                Status: {order.status.replaceAll("_", " ")}. Complete payment if this order is still pending.
+              </div>
+            )}
 
             <div className="border border-border bg-card p-6 text-left mb-8">
               <h2 className="type-h3 text-lg mb-4">Order Details</h2>
