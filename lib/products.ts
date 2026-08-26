@@ -35,8 +35,8 @@ function parsePricePaise(price: string): number {
 }
 
 function finishModifier(finish: string): number {
-  if (finish === "Matte Lacquer") return 150_000
-  if (finish === "Dark Stain") return 200_000
+  if (finish === "Matte Lacquer") return 20_000
+  if (finish === "Dark Stain") return 40_000
   return 0
 }
 
