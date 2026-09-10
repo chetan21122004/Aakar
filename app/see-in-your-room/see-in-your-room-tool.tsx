@@ -5,6 +5,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { Camera, Download, ImagePlus, Loader2, Sofa, Sparkles, Upload, X } from "lucide-react"
 import { toast } from "sonner"
+import { placementHint, RoomMarkOverlay, type PlacementBox } from "@/components/room-mark-overlay"
 import {
   Dialog,
   DialogContent,
@@ -78,6 +79,8 @@ export function SeeInYourRoomTool({ products, initialProductSlug }: SeeInYourRoo
   const [generationStage, setGenerationStage] = useState(0)
   const [result, setResult] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [placement, setPlacement] = useState<PlacementBox | null>(null)
+  const [roomImageSize, setRoomImageSize] = useState<{ width: number; height: number } | null>(null)
 
   const selectedProduct = useMemo(
     () => products.find((product) => product.slug === selectedSlug) ?? null,
@@ -121,6 +124,11 @@ export function SeeInYourRoomTool({ products, initialProductSlug }: SeeInYourRoo
       return url
     })
     setRoomFile(file)
+    setPlacement(null)
+    setRoomImageSize(null)
+    const probe = new window.Image()
+    probe.onload = () => setRoomImageSize({ width: probe.naturalWidth, height: probe.naturalHeight })
+    probe.src = url
     resetPreview()
   }
 
@@ -134,6 +142,8 @@ export function SeeInYourRoomTool({ products, initialProductSlug }: SeeInYourRoo
       const formData = new FormData()
       formData.append("roomPhoto", compressed)
       formData.append("productSlug", selectedProduct.slug)
+      const hint = placementHint(placement)
+      if (hint) formData.append("placementHint", hint)
 
       const res = await fetch("/api/see-in-your-room", {
         method: "POST",
@@ -205,21 +215,34 @@ export function SeeInYourRoomTool({ products, initialProductSlug }: SeeInYourRoo
                   event.currentTarget.value = ""
                 }}
               />
-              <button
-                type="button"
-                onClick={() => uploadInputRef.current?.click()}
-                className="relative flex aspect-[4/3] w-full items-center justify-center overflow-hidden rounded-[1.75rem] border border-dashed border-[#C4B5A5] bg-sand transition-colors hover:border-clay"
-              >
+              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[1.75rem] border border-dashed border-[#C4B5A5] bg-sand">
                 {roomPreview ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={roomPreview} alt="Uploaded room" className="absolute inset-0 h-full w-full object-cover" />
+                  <>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={roomPreview} alt="Uploaded room" className="absolute inset-0 h-full w-full object-cover" />
+                    <RoomMarkOverlay
+                      key={roomPreview}
+                      imageSrc={roomPreview}
+                      imageSize={roomImageSize}
+                      onPlacementChange={setPlacement}
+                    />
+                  </>
                 ) : (
-                  <span className="flex flex-col items-center gap-2 px-6 font-sans text-sm text-ink/55">
+                  <button
+                    type="button"
+                    onClick={() => uploadInputRef.current?.click()}
+                    className="flex h-full min-h-[12rem] w-full flex-col items-center justify-center gap-2 px-6 font-sans text-sm text-ink/55 transition-colors hover:border-clay"
+                  >
                     <ImagePlus size={22} />
                     Tap to add a room photo
-                  </span>
+                  </button>
                 )}
-              </button>
+              </div>
+              {roomPreview && (
+                <p className="mt-2 font-sans text-xs leading-relaxed text-ink/55">
+                  Drag a box or use the pen to mark where the piece should sit. Clear if you want us to choose.
+                </p>
+              )}
               <div className="mt-3 grid grid-cols-2 gap-3">
                 <button
                   type="button"

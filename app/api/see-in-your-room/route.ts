@@ -94,12 +94,14 @@ export async function POST(request: Request) {
     const productImage = await loadProductImage(product.image)
 
     await reserveLocalTestAttempt()
+    const placementRaw = String(formData.get("placementHint") ?? "").trim()
     const preview = await composeFurnitureInRoom({
       room: { mimeType: roomMime, data: roomBuffer.toString("base64") },
       product: productImage,
       productName: product.name,
       category: product.category,
       dimensions: product.dimensions,
+      placementHint: placementRaw || undefined,
     })
 
     return NextResponse.json(

@@ -90,11 +90,21 @@ export async function syncCartItems(cartId: string, items: CartItem[]) {
 
   if (!items.length) return
 
-  const rows = items.map((item) => ({
-    cart_id: cartId,
-    variant_id: item.variantId,
-    qty: item.qty,
-  }))
+  const variantIds = [...new Set(items.map((item) => item.variantId).filter(Boolean))]
+  const { data: validVariants } = await admin
+    .from("product_variants")
+    .select("id")
+    .in("id", variantIds)
+  const validIds = new Set((validVariants ?? []).map((row) => row.id))
+  const rows = items
+    .filter((item) => validIds.has(item.variantId))
+    .map((item) => ({
+      cart_id: cartId,
+      variant_id: item.variantId,
+      qty: item.qty,
+    }))
+
+  if (!rows.length) return
 
   const { error } = await admin.from("cart_items").insert(rows)
   if (error) throw error
