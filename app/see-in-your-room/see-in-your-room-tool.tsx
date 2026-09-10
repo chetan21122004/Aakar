@@ -5,7 +5,13 @@ import Image from "next/image"
 import Link from "next/link"
 import { Camera, Download, ImagePlus, Loader2, Sofa, Sparkles, Upload, X } from "lucide-react"
 import { toast } from "sonner"
-import { placementHint, RoomMarkOverlay, type PlacementBox } from "@/components/room-mark-overlay"
+import {
+  placementHint,
+  RoomMarkOverlay,
+  type OverlayRect,
+  type PlacementBox,
+} from "@/components/room-mark-overlay"
+import { SEE_IN_ROOM_DRAFT_KEY } from "@/lib/constants"
 import {
   Dialog,
   DialogContent,
@@ -26,6 +32,19 @@ type SeeInYourRoomToolProps = {
   products: SeeInRoomProduct[]
   initialProductSlug?: string
 }
+
+type OverlayMarks = { rect: OverlayRect | null; strokes: { x: number; y: number }[][] }
+
+type Draft = {
+  selectedSlug: string
+  roomDataUrl: string | null
+  roomImageSize: { width: number; height: number } | null
+  placement: PlacementBox | null
+  overlayMarks: OverlayMarks | null
+  result: string | null
+}
+
+const MAX_STORED_RESULT = 1_400_000
 
 const generationStages = [
   {
@@ -61,16 +80,35 @@ async function compressRoomPhoto(file: File) {
     canvas.toBlob(
       (result) => (result ? resolve(result) : reject(new Error("Could not prepare the room photo."))),
       "image/jpeg",
-      0.86
+      0.82,
     )
   })
 
   return new File([blob], "room.jpg", { type: "image/jpeg" })
 }
 
+function fileToDataUrl(file: File) {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(String(reader.result))
+    reader.onerror = reject
+    reader.readAsDataURL(file)
+  })
+}
+
+function dataUrlToFile(dataUrl: string, name: string) {
+  const [header, body] = dataUrl.split(",")
+  const mime = header.match(/:(.*?);/)?.[1] ?? "image/jpeg"
+  const binary = atob(body)
+  const bytes = new Uint8Array(binary.length)
+  for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i)
+  return new File([bytes], name, { type: mime })
+}
+
 export function SeeInYourRoomTool({ products, initialProductSlug }: SeeInYourRoomToolProps) {
   const cameraInputRef = useRef<HTMLInputElement>(null)
   const uploadInputRef = useRef<HTMLInputElement>(null)
+  const [hydrated, setHydrated] = useState(false)
   const [roomPreview, setRoomPreview] = useState<string | null>(null)
   const [roomFile, setRoomFile] = useState<File | null>(null)
   const [selectedSlug, setSelectedSlug] = useState(initialProductSlug ?? "")
@@ -80,14 +118,63 @@ export function SeeInYourRoomTool({ products, initialProductSlug }: SeeInYourRoo
   const [result, setResult] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [placement, setPlacement] = useState<PlacementBox | null>(null)
+  const [overlayMarks, setOverlayMarks] = useState<OverlayMarks | null>(null)
   const [roomImageSize, setRoomImageSize] = useState<{ width: number; height: number } | null>(null)
+  const [markHint, setMarkHint] = useState(false)
+  const [roomSession, setRoomSession] = useState(0)
 
   const selectedProduct = useMemo(
     () => products.find((product) => product.slug === selectedSlug) ?? null,
-    [products, selectedSlug]
+    [products, selectedSlug],
   )
 
   const canGenerate = Boolean(roomFile && selectedProduct) && !generating
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(SEE_IN_ROOM_DRAFT_KEY)
+      if (raw) {
+        const draft = JSON.parse(raw) as Draft
+        if (draft.roomDataUrl) {
+          setRoomPreview(draft.roomDataUrl)
+          setRoomFile(dataUrlToFile(draft.roomDataUrl, "room.jpg"))
+          setRoomImageSize(draft.roomImageSize ?? null)
+          setMarkHint(!draft.placement)
+        }
+        if (!initialProductSlug && draft.selectedSlug) setSelectedSlug(draft.selectedSlug)
+        if (draft.placement) setPlacement(draft.placement)
+        if (draft.overlayMarks) setOverlayMarks(draft.overlayMarks)
+        if (draft.result && draft.result.length < MAX_STORED_RESULT) setResult(draft.result)
+      }
+    } catch {
+      /* ignore corrupt drafts */
+    }
+    setHydrated(true)
+  }, [initialProductSlug])
+
+  useEffect(() => {
+    if (!hydrated) return
+    const draft: Draft = {
+      selectedSlug,
+      roomDataUrl: roomPreview?.startsWith("data:") ? roomPreview : null,
+      roomImageSize,
+      placement,
+      overlayMarks,
+      result: result && result.length < MAX_STORED_RESULT ? result : null,
+    }
+    const timer = window.setTimeout(() => {
+      try {
+        localStorage.setItem(SEE_IN_ROOM_DRAFT_KEY, JSON.stringify(draft))
+      } catch {
+        try {
+          localStorage.setItem(SEE_IN_ROOM_DRAFT_KEY, JSON.stringify({ ...draft, result: null }))
+        } catch {
+          /* quota */
+        }
+      }
+    }, 250)
+    return () => window.clearTimeout(timer)
+  }, [hydrated, overlayMarks, placement, result, roomImageSize, roomPreview, selectedSlug])
 
   useEffect(() => {
     if (!generating) {
@@ -107,7 +194,7 @@ export function SeeInYourRoomTool({ products, initialProductSlug }: SeeInYourRoo
     setError(null)
   }
 
-  const handleRoomFile = (file: File | undefined) => {
+  const handleRoomFile = async (file: File | undefined) => {
     if (!file) return
     if (!file.type.startsWith("image/")) {
       toast.error("Please choose a photo file.")
@@ -118,24 +205,29 @@ export function SeeInYourRoomTool({ products, initialProductSlug }: SeeInYourRoo
       return
     }
 
-    const url = URL.createObjectURL(file)
-    setRoomPreview((current) => {
-      if (current) URL.revokeObjectURL(current)
-      return url
-    })
-    setRoomFile(file)
-    setPlacement(null)
-    setRoomImageSize(null)
-    const probe = new window.Image()
-    probe.onload = () => setRoomImageSize({ width: probe.naturalWidth, height: probe.naturalHeight })
-    probe.src = url
-    resetPreview()
+    try {
+      const compressed = await compressRoomPhoto(file)
+      const dataUrl = await fileToDataUrl(compressed)
+      setRoomPreview(dataUrl)
+      setRoomFile(compressed)
+      setPlacement(null)
+      setOverlayMarks(null)
+      setMarkHint(true)
+      setRoomSession((current) => current + 1)
+      const probe = new window.Image()
+      probe.onload = () => setRoomImageSize({ width: probe.naturalWidth, height: probe.naturalHeight })
+      probe.src = dataUrl
+      resetPreview()
+    } catch {
+      toast.error("Could not read that photo. Try another image.")
+    }
   }
 
   const handleGenerate = async () => {
     if (!roomFile || !selectedProduct) return
     setGenerating(true)
     setError(null)
+    setMarkHint(false)
 
     try {
       const compressed = await compressRoomPhoto(roomFile)
@@ -174,138 +266,115 @@ export function SeeInYourRoomTool({ products, initialProductSlug }: SeeInYourRoo
 
   return (
     <>
-      <div className="mx-auto max-w-7xl overflow-hidden rounded-[2rem] border border-[#E7E0D8] bg-[#FFFcf8] p-5 md:rounded-[2.5rem] md:p-8 lg:p-10">
-        <div className="mb-8 flex flex-col justify-between gap-4 border-b border-[#E7E0D8] pb-6 sm:flex-row sm:items-end">
-          <div>
-            <p className="font-condensed text-xs font-semibold uppercase tracking-[0.16em] text-clay">Studio preview</p>
-            <h2 className="mt-2 font-hero !text-3xl !font-medium !normal-case !tracking-[-0.03em] text-ink md:!text-4xl">
-              Picture it at home
-            </h2>
-          </div>
-          <p className="max-w-md font-sans text-sm leading-relaxed text-ink/60">
-            A clear, well-lit photo of the floor and walls works best. This is a visual guide — not an exact AR overlay.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[.85fr_1.15fr] lg:gap-10">
-          <div className="space-y-6">
-            <div>
-              <div className="mb-3 flex items-center justify-between gap-3">
-                <h3 className="font-hero !text-base !font-medium !normal-case !tracking-[-0.02em] text-ink">Add your room</h3>
-                {roomPreview && <span className="font-sans text-xs text-[#067D62]">Photo ready</span>}
-              </div>
-              <input
-                ref={cameraInputRef}
-                type="file"
-                accept="image/*"
-                capture="environment"
-                className="sr-only"
-                onChange={(event) => {
-                  handleRoomFile(event.target.files?.[0])
-                  event.currentTarget.value = ""
-                }}
-              />
-              <input
-                ref={uploadInputRef}
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                className="sr-only"
-                onChange={(event) => {
-                  handleRoomFile(event.target.files?.[0])
-                  event.currentTarget.value = ""
-                }}
-              />
-              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[1.75rem] border border-dashed border-[#C4B5A5] bg-sand">
-                {roomPreview ? (
-                  <>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={roomPreview} alt="Uploaded room" className="absolute inset-0 h-full w-full object-cover" />
-                    <RoomMarkOverlay
-                      key={roomPreview}
-                      imageSrc={roomPreview}
-                      imageSize={roomImageSize}
-                      onPlacementChange={setPlacement}
-                    />
-                  </>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => uploadInputRef.current?.click()}
-                    className="flex h-full min-h-[12rem] w-full flex-col items-center justify-center gap-2 px-6 font-sans text-sm text-ink/55 transition-colors hover:border-clay"
-                  >
-                    <ImagePlus size={22} />
-                    Tap to add a room photo
-                  </button>
-                )}
-              </div>
-              {roomPreview && (
-                <p className="mt-2 font-sans text-xs leading-relaxed text-ink/55">
-                  Drag a box or use the pen to mark where the piece should sit. Clear if you want us to choose.
-                </p>
-              )}
-              <div className="mt-3 grid grid-cols-2 gap-3">
-                <button
-                  type="button"
-                  onClick={() => cameraInputRef.current?.click()}
-                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-ink px-4 py-3 font-sans !text-[13px] font-medium !normal-case !tracking-normal text-sand transition-colors hover:bg-umber"
-                >
-                  <Camera size={16} />
-                  Take photo
-                </button>
+      <div className="mx-auto max-w-7xl overflow-hidden rounded-[1.75rem] border border-[#E7E0D8] bg-[#FFFcf8] p-4 md:rounded-[2rem] md:p-6 lg:p-8">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.05fr_1fr] lg:items-stretch lg:gap-8">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="font-hero !text-xl !font-medium !normal-case !tracking-[-0.03em] text-ink md:!text-2xl">
+                Your room
+              </h2>
+              {roomPreview && <span className="font-sans text-xs text-[#067D62]">Photo saved on this device</span>}
+            </div>
+            <input
+              ref={cameraInputRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
+              className="sr-only"
+              onChange={(event) => {
+                void handleRoomFile(event.target.files?.[0])
+                event.currentTarget.value = ""
+              }}
+            />
+            <input
+              ref={uploadInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className="sr-only"
+              onChange={(event) => {
+                void handleRoomFile(event.target.files?.[0])
+                event.currentTarget.value = ""
+              }}
+            />
+            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[1.5rem] border border-dashed border-[#C4B5A5] bg-sand lg:min-h-[28rem] lg:aspect-auto">
+              {roomPreview ? (
+                <>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={roomPreview} alt="Uploaded room" className="absolute inset-0 h-full w-full object-cover" />
+                  <RoomMarkOverlay
+                    key={roomSession}
+                    imageSrc={roomPreview}
+                    imageSize={roomImageSize}
+                    highlight={markHint}
+                    initialRect={overlayMarks?.rect ?? null}
+                    initialStrokes={overlayMarks?.strokes ?? []}
+                    onPlacementChange={setPlacement}
+                    onMarksChange={setOverlayMarks}
+                    onInteract={() => setMarkHint(false)}
+                  />
+                </>
+              ) : (
                 <button
                   type="button"
                   onClick={() => uploadInputRef.current?.click()}
-                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-ink/20 bg-sand px-4 py-3 font-sans !text-[13px] font-medium !normal-case !tracking-normal text-ink transition-colors hover:border-ink"
+                  className="flex h-full min-h-[14rem] w-full flex-col items-center justify-center gap-2 px-6 font-sans text-sm text-ink/55 transition-colors hover:text-ink"
                 >
-                  <Upload size={16} />
-                  Upload photo
+                  <ImagePlus size={22} />
+                  Add a room photo to begin
                 </button>
-              </div>
-              <p className="mt-2 font-sans text-xs leading-relaxed text-ink/50">
-                JPG, PNG or WebP up to 12MB. On phones, Take photo opens the camera.
-              </p>
+              )}
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => cameraInputRef.current?.click()}
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-ink px-4 py-2.5 font-sans !text-[13px] font-medium !normal-case !tracking-normal text-sand transition-colors hover:bg-umber"
+              >
+                <Camera size={16} />
+                Take photo
+              </button>
+              <button
+                type="button"
+                onClick={() => uploadInputRef.current?.click()}
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-ink/20 bg-sand px-4 py-2.5 font-sans !text-[13px] font-medium !normal-case !tracking-normal text-ink transition-colors hover:border-ink"
+              >
+                <Upload size={16} />
+                Upload
+              </button>
             </div>
 
-            <div>
-              <h3 className="mb-3 font-hero !text-base !font-medium !normal-case !tracking-[-0.02em] text-ink">Confirm furniture</h3>
-              <button
-                type="button"
-                onClick={() => setPickerOpen(true)}
-                className="relative flex aspect-[4/3] w-full items-center justify-center overflow-hidden rounded-[1.75rem] border border-[#E7E0D8] bg-sand"
-              >
+            <button
+              type="button"
+              onClick={() => setPickerOpen(true)}
+              className="flex w-full items-center gap-3 rounded-[1.25rem] border border-[#E7E0D8] bg-sand p-2.5 text-left transition-colors hover:border-clay/50"
+            >
+              <span className="relative h-16 w-20 shrink-0 overflow-hidden rounded-xl bg-[#EFE7DC]">
                 {selectedProduct ? (
-                  <Image
-                    src={selectedProduct.image}
-                    alt={selectedProduct.name}
-                    fill
-                    className="object-cover"
-                  />
+                  <Image src={selectedProduct.image} alt="" fill className="object-cover" />
                 ) : (
-                  <span className="flex flex-col items-center gap-2 px-6 text-sm text-ink/55">
-                    <Sofa size={22} />
-                    Select a piece
+                  <span className="flex h-full items-center justify-center text-ink/40">
+                    <Sofa size={18} />
                   </span>
                 )}
-              </button>
-              {selectedProduct && (
-                <p className="mt-2 font-sans text-sm text-ink">
-                  {selectedProduct.name}
-                  <span className="text-ink/50"> · {selectedProduct.category}</span>
-                </p>
-              )}
-              <button
-                type="button"
-                onClick={() => setPickerOpen(true)}
-                className="mt-3 w-full rounded-full border border-ink/20 bg-transparent py-3 font-sans !text-[13px] font-medium !normal-case !tracking-normal text-ink transition-colors hover:border-ink hover:bg-sand"
-              >
-                {selectedProduct ? "Change piece" : "Select a piece"}
-              </button>
-            </div>
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block font-sans text-[11px] uppercase tracking-[0.14em] text-clay">Furniture</span>
+                <span className="mt-0.5 block truncate font-hero !text-base !font-medium !normal-case !tracking-[-0.02em] text-ink">
+                  {selectedProduct ? selectedProduct.name : "Select a piece"}
+                </span>
+                {selectedProduct && (
+                  <span className="font-sans text-xs text-ink/50">{selectedProduct.category}</span>
+                )}
+              </span>
+              <span className="shrink-0 font-sans text-xs text-ink/50">{selectedProduct ? "Change" : "Choose"}</span>
+            </button>
           </div>
 
           <div className="flex flex-col">
-            <h3 className="mb-3 font-hero !text-base !font-medium !normal-case !tracking-[-0.02em] text-ink">Your preview</h3>
-            <div className="relative flex min-h-[22rem] flex-1 aspect-[4/3] w-full items-center justify-center overflow-hidden rounded-[1.75rem] border border-[#E7E0D8] bg-sand md:min-h-[28rem]">
+            <h2 className="mb-4 font-hero !text-xl !font-medium !normal-case !tracking-[-0.03em] text-ink md:!text-2xl">
+              Preview
+            </h2>
+            <div className="relative flex min-h-[16rem] flex-1 aspect-[4/3] w-full items-center justify-center overflow-hidden rounded-[1.5rem] border border-[#E7E0D8] bg-sand lg:min-h-[28rem] lg:aspect-auto">
               {generating && (
                 <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-sand/95 px-6 text-center backdrop-blur-sm">
                   <div className="relative mb-6 flex h-20 w-20 items-center justify-center">
@@ -334,9 +403,7 @@ export function SeeInYourRoomTool({ products, initialProductSlug }: SeeInYourRoo
                     ))}
                   </div>
 
-                  <p className="mt-5 font-sans text-xs text-ink/45">
-                    Usually 1–3 minutes. Keep this page open while we work.
-                  </p>
+                  <p className="mt-5 font-sans text-xs text-ink/45">Usually 1–3 minutes. Keep this page open.</p>
                 </div>
               )}
               {result ? (
@@ -345,7 +412,7 @@ export function SeeInYourRoomTool({ products, initialProductSlug }: SeeInYourRoo
               ) : (
                 !generating && (
                   <p className="px-6 text-center font-sans text-sm text-ink/50">
-                    Add a room photo and a piece. Your preview will appear here.
+                    Your generated preview will appear here.
                   </p>
                 )
               )}
@@ -355,7 +422,7 @@ export function SeeInYourRoomTool({ products, initialProductSlug }: SeeInYourRoo
 
             <button
               type="button"
-              onClick={handleGenerate}
+              onClick={() => void handleGenerate()}
               disabled={!canGenerate}
               className="mt-4 w-full rounded-full bg-clay py-3.5 font-sans !text-sm font-medium !normal-case !tracking-normal text-white transition-colors hover:bg-umber disabled:pointer-events-none disabled:opacity-40"
             >
@@ -364,7 +431,9 @@ export function SeeInYourRoomTool({ products, initialProductSlug }: SeeInYourRoo
                   <Loader2 size={16} className="animate-spin" />
                   Creating your preview
                 </span>
-              ) : "Generate preview"}
+              ) : (
+                "Generate preview"
+              )}
             </button>
 
             <div className="mt-3 flex gap-3">

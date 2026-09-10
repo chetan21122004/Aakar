@@ -12,6 +12,7 @@ export type PlacementBox = {
 }
 
 type Point = { x: number; y: number }
+export type OverlayRect = { start: Point; end: Point }
 type Tool = "box" | "pen"
 
 function clamp01(value: number) {
@@ -58,16 +59,26 @@ export function placementHint(box: PlacementBox | null) {
 export function RoomMarkOverlay({
   imageSrc,
   imageSize,
+  highlight = false,
+  initialRect = null,
+  initialStrokes = [],
   onPlacementChange,
+  onMarksChange,
+  onInteract,
 }: {
   imageSrc: string
   imageSize: { width: number; height: number } | null
+  highlight?: boolean
+  initialRect?: OverlayRect | null
+  initialStrokes?: Point[][]
   onPlacementChange: (box: PlacementBox | null) => void
+  onMarksChange?: (marks: { rect: OverlayRect | null; strokes: Point[][] }) => void
+  onInteract?: () => void
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [tool, setTool] = useState<Tool>("box")
-  const [rect, setRect] = useState<{ start: Point; end: Point } | null>(null)
-  const [strokes, setStrokes] = useState<Point[][]>([])
+  const [rect, setRect] = useState<{ start: Point; end: Point } | null>(initialRect ?? null)
+  const [strokes, setStrokes] = useState<Point[][]>(initialStrokes)
   const drawing = useRef(false)
   const rectRef = useRef(rect)
   const strokesRef = useRef(strokes)
@@ -133,6 +144,7 @@ export function RoomMarkOverlay({
       if (nextRect) overlayPoints.push(nextRect.start, nextRect.end)
       nextStrokes.forEach((stroke) => overlayPoints.push(...stroke))
       const overlayBox = boxFromPoints(overlayPoints)
+      onMarksChange?.({ rect: nextRect, strokes: nextStrokes })
       if (!overlayBox || !imageSize || !canvasRef.current) {
         onPlacementChange(overlayBox)
         return
@@ -151,7 +163,7 @@ export function RoomMarkOverlay({
         height: Math.abs(b.y - a.y),
       })
     },
-    [imageSize, onPlacementChange],
+    [imageSize, onMarksChange, onPlacementChange],
   )
 
   const pointFromEvent = (event: React.PointerEvent<HTMLCanvasElement>): Point | null => {
@@ -165,6 +177,7 @@ export function RoomMarkOverlay({
   }
 
   const onPointerDown = (event: React.PointerEvent<HTMLCanvasElement>) => {
+    onInteract?.()
     const point = pointFromEvent(event)
     if (!point) return
     event.currentTarget.setPointerCapture(event.pointerId)
@@ -203,6 +216,7 @@ export function RoomMarkOverlay({
   const clear = () => {
     setRect(null)
     setStrokes([])
+    onMarksChange?.({ rect: null, strokes: [] })
     onPlacementChange(null)
   }
 
@@ -216,35 +230,54 @@ export function RoomMarkOverlay({
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
       />
-      <div className="absolute left-3 top-3 z-10 flex gap-1.5 rounded-full border border-[#E7E0D8] bg-[#F6EFE5]/95 p-1 shadow-sm">
+      {highlight && (
+        <div className="pointer-events-none absolute inset-x-3 top-14 z-10 rounded-2xl bg-[#1F1A17]/88 px-4 py-3 text-center shadow-lg">
+          <p className="font-sans text-[13px] font-medium leading-snug text-white">
+            Mark where the furniture should sit
+          </p>
+          <p className="mt-1 font-sans text-[12px] text-white/75">
+            Use the highlighted square to drag a box, or the pen to draw the spot.
+          </p>
+        </div>
+      )}
+      <div
+        className={cn(
+          "absolute left-3 top-3 z-10 flex items-center gap-1 rounded-full border bg-[#F6EFE5]/95 p-1 shadow-sm",
+          highlight ? "border-clay ring-4 ring-clay/35" : "border-[#E7E0D8]",
+        )}
+      >
         <button
           type="button"
           onClick={() => setTool("box")}
           className={cn(
-            "flex h-9 w-9 items-center justify-center rounded-full",
+            "flex h-10 items-center justify-center gap-1.5 rounded-full px-3",
             tool === "box" ? "bg-clay text-white" : "text-ink hover:bg-white",
+            highlight && tool === "box" && "animate-pulse",
           )}
           aria-label="Mark a rectangle"
           title="Mark area"
         >
           <Square size={16} />
+          <span className="font-sans !text-[11px] font-medium !normal-case !tracking-normal">Square</span>
         </button>
         <button
           type="button"
           onClick={() => setTool("pen")}
           className={cn(
-            "flex h-9 w-9 items-center justify-center rounded-full",
+            "flex h-10 items-center justify-center gap-1.5 rounded-full px-3",
             tool === "pen" ? "bg-clay text-white" : "text-ink hover:bg-white",
+            highlight && "ring-2 ring-clay/50",
           )}
           aria-label="Draw with pen"
           title="Pen"
         >
           <PenLine size={16} />
+          <span className="font-sans !text-[11px] font-medium !normal-case !tracking-normal">Pen</span>
         </button>
         <button
           type="button"
           onClick={clear}
-          className="flex h-9 w-9 items-center justify-center rounded-full text-ink hover:bg-white"
+          className="flex h-10 w-10 items-center justify-center rounded-full text-ink hover:bg-white"
           aria-label="Clear marks"
           title="Clear"
         >
