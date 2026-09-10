@@ -1,8 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { Suspense, useState } from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { Header } from "@/components/header"
@@ -10,9 +10,12 @@ import { FooterSection } from "@/components/sections/footer-section"
 import { PasswordInput } from "@/components/password-input"
 import { createClient } from "@/lib/supabase/client"
 import { getGuestToken } from "@/lib/guest-token"
+import { safeNextPath } from "@/lib/safe-redirect"
 
-export default function SignupPage() {
+function SignupForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const redirect = safeNextPath(searchParams.get("redirect"))
   const { register, handleSubmit } = useForm<{
     name: string
     email: string
@@ -46,7 +49,7 @@ export default function SignupPage() {
     if (error) {
       toast.error("Account created, but sign in failed", { description: error.message })
       setLoading(false)
-      router.push("/login")
+      router.push(`/login?redirect=${encodeURIComponent(redirect)}`)
       return
     }
 
@@ -60,7 +63,7 @@ export default function SignupPage() {
     }
 
     toast.success("Account created")
-    router.push("/account")
+    router.push(redirect)
     router.refresh()
   }
 
@@ -110,7 +113,10 @@ export default function SignupPage() {
           </form>
           <p className="font-sans text-sm text-center text-muted-foreground mt-6">
             Already have an account?{" "}
-            <Link href="/login" className="text-foreground underline underline-offset-2">
+            <Link
+              href={`/login?redirect=${encodeURIComponent(redirect)}`}
+              className="text-foreground underline underline-offset-2"
+            >
               Sign in
             </Link>
           </p>
@@ -118,5 +124,13 @@ export default function SignupPage() {
       </section>
       <FooterSection />
     </main>
+  )
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-background pt-32 text-center">Loading...</div>}>
+      <SignupForm />
+    </Suspense>
   )
 }

@@ -1,35 +1,30 @@
 import { NextResponse } from "next/server"
 import { getProductBySlugFromDb } from "@/lib/catalog"
 import { catalogProducts } from "@/lib/products"
+import { isLocalhostHost, ROOM_PREVIEW_DAILY_LIMIT } from "@/lib/constants"
 import {
   loadProductImage,
   mimeFromFilename,
 } from "@/lib/gemini-see-in-room"
 import { composeFurnitureInRoom } from "@/lib/openai-see-in-room"
-import { mkdir, open, readdir } from "node:fs/promises"
-import path from "node:path"
-import { randomUUID } from "node:crypto"
+import {
+  consumeRoomPreviewSlot,
+  refundRoomPreviewSlot,
+} from "@/lib/room-preview-quota"
+import { createClient } from "@/lib/supabase/server"
+import {
+  loadProductImage,
+  mimeFromFilename,
+} from "@/lib/gemini-see-in-room"
+import { composeFurnitureInRoom } from "@/lib/openai-see-in-room"
+import {
+  consumeRoomPreviewSlot,
+  refundRoomPreviewSlot,
+} from "@/lib/room-preview-quota"
+import { createClient } from "@/lib/supabase/server"
 
 export const runtime = "nodejs"
 export const maxDuration = 180
-
-async function reserveLocalTestAttempt() {
-  if (process.env.NODE_ENV === "production") return
-  const directory = path.join(process.cwd(), ".room-preview-tests")
-  await mkdir(directory, { recursive: true })
-  const lock = await open(path.join(directory, "lock"), "wx").catch(() => null)
-  if (!lock) throw new Error("Another preview request is being prepared. Please try again shortly.")
-  try {
-    const attempts = (await readdir(directory)).filter((name) => name.endsWith(".attempt"))
-    if (attempts.length >= 3) throw new Error("The three-preview local test limit has been reached.")
-    const marker = await open(path.join(directory, `${randomUUID()}.attempt`), "wx")
-    await marker.close()
-  } finally {
-    await lock.close()
-    const { unlink } = await import("node:fs/promises")
-    await unlink(path.join(directory, "lock")).catch(() => undefined)
-  }
-}
 
 const ALLOWED_ROOM_TYPES = new Set(["image/jpeg", "image/png", "image/webp"])
 const MAX_ROOM_BYTES = 8 * 1024 * 1024
@@ -41,6 +36,8 @@ async function resolveProduct(slug: string) {
 }
 
 function errorStatus(message: string) {
+  if (message.includes("Sign in")) return 401
+  if (message.includes("daily limit") || message.includes("5 previews")) return 429
   if (
     message.includes("not configured") ||
     message.includes("unavailable") ||
@@ -55,7 +52,21 @@ function errorStatus(message: string) {
 }
 
 export async function POST(request: Request) {
+  let consumedFor: string | null = null
+  let supabase: Awaited<ReturnType<typeof createClient>> | null = null
+
   try {
+    supabase = await createClient()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+    if (!user) {
+      return NextResponse.json(
+        { error: "Sign in to use the room preview." },
+        { status: 401 },
+      )
+    }
+
     if (!process.env.OPENAI_API_KEY?.trim()) {
       return NextResponse.json(
         { error: "Room previews are not configured on this server yet." },
@@ -90,10 +101,27 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "That product could not be found." }, { status: 404 })
     }
 
+    const host = request.headers.get("x-forwarded-host") ?? request.headers.get("host") ?? new URL(request.url).host
+    const skipQuota = isLocalhostHost(host)
+    let remaining: number | null = null
+
+    if (!skipQuota) {
+      const slot = await consumeRoomPreviewSlot(supabase, user.id)
+      if (!slot.ok) {
+        return NextResponse.json(
+          {
+            error: `You have used today's ${ROOM_PREVIEW_DAILY_LIMIT} previews. Please try again tomorrow.`,
+            remaining: 0,
+          },
+          { status: 429 },
+        )
+      }
+      consumedFor = user.id
+      remaining = slot.remaining
+    }
+
     const roomBuffer = Buffer.from(await roomPhoto.arrayBuffer())
     const productImage = await loadProductImage(product.image)
-
-    await reserveLocalTestAttempt()
     const placementRaw = String(formData.get("placementHint") ?? "").trim()
     const preview = await composeFurnitureInRoom({
       room: { mimeType: roomMime, data: roomBuffer.toString("base64") },
@@ -109,10 +137,14 @@ export async function POST(request: Request) {
         image: `data:${preview.mimeType};base64,${preview.data}`,
         productName: product.name,
         productSlug: product.slug,
+        remaining,
       },
       { headers: { "Cache-Control": "no-store" } },
     )
   } catch (error) {
+    if (consumedFor && supabase) {
+      await refundRoomPreviewSlot(supabase, consumedFor).catch(() => undefined)
+    }
     const message =
       error instanceof Error && error.name === "TimeoutError"
         ? "The preview took too long. Please try again later."

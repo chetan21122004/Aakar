@@ -1,7 +1,11 @@
 import { Header } from "@/components/header"
 import { FooterSection } from "@/components/sections/footer-section"
 import { getCatalogProducts } from "@/lib/catalog"
+import { isLocalhostHost, ROOM_PREVIEW_DAILY_LIMIT } from "@/lib/constants"
 import { catalogProducts } from "@/lib/products"
+import { getRoomPreviewRemaining } from "@/lib/room-preview-quota"
+import { createClient } from "@/lib/supabase/server"
+import { headers } from "next/headers"
 import { SeeInYourRoomTool, type SeeInRoomProduct } from "./see-in-your-room-tool"
 
 export const metadata = {
@@ -32,6 +36,16 @@ export default async function SeeInYourRoomPage({
   searchParams: Promise<{ product?: string }>
 }) {
   const { product: productSlug } = await searchParams
+  const requestHeaders = await headers()
+  const skipQuota = isLocalhostHost(requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host"))
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  const remainingPreviews =
+    skipQuota || !user
+      ? null
+      : await getRoomPreviewRemaining(supabase, user.id).catch(() => ROOM_PREVIEW_DAILY_LIMIT)
   const dbProducts = await getCatalogProducts()
   const products = toToolProducts(dbProducts.length ? dbProducts : catalogProducts)
 
@@ -45,7 +59,8 @@ export default async function SeeInYourRoomPage({
             <p className="type-label mb-2">Visual preview</p>
             <h1 className="text-[clamp(2rem,4.2vw,3.4rem)] leading-[.95]">See the piece in your room.</h1>
             <p className="mt-3 max-w-xl text-base font-light leading-relaxed text-ink/70 md:text-lg">
-              Upload a photo, mark the floor with the square or pen, then generate a preview. Your photo stays on this device if you refresh.
+              Sign in, upload a photo, mark the floor, then generate a preview
+              {skipQuota ? "." : `. Each account has ${ROOM_PREVIEW_DAILY_LIMIT} previews a day.`}
             </p>
           </div>
           <ol className="flex flex-wrap gap-2 lg:justify-end">
@@ -63,7 +78,11 @@ export default async function SeeInYourRoomPage({
           </ol>
         </div>
 
-        <SeeInYourRoomTool products={products} initialProductSlug={productSlug} />
+        <SeeInYourRoomTool
+          products={products}
+          initialProductSlug={productSlug}
+          remainingPreviews={remainingPreviews}
+        />
       </section>
 
       <FooterSection />

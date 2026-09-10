@@ -9,21 +9,36 @@ export const metadata = {
     "Browse furniture from Still Mandu, Hampi Rift, Fatehpur Sikri, and Bishnupur Temples.",
 }
 
-export default async function ShopPage() {
+export default async function ShopPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ collection?: string }>
+}) {
+  const { collection } = await searchParams
   const products = await getCatalogProducts()
 
   return (
     <main className="min-h-screen bg-background">
       <Header />
 
-      <section className="px-6 pb-24 pt-32 md:px-12 lg:px-20">
-        <div className="max-w-7xl mx-auto">
-          <div className="mb-12 grid items-end gap-6 border-b border-ink/10 pb-10 md:grid-cols-[1fr_auto]">
+      <section className="px-4 pb-10 pt-24 md:px-12 md:pb-24 md:pt-32 lg:px-20">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-5 flex items-end justify-between gap-3 md:hidden">
+            <div>
+              <p className="type-label mb-1.5">Shop</p>
+              <h1 className="font-hero text-[1.85rem] leading-[1.02] tracking-[-0.03em] text-ink">Furniture</h1>
+            </div>
+            <span className="rounded-full bg-[#F3EDE4] px-3 py-1 font-sans text-[11px] text-ink/60">
+              {products.length} pieces
+            </span>
+          </div>
+
+          <div className="mb-12 hidden items-end gap-6 border-b border-ink/10 pb-10 md:grid md:grid-cols-[1fr_auto]">
             <div className="max-w-3xl">
               <p className="type-label mb-4">The collection</p>
               <h1 className="type-h1 mb-4">Furniture shaped by architecture</h1>
               <p className="type-body max-w-2xl text-lg">
-              Explore pieces from four architecture-led collections using the original concept renders.
+                Explore pieces from four architecture-led collections using the original concept renders.
               </p>
             </div>
             <div className="font-condensed text-sm uppercase tracking-[.12em] text-ink/55">
@@ -31,7 +46,7 @@ export default async function ShopPage() {
             </div>
           </div>
 
-          <ShopGrid products={products} />
+          <ShopGrid products={products} initialCollection={collection} />
         </div>
       </section>
 

@@ -11,7 +11,7 @@ import {
   type OverlayRect,
   type PlacementBox,
 } from "@/components/room-mark-overlay"
-import { SEE_IN_ROOM_DRAFT_KEY } from "@/lib/constants"
+import { ROOM_PREVIEW_DAILY_LIMIT, SEE_IN_ROOM_DRAFT_KEY } from "@/lib/constants"
 import {
   Dialog,
   DialogContent,
@@ -31,6 +31,7 @@ export type SeeInRoomProduct = {
 type SeeInYourRoomToolProps = {
   products: SeeInRoomProduct[]
   initialProductSlug?: string
+  remainingPreviews: number | null
 }
 
 type OverlayMarks = { rect: OverlayRect | null; strokes: { x: number; y: number }[][] }
@@ -105,7 +106,7 @@ function dataUrlToFile(dataUrl: string, name: string) {
   return new File([bytes], name, { type: mime })
 }
 
-export function SeeInYourRoomTool({ products, initialProductSlug }: SeeInYourRoomToolProps) {
+export function SeeInYourRoomTool({ products, initialProductSlug, remainingPreviews }: SeeInYourRoomToolProps) {
   const cameraInputRef = useRef<HTMLInputElement>(null)
   const uploadInputRef = useRef<HTMLInputElement>(null)
   const [hydrated, setHydrated] = useState(false)
@@ -122,13 +123,15 @@ export function SeeInYourRoomTool({ products, initialProductSlug }: SeeInYourRoo
   const [roomImageSize, setRoomImageSize] = useState<{ width: number; height: number } | null>(null)
   const [markHint, setMarkHint] = useState(false)
   const [roomSession, setRoomSession] = useState(0)
+  const quotaEnabled = remainingPreviews !== null
+  const [remaining, setRemaining] = useState(remainingPreviews)
 
   const selectedProduct = useMemo(
     () => products.find((product) => product.slug === selectedSlug) ?? null,
     [products, selectedSlug],
   )
 
-  const canGenerate = Boolean(roomFile && selectedProduct) && !generating
+  const canGenerate = Boolean(roomFile && selectedProduct) && !generating && (!quotaEnabled || (remaining ?? 0) > 0)
 
   useEffect(() => {
     try {
@@ -241,8 +244,18 @@ export function SeeInYourRoomTool({ products, initialProductSlug }: SeeInYourRoo
         method: "POST",
         body: formData,
       })
-      const payload = (await res.json().catch(() => ({}))) as { image?: string; error?: string }
+      const payload = (await res.json().catch(() => ({}))) as {
+        image?: string
+        error?: string
+        remaining?: number
+      }
+      if (typeof payload.remaining === "number") setRemaining(payload.remaining)
+      if (res.status === 401) {
+        window.location.href = `/login?redirect=${encodeURIComponent("/see-in-your-room")}`
+        return
+      }
       if (!res.ok || !payload.image) {
+        if (res.status === 429) setRemaining(0)
         throw new Error(
           payload.error ||
             (res.status === 502 || res.status === 504
@@ -374,6 +387,13 @@ export function SeeInYourRoomTool({ products, initialProductSlug }: SeeInYourRoo
             <h2 className="mb-4 font-hero !text-xl !font-medium !normal-case !tracking-[-0.03em] text-ink md:!text-2xl">
               Preview
             </h2>
+            {quotaEnabled && (
+              <p className="mb-3 font-sans text-xs text-ink/55">
+                {(remaining ?? 0) > 0
+                  ? `${remaining} of ${ROOM_PREVIEW_DAILY_LIMIT} previews left today`
+                  : `Daily limit reached. ${ROOM_PREVIEW_DAILY_LIMIT} previews per account each day.`}
+              </p>
+            )}
             <div className="relative flex min-h-[16rem] flex-1 aspect-[4/3] w-full items-center justify-center overflow-hidden rounded-[1.5rem] border border-[#E7E0D8] bg-sand lg:min-h-[28rem] lg:aspect-auto">
               {generating && (
                 <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-sand/95 px-6 text-center backdrop-blur-sm">
@@ -431,6 +451,8 @@ export function SeeInYourRoomTool({ products, initialProductSlug }: SeeInYourRoo
                   <Loader2 size={16} className="animate-spin" />
                   Creating your preview
                 </span>
+              ) : quotaEnabled && (remaining ?? 0) <= 0 ? (
+                "Daily limit reached"
               ) : (
                 "Generate preview"
               )}

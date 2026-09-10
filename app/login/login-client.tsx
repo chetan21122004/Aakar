@@ -10,11 +10,13 @@ import { FooterSection } from "@/components/sections/footer-section"
 import { PasswordInput } from "@/components/password-input"
 import { createClient } from "@/lib/supabase/client"
 import { getGuestToken } from "@/lib/guest-token"
+import { safeNextPath } from "@/lib/safe-redirect"
 
 export default function LoginPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const redirect = searchParams.get("redirect") ?? "/account"
+  const redirect = safeNextPath(searchParams.get("redirect"))
+  const fromRoomPreview = redirect.startsWith("/see-in-your-room")
   const { register, handleSubmit } = useForm<{ email: string; password: string }>()
   const [loading, setLoading] = useState(false)
 
@@ -52,7 +54,11 @@ export default function LoginPage() {
       <section className="pt-32 pb-20 px-6 md:px-12 lg:px-20">
         <div className="max-w-md mx-auto">
           <h1 className="type-h1 mb-2 text-center">Sign In</h1>
-          <p className="type-body text-center mb-10">Access your orders and saved details.</p>
+          <p className="type-body text-center mb-10">
+            {fromRoomPreview
+              ? "Sign in to preview furniture in your room. Each account has 5 previews a day."
+              : "Access your orders and saved details."}
+          </p>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <div>
               <label className="type-label block mb-2">Email</label>
@@ -74,7 +80,10 @@ export default function LoginPage() {
           </form>
           <p className="font-sans text-sm text-center text-muted-foreground mt-6">
             Don&apos;t have an account?{" "}
-            <Link href="/signup" className="text-foreground underline underline-offset-2">
+            <Link
+              href={`/signup?redirect=${encodeURIComponent(redirect)}`}
+              className="text-foreground underline underline-offset-2"
+            >
               Create one
             </Link>
           </p>
