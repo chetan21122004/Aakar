@@ -5,7 +5,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import useEmblaCarousel from "embla-carousel-react"
-import { Camera, ChevronLeft, ChevronRight, Clock, Shield, Truck } from "lucide-react"
+import { Camera, ChevronLeft, ChevronRight, Clock, Shield, Truck, X } from "lucide-react"
 import { toast } from "sonner"
 import { WhatsAppIcon } from "@/components/whatsapp-icon"
 import { EnquiryForm } from "@/components/enquiry-form"
@@ -49,6 +49,7 @@ export function ProductPurchasePanel({ product, ratingAverage, ratingCount }: Pr
   const [selected, setSelected] = useState({
     finish: defaultVariant.options.finish,
   })
+  const [lightboxOpen, setLightboxOpen] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: gallery.length > 1,
@@ -81,6 +82,21 @@ export function ProductPurchasePanel({ product, ratingAverage, ratingCount }: Pr
       emblaApi.off("select", onSelect)
     }
   }, [emblaApi])
+
+  useEffect(() => {
+    if (!lightboxOpen) return
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setLightboxOpen(false)
+      if (event.key === "ArrowLeft") emblaApi?.scrollPrev()
+      if (event.key === "ArrowRight") emblaApi?.scrollNext()
+    }
+    window.addEventListener("keydown", onKey)
+    document.body.style.overflow = "hidden"
+    return () => {
+      window.removeEventListener("keydown", onKey)
+      document.body.style.overflow = ""
+    }
+  }, [lightboxOpen, emblaApi])
 
   const handleAddToCart = (redirectToCheckout = false) => {
     if (!activeVariant) return
@@ -143,12 +159,25 @@ export function ProductPurchasePanel({ product, ratingAverage, ratingCount }: Pr
             <div className="h-full min-h-[420px] md:min-h-[560px] xl:min-h-[640px]" ref={emblaRef}>
               <div className="flex h-full min-h-[420px] md:min-h-[560px] xl:min-h-[640px]">
                 {gallery.map((src, i) => (
-                  <div key={`${src}-${i}`} className="relative min-h-[420px] min-w-0 flex-[0_0_100%] md:min-h-[560px] xl:min-h-[640px]">
+                  <div
+                    key={`${src}-${i}`}
+                    className="relative min-h-[420px] min-w-0 flex-[0_0_100%] cursor-zoom-in md:min-h-[560px] xl:min-h-[640px]"
+                    onClick={() => setLightboxOpen(true)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault()
+                        setLightboxOpen(true)
+                      }
+                    }}
+                    aria-label={`Open ${product.name} image`}
+                  >
                     <Image
                       src={src}
                       alt={`${product.name} view ${i + 1}`}
                       fill
-                      className="object-contain p-6 md:p-10"
+                      className="pointer-events-none object-contain p-6 md:p-10"
                       sizes="(max-width: 1024px) 100vw, 52rem"
                       priority={i === 0}
                     />
@@ -322,7 +351,65 @@ export function ProductPurchasePanel({ product, ratingAverage, ratingCount }: Pr
         </div>
       </details>
 
-      <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-[#E7E0D8] bg-white/95 p-3 backdrop-blur-sm sm:hidden">
+      {lightboxOpen && (
+        <div
+          className="fixed inset-0 z-[80] flex items-center justify-center bg-[#1F1A17]/92 p-4 backdrop-blur-sm"
+          onClick={() => setLightboxOpen(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${product.name} image`}
+        >
+          <button
+            type="button"
+            className="absolute right-4 top-4 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white/95 text-[#1F1A17]"
+            onClick={() => setLightboxOpen(false)}
+            aria-label="Close image"
+          >
+            <X size={20} />
+          </button>
+          {gallery.length > 1 && (
+            <>
+              <button
+                type="button"
+                className="absolute left-4 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-[#1F1A17]"
+                onClick={(event) => {
+                  event.stopPropagation()
+                  emblaApi?.scrollPrev()
+                }}
+                aria-label="Previous image"
+              >
+                <ChevronLeft size={22} />
+              </button>
+              <button
+                type="button"
+                className="absolute right-4 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-[#1F1A17] md:right-16"
+                onClick={(event) => {
+                  event.stopPropagation()
+                  emblaApi?.scrollNext()
+                }}
+                aria-label="Next image"
+              >
+                <ChevronRight size={22} />
+              </button>
+            </>
+          )}
+          <div
+            className="relative h-[min(86vh,860px)] w-full max-w-5xl"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <Image
+              src={gallery[selectedIndex] ?? gallery[0]}
+              alt={`${product.name} enlarged view`}
+              fill
+              className="object-contain"
+              sizes="100vw"
+              priority
+            />
+          </div>
+        </div>
+      )}
+
+      <div className="fixed inset-x-0 bottom-[4.75rem] z-40 border-t border-[#E7E0D8] bg-white/95 p-3 backdrop-blur-sm lg:hidden" style={{ bottom: "calc(4.75rem + env(safe-area-inset-bottom))" }}>
         <div className="flex items-center gap-3">
           <div className="min-w-0 flex-1">
             <p className="font-sans text-lg font-semibold tabular-nums text-[#0F1111]">

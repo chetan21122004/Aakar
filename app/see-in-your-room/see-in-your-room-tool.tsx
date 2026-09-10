@@ -139,9 +139,14 @@ export function SeeInYourRoomTool({ products, initialProductSlug }: SeeInYourRoo
         method: "POST",
         body: formData,
       })
-      const payload = (await res.json()) as { image?: string; error?: string }
+      const payload = (await res.json().catch(() => ({}))) as { image?: string; error?: string }
       if (!res.ok || !payload.image) {
-        throw new Error(payload.error || "Couldn't create a preview. Please try again later.")
+        throw new Error(
+          payload.error ||
+            (res.status === 502 || res.status === 504
+              ? "The preview service is busy. Please try again in a moment."
+              : "Couldn't create a preview. Please try again later."),
+        )
       }
       setResult(payload.image)
     } catch (err) {

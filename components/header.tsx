@@ -1,13 +1,14 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { ChevronDown, Menu, ShoppingBag, User, X } from "lucide-react"
+import { ChevronDown, ShoppingBag, User } from "lucide-react"
 import { CartDrawer } from "@/components/cart-drawer"
+import { MobileBottomNav } from "@/components/mobile-bottom-nav"
 import { useCart } from "@/contexts/cart-context"
-import { contactLink, moreNavLinks, navLinks, primaryNavLinks } from "@/lib/nav-links"
+import { contactLink, moreNavLinks, primaryNavLinks } from "@/lib/nav-links"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,13 +30,13 @@ function BrandLogo() {
         width={112}
         height={112}
         priority
-        className="h-9 w-9 object-contain md:h-10 md:w-10"
+        className="h-8 w-8 object-contain lg:h-10 lg:w-10"
       />
       <span className="flex flex-col leading-none">
-        <span className="font-serif text-[1rem] font-normal tracking-[-0.02em] lowercase text-[#5c3d2e] md:text-[1.1rem]">
+        <span className="font-serif text-[0.95rem] font-normal tracking-[-0.02em] lowercase text-[#5c3d2e] lg:text-[1.1rem]">
           aakarwood
         </span>
-        <span className="mt-1 flex items-center gap-1.5 font-sans text-[0.5rem] font-medium uppercase tracking-[0.28em] text-[#6b4423] md:text-[0.55rem]">
+        <span className="mt-1 flex items-center gap-1.5 font-sans text-[0.45rem] font-medium uppercase tracking-[0.28em] text-[#6b4423] lg:text-[0.55rem]">
           <span className="h-px w-2 bg-[#6b4423]/60" aria-hidden />
           CRAFT
           <span className="h-px w-2 bg-[#6b4423]/60" aria-hidden />
@@ -67,15 +68,8 @@ function navLinkClass(active: boolean) {
 export function Header() {
   const pathname = usePathname()
   const { itemCount } = useCart()
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [cartOpen, setCartOpen] = useState(false)
   const moreActive = moreNavLinks.some((link) => isActivePath(pathname, link.href))
-
-  const barRadius = isMenuOpen ? "rounded-t-2xl" : "rounded-full"
-
-  useEffect(() => {
-    setIsMenuOpen(false)
-  }, [pathname])
 
   const cartBadge = itemCount > 0 && (
     <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#A86F47] px-1 font-sans text-[10px] font-bold text-[#F6EFE5]">
@@ -85,9 +79,9 @@ export function Header() {
 
   return (
     <>
-      <header className="site-header fixed top-4 left-1/2 z-50 w-[96%] max-w-6xl -translate-x-1/2">
+      <header className="site-header fixed top-3 left-1/2 z-50 w-[94%] max-w-6xl -translate-x-1/2 lg:top-4 lg:w-[96%]">
         <div
-          className={`site-header__bar grid grid-cols-[auto_1fr_auto] items-center gap-4 px-4 py-2 transition-all duration-300 lg:gap-6 lg:px-6 ${barRadius} ${NAV_BAR}`}
+          className={`site-header__bar flex items-center justify-between gap-3 rounded-full px-3 py-1.5 lg:grid lg:grid-cols-[auto_1fr_auto] lg:gap-6 lg:px-6 lg:py-2 ${NAV_BAR}`}
         >
           <BrandLogo />
 
@@ -164,57 +158,16 @@ export function Header() {
             </Link>
           </div>
 
-          <div className="col-start-3 flex shrink-0 items-center justify-end gap-1 lg:hidden">
-            <button
-              type="button"
-              className={NAV_ICON}
-              onClick={() => setCartOpen(true)}
-              aria-label="Open cart"
-            >
-              <ShoppingBag size={20} />
-              {cartBadge}
-            </button>
-            <button
-              type="button"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-[#302A26] transition-colors hover:text-[#A86F47]"
-              aria-label="Toggle menu"
-            >
-              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
-          </div>
+          <Link
+            href={contactLink.href}
+            className="rounded-full bg-[#A86F47] px-3 py-1.5 font-sans !text-[12px] font-medium !normal-case !tracking-normal text-white lg:hidden"
+          >
+            Contact
+          </Link>
         </div>
-
-        {isMenuOpen && (
-          <div className={`max-h-[80vh] overflow-y-auto rounded-b-2xl border border-t-0 px-6 py-6 lg:hidden ${NAV_BAR}`}>
-            <nav className="flex flex-col gap-4" aria-label="Mobile">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.label}
-                  href={link.href}
-                  className={cn(
-                    "font-sans !text-lg !normal-case !tracking-normal transition-colors",
-                    isActivePath(pathname, link.href)
-                      ? "font-medium text-[#302A26]"
-                      : "text-[#6B5E54] hover:text-[#302A26]",
-                  )}
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {link.label}
-                </Link>
-              ))}
-              <Link
-                href="/login"
-                className="font-sans !text-lg !normal-case !tracking-normal text-[#6B5E54] transition-colors hover:text-[#302A26]"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Account
-              </Link>
-            </nav>
-          </div>
-        )}
       </header>
 
+      <MobileBottomNav onCartClick={() => setCartOpen(true)} />
       <CartDrawer open={cartOpen} onOpenChange={setCartOpen} />
     </>
   )

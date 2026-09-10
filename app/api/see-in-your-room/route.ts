@@ -13,25 +13,21 @@ import { randomUUID } from "node:crypto"
 export const runtime = "nodejs"
 export const maxDuration = 180
 
-async function reserveTestAttempt() {
-  // Local test mode only. Persistent files prevent refresh/restart from resetting the cap.
-  // Production requires a shared quota store before enabling paid requests.
-  if (process.env.NODE_ENV === "production") {
-    throw new Error("Room previews are currently available in local testing only.")
-  }
+async function reserveLocalTestAttempt() {
+  if (process.env.NODE_ENV === "production") return
   const directory = path.join(process.cwd(), ".room-preview-tests")
   await mkdir(directory, { recursive: true })
   const lock = await open(path.join(directory, "lock"), "wx").catch(() => null)
   if (!lock) throw new Error("Another preview request is being prepared. Please try again shortly.")
   try {
-    const attempts = (await readdir(directory)).filter(name => name.endsWith(".attempt"))
+    const attempts = (await readdir(directory)).filter((name) => name.endsWith(".attempt"))
     if (attempts.length >= 3) throw new Error("The three-preview local test limit has been reached.")
     const marker = await open(path.join(directory, `${randomUUID()}.attempt`), "wx")
     await marker.close()
   } finally {
     await lock.close()
     const { unlink } = await import("node:fs/promises")
-    await unlink(path.join(directory, "lock"))
+    await unlink(path.join(directory, "lock")).catch(() => undefined)
   }
 }
 
@@ -44,8 +40,29 @@ async function resolveProduct(slug: string) {
   return catalogProducts.find((product) => product.slug === slug) ?? null
 }
 
+function errorStatus(message: string) {
+  if (
+    message.includes("not configured") ||
+    message.includes("unavailable") ||
+    message.includes("contact the studio")
+  ) {
+    return 503
+  }
+  if (message.includes("capacity") || message.includes("too long") || message.includes("Could not generate")) {
+    return 502
+  }
+  return 500
+}
+
 export async function POST(request: Request) {
   try {
+    if (!process.env.OPENAI_API_KEY?.trim()) {
+      return NextResponse.json(
+        { error: "Room previews are not configured on this server yet." },
+        { status: 503 },
+      )
+    }
+
     const formData = await request.formData()
     const productSlug = String(formData.get("productSlug") ?? "").trim()
     const roomPhoto = formData.get("roomPhoto")
@@ -64,7 +81,7 @@ export async function POST(request: Request) {
     if (!ALLOWED_ROOM_TYPES.has(roomMime)) {
       return NextResponse.json(
         { error: "Please upload a JPG, PNG, or WEBP photo of your room." },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -76,10 +93,7 @@ export async function POST(request: Request) {
     const roomBuffer = Buffer.from(await roomPhoto.arrayBuffer())
     const productImage = await loadProductImage(product.image)
 
-    if (!process.env.OPENAI_API_KEY?.trim()) {
-      return NextResponse.json({ error: "Room previews are not configured yet." }, { status: 503 })
-    }
-    await reserveTestAttempt()
+    await reserveLocalTestAttempt()
     const preview = await composeFurnitureInRoom({
       room: { mimeType: roomMime, data: roomBuffer.toString("base64") },
       product: productImage,
@@ -88,15 +102,21 @@ export async function POST(request: Request) {
       dimensions: product.dimensions,
     })
 
-    return NextResponse.json({
-      image: `data:${preview.mimeType};base64,${preview.data}`,
-      productName: product.name,
-      productSlug: product.slug,
-    }, { headers: { "Cache-Control": "no-store" } })
+    return NextResponse.json(
+      {
+        image: `data:${preview.mimeType};base64,${preview.data}`,
+        productName: product.name,
+        productSlug: product.slug,
+      },
+      { headers: { "Cache-Control": "no-store" } },
+    )
   } catch (error) {
-    const message = error instanceof Error && error.name === "TimeoutError"
-      ? "The preview took too long. Please try again later."
-      : error instanceof Error ? error.message : "Couldn't create a preview. Please try again later."
-    return NextResponse.json({ error: message }, { status: 502 })
+    const message =
+      error instanceof Error && error.name === "TimeoutError"
+        ? "The preview took too long. Please try again later."
+        : error instanceof Error
+          ? error.message
+          : "Couldn't create a preview. Please try again later."
+    return NextResponse.json({ error: message }, { status: errorStatus(message) })
   }
 }
