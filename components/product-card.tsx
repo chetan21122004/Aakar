@@ -2,10 +2,11 @@
 
 import Link from "next/link"
 import Image from "next/image"
+import { Camera } from "lucide-react"
 import { toast } from "sonner"
 import { useCart } from "@/contexts/cart-context"
-import { getDefaultVariant, type CatalogProduct } from "@/lib/products"
-import { formatStartingPrice } from "@/lib/format"
+import { getDefaultVariant, getStockLabel, type CatalogProduct } from "@/lib/products"
+import { formatINR } from "@/lib/format"
 import { getConceptForProduct } from "@/lib/concepts"
 
 interface ProductCardProps {
@@ -17,6 +18,7 @@ export function ProductCard({ product }: ProductCardProps) {
   const defaultVariant = getDefaultVariant(product)
   const href = `/products/${product.slug}`
   const collection = getConceptForProduct(product.slug)
+  const stockLabel = getStockLabel(defaultVariant.stockQty)
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault()
@@ -35,29 +37,50 @@ export function ProductCard({ product }: ProductCardProps) {
   }
 
   return (
-    <article className="group flex h-full flex-col border border-ink/10 bg-stone p-3.5 shadow-[0_1px_0_rgba(48,42,38,.04)] transition-shadow hover:shadow-[0_18px_44px_-30px_rgba(48,42,38,.45)] md:p-4">
-      <Link href={href} className="cursor-pointer block">
-        <div className="relative mb-4 aspect-[4/5] overflow-hidden rounded-[1.25rem] bg-sand">
+    <article className="group flex h-full flex-col overflow-hidden rounded-xl border border-[#E7E0D8] bg-[#FFFcf8] transition-shadow duration-200 hover:shadow-[0_8px_24px_rgba(48,42,38,0.08)]">
+      <div className="relative aspect-square overflow-hidden bg-[#F3EDE4]">
+        <Link href={href} className="absolute inset-0 block">
           <Image
             src={product.images[0]}
             alt={product.name}
             fill
-            className="object-cover transition-transform duration-700 group-hover:scale-105"
+            sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 25vw"
+            className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
           />
-        </div>
-        <div className="space-y-2">
-          <p className="font-condensed text-[.7rem] font-semibold uppercase tracking-[.16em] text-umber">{collection?.name ?? product.category}</p>
-          <h3 className="type-h3 text-lg group-hover:text-primary transition-colors">{product.name}</h3>
-          <p className="type-price-sm">{formatStartingPrice(product.basePricePaise)}</p>
-        </div>
-      </Link>
-      <div className="mt-auto flex items-center gap-3 pt-4">
-        <button type="button" className="btn-primary flex-1 py-2.5 text-xs" onClick={handleAddToCart}>
-          Add to Cart
-        </button>
-        <Link href={href} className="btn-outline-sm shrink-0 py-2.5">
-          Details
         </Link>
+        <Link
+          href={`/see-in-your-room?product=${encodeURIComponent(product.slug)}`}
+          className="absolute right-2.5 top-2.5 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white/95 text-[#302A26] shadow-sm transition-colors hover:text-[#A86F47]"
+          aria-label={`See ${product.name} in your room`}
+          title="See in your room"
+        >
+          <Camera size={15} />
+        </Link>
+      </div>
+
+      <div className="flex flex-1 flex-col px-3.5 pb-4 pt-3">
+        <p className="font-sans text-[11px] font-medium uppercase tracking-[0.14em] text-[#8A6A4F]">
+          {collection?.name ?? product.category}
+        </p>
+        <Link href={href} className="mt-1 block">
+          <h3 className="font-hero !normal-case !tracking-[-0.01em] line-clamp-2 text-[15px] font-medium leading-snug text-[#0F1111] md:text-[16px]">
+            {product.name}
+          </h3>
+        </Link>
+
+        <p className="mt-2 font-sans text-[11px] text-[#6B5E54]">From</p>
+        <p className="font-sans text-[1.35rem] font-semibold tabular-nums leading-none text-[#0F1111]">
+          {formatINR(product.basePricePaise)}
+        </p>
+        <p className="mt-2 font-sans text-[12px] leading-snug text-[#067D62]">{stockLabel}</p>
+
+        <button
+          type="button"
+          className="mt-auto w-full rounded-lg bg-[#A86F47] px-3 py-2.5 font-sans !text-[13px] font-medium !normal-case !tracking-normal text-white transition-colors hover:bg-[#8F5B38]"
+          onClick={handleAddToCart}
+        >
+          Add to cart
+        </button>
       </div>
     </article>
   )

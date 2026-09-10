@@ -6,7 +6,7 @@ import { conceptCollections } from "@/lib/concepts"
 import type { CatalogProduct } from "@/lib/products"
 
 const filters = [
-  { label: "All pieces", slug: "all" },
+  { label: "All", slug: "all" },
   ...conceptCollections.map((collection) => ({ label: collection.name, slug: collection.slug })),
 ]
 
@@ -24,30 +24,35 @@ export function ShopGrid({ products }: ShopGridProps) {
 
   return (
     <div>
-      <div className="mb-12 flex flex-wrap gap-3 rounded-[1.5rem] border border-ink/10 bg-stone p-3">
-        {filters.map((filter) => (
-          <button
-            key={filter.slug}
-            onClick={() => setActiveFilter(filter.slug)}
-            className={`rounded-full border px-5 py-2 font-condensed text-sm font-semibold uppercase tracking-[.08em] transition-colors ${
-              activeFilter === filter.slug
-                ? "bg-primary text-white border-primary"
-                : "border-border text-muted-foreground hover:text-foreground hover:border-foreground"
-            }`}
-          >
-            {filter.label}
-          </button>
-        ))}
+      <div className="mb-6 flex flex-col gap-3 border-b border-[#E7E0D8] pb-4 sm:flex-row sm:items-center sm:justify-between">
+        <p className="font-sans text-sm text-[#5C524A]">
+          {filteredProducts.length} {filteredProducts.length === 1 ? "result" : "results"}
+        </p>
+        <div className="flex flex-wrap gap-1.5">
+          {filters.map((filter) => (
+            <button
+              key={filter.slug}
+              onClick={() => setActiveFilter(filter.slug)}
+              className={`rounded-full px-3.5 py-1.5 font-sans !text-[13px] font-medium !normal-case !tracking-normal transition-colors ${
+                activeFilter === filter.slug
+                  ? "bg-[#302A26] text-white"
+                  : "bg-[#F3EDE4] text-[#5C524A] hover:bg-[#E7E0D8] hover:text-[#1F1A17]"
+              }`}
+            >
+              {filter.label}
+            </button>
+          ))}
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {filteredProducts.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}
       </div>
 
       {filteredProducts.length === 0 && (
-        <p className="text-center text-muted-foreground py-20 font-sans">
+        <p className="py-20 text-center font-sans text-[#6B5E54]">
           No products found in this category yet.
         </p>
       )}

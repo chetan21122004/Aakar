@@ -1,9 +1,9 @@
 "use client"
 
-import { useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { Download, ImagePlus, Loader2, Sofa, X } from "lucide-react"
+import { Camera, Download, ImagePlus, Loader2, Sofa, Sparkles, Upload, X } from "lucide-react"
 import { toast } from "sonner"
 import {
   Dialog,
@@ -25,6 +25,25 @@ type SeeInYourRoomToolProps = {
   products: SeeInRoomProduct[]
   initialProductSlug?: string
 }
+
+const generationStages = [
+  {
+    title: "Reading your room",
+    description: "Looking at the floor, walls, perspective and available space.",
+  },
+  {
+    title: "Preparing the furniture",
+    description: "Preserving the selected piece's shape, finish and proportions.",
+  },
+  {
+    title: "Placing it naturally",
+    description: "Matching scale, camera angle, light and contact shadows.",
+  },
+  {
+    title: "Refining your preview",
+    description: "Finishing the composition so it feels coherent and useful.",
+  },
+]
 
 async function compressRoomPhoto(file: File) {
   const bitmap = await createImageBitmap(file)
@@ -49,12 +68,14 @@ async function compressRoomPhoto(file: File) {
 }
 
 export function SeeInYourRoomTool({ products, initialProductSlug }: SeeInYourRoomToolProps) {
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const cameraInputRef = useRef<HTMLInputElement>(null)
+  const uploadInputRef = useRef<HTMLInputElement>(null)
   const [roomPreview, setRoomPreview] = useState<string | null>(null)
   const [roomFile, setRoomFile] = useState<File | null>(null)
   const [selectedSlug, setSelectedSlug] = useState(initialProductSlug ?? "")
   const [pickerOpen, setPickerOpen] = useState(false)
   const [generating, setGenerating] = useState(false)
+  const [generationStage, setGenerationStage] = useState(0)
   const [result, setResult] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
 
@@ -64,6 +85,19 @@ export function SeeInYourRoomTool({ products, initialProductSlug }: SeeInYourRoo
   )
 
   const canGenerate = Boolean(roomFile && selectedProduct) && !generating
+
+  useEffect(() => {
+    if (!generating) {
+      setGenerationStage(0)
+      return
+    }
+
+    const timer = window.setInterval(() => {
+      setGenerationStage((current) => Math.min(current + 1, generationStages.length - 1))
+    }, 18000)
+
+    return () => window.clearInterval(timer)
+  }, [generating])
 
   const resetPreview = () => {
     setResult(null)
@@ -125,48 +159,91 @@ export function SeeInYourRoomTool({ products, initialProductSlug }: SeeInYourRoo
 
   return (
     <>
-      <div className="max-w-5xl mx-auto bg-muted/40 p-8 md:p-12">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+      <div className="mx-auto max-w-7xl overflow-hidden rounded-[2rem] border border-[#E7E0D8] bg-[#FFFcf8] p-5 md:rounded-[2.5rem] md:p-8 lg:p-10">
+        <div className="mb-8 flex flex-col justify-between gap-4 border-b border-[#E7E0D8] pb-6 sm:flex-row sm:items-end">
+          <div>
+            <p className="font-condensed text-xs font-semibold uppercase tracking-[0.16em] text-clay">Studio preview</p>
+            <h2 className="mt-2 font-hero !text-3xl !font-medium !normal-case !tracking-[-0.03em] text-ink md:!text-4xl">
+              Picture it at home
+            </h2>
+          </div>
+          <p className="max-w-md font-sans text-sm leading-relaxed text-ink/60">
+            A clear, well-lit photo of the floor and walls works best. This is a visual guide — not an exact AR overlay.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[.85fr_1.15fr] lg:gap-10">
           <div className="space-y-6">
             <div>
-              <h3 className="font-semibold text-foreground mb-3">1. Upload Room Photo</h3>
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <h3 className="font-hero !text-base !font-medium !normal-case !tracking-[-0.02em] text-ink">Add your room</h3>
+                {roomPreview && <span className="font-sans text-xs text-[#067D62]">Photo ready</span>}
+              </div>
               <input
-                ref={fileInputRef}
+                ref={cameraInputRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                className="sr-only"
+                onChange={(event) => {
+                  handleRoomFile(event.target.files?.[0])
+                  event.currentTarget.value = ""
+                }}
+              />
+              <input
+                ref={uploadInputRef}
                 type="file"
                 accept="image/jpeg,image/png,image/webp"
                 className="sr-only"
-                onChange={(event) => handleRoomFile(event.target.files?.[0])}
+                onChange={(event) => {
+                  handleRoomFile(event.target.files?.[0])
+                  event.currentTarget.value = ""
+                }}
               />
               <button
                 type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="aspect-[4/3] w-full bg-white border border-dashed border-border flex items-center justify-center overflow-hidden relative"
+                onClick={() => uploadInputRef.current?.click()}
+                className="relative flex aspect-[4/3] w-full items-center justify-center overflow-hidden rounded-[1.75rem] border border-dashed border-[#C4B5A5] bg-sand transition-colors hover:border-clay"
               >
                 {roomPreview ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={roomPreview} alt="Uploaded room" className="absolute inset-0 h-full w-full object-cover" />
                 ) : (
-                  <span className="flex flex-col items-center gap-2 px-6 text-sm text-muted-foreground">
+                  <span className="flex flex-col items-center gap-2 px-6 font-sans text-sm text-ink/55">
                     <ImagePlus size={22} />
-                    No photo uploaded
+                    Tap to add a room photo
                   </span>
                 )}
               </button>
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="mt-3 w-full border border-foreground/20 text-foreground font-semibold py-3 hover:bg-foreground hover:text-background transition-colors"
-              >
-                {roomPreview ? "Change Room Photo" : "Upload Room Photo"}
-              </button>
+              <div className="mt-3 grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => cameraInputRef.current?.click()}
+                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-ink px-4 py-3 font-sans !text-[13px] font-medium !normal-case !tracking-normal text-sand transition-colors hover:bg-umber"
+                >
+                  <Camera size={16} />
+                  Take photo
+                </button>
+                <button
+                  type="button"
+                  onClick={() => uploadInputRef.current?.click()}
+                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-ink/20 bg-sand px-4 py-3 font-sans !text-[13px] font-medium !normal-case !tracking-normal text-ink transition-colors hover:border-ink"
+                >
+                  <Upload size={16} />
+                  Upload photo
+                </button>
+              </div>
+              <p className="mt-2 font-sans text-xs leading-relaxed text-ink/50">
+                JPG, PNG or WebP up to 12MB. On phones, Take photo opens the camera.
+              </p>
             </div>
 
             <div>
-              <h3 className="font-semibold text-foreground mb-3">2. Select Furniture</h3>
+              <h3 className="mb-3 font-hero !text-base !font-medium !normal-case !tracking-[-0.02em] text-ink">Confirm furniture</h3>
               <button
                 type="button"
                 onClick={() => setPickerOpen(true)}
-                className="aspect-[4/3] w-full bg-white border border-dashed border-border flex items-center justify-center overflow-hidden relative"
+                className="relative flex aspect-[4/3] w-full items-center justify-center overflow-hidden rounded-[1.75rem] border border-[#E7E0D8] bg-sand"
               >
                 {selectedProduct ? (
                   <Image
@@ -176,35 +253,62 @@ export function SeeInYourRoomTool({ products, initialProductSlug }: SeeInYourRoo
                     className="object-cover"
                   />
                 ) : (
-                  <span className="flex flex-col items-center gap-2 px-6 text-sm text-muted-foreground">
+                  <span className="flex flex-col items-center gap-2 px-6 text-sm text-ink/55">
                     <Sofa size={22} />
-                    No product selected
+                    Select a piece
                   </span>
                 )}
               </button>
               {selectedProduct && (
-                <p className="mt-2 text-sm text-foreground">
+                <p className="mt-2 font-sans text-sm text-ink">
                   {selectedProduct.name}
-                  <span className="text-muted-foreground"> · {selectedProduct.category}</span>
+                  <span className="text-ink/50"> · {selectedProduct.category}</span>
                 </p>
               )}
               <button
                 type="button"
                 onClick={() => setPickerOpen(true)}
-                className="mt-3 w-full border border-foreground/20 text-foreground font-semibold py-3 hover:bg-foreground hover:text-background transition-colors"
+                className="mt-3 w-full rounded-full border border-ink/20 bg-transparent py-3 font-sans !text-[13px] font-medium !normal-case !tracking-normal text-ink transition-colors hover:border-ink hover:bg-sand"
               >
-                {selectedProduct ? "Change Product" : "Select Product"}
+                {selectedProduct ? "Change piece" : "Select a piece"}
               </button>
             </div>
           </div>
 
           <div className="flex flex-col">
-            <h3 className="font-semibold text-foreground mb-3">Preview Result</h3>
-            <div className="flex-1 aspect-[4/3] w-full bg-white border border-dashed border-border flex items-center justify-center overflow-hidden relative">
+            <h3 className="mb-3 font-hero !text-base !font-medium !normal-case !tracking-[-0.02em] text-ink">Your preview</h3>
+            <div className="relative flex min-h-[22rem] flex-1 aspect-[4/3] w-full items-center justify-center overflow-hidden rounded-[1.75rem] border border-[#E7E0D8] bg-sand md:min-h-[28rem]">
               {generating && (
-                <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-white/80 px-6 text-center">
-                  <Loader2 className="animate-spin text-foreground" size={28} />
-                  <p className="text-sm text-muted-foreground">Placing the piece in your room. This can take about 15–30 seconds.</p>
+                <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-sand/95 px-6 text-center backdrop-blur-sm">
+                  <div className="relative mb-6 flex h-20 w-20 items-center justify-center">
+                    <span className="absolute inset-0 animate-ping rounded-full border border-primary/20 [animation-duration:2.4s]" />
+                    <span className="absolute inset-2 animate-spin rounded-full border border-ink/10 border-t-primary [animation-duration:1.8s]" />
+                    <span className="flex h-12 w-12 items-center justify-center rounded-full bg-ink text-sand shadow-lg">
+                      <Sparkles size={20} className="animate-pulse" />
+                    </span>
+                  </div>
+
+                  <p className="font-hero !text-lg !font-medium !normal-case !tracking-[-0.02em] text-ink">
+                    {generationStages[generationStage].title}
+                  </p>
+                  <p className="mt-2 max-w-sm font-sans text-sm leading-relaxed text-ink/60">
+                    {generationStages[generationStage].description}
+                  </p>
+
+                  <div className="mt-6 flex gap-1.5" aria-label={`Step ${generationStage + 1} of ${generationStages.length}`}>
+                    {generationStages.map((stage, index) => (
+                      <span
+                        key={stage.title}
+                        className={`h-1.5 rounded-full transition-all duration-500 ${
+                          index <= generationStage ? "w-7 bg-primary" : "w-3 bg-ink/15"
+                        }`}
+                      />
+                    ))}
+                  </div>
+
+                  <p className="mt-5 font-sans text-xs text-ink/45">
+                    Usually 1–3 minutes. Keep this page open while we work.
+                  </p>
                 </div>
               )}
               {result ? (
@@ -212,8 +316,8 @@ export function SeeInYourRoomTool({ products, initialProductSlug }: SeeInYourRoo
                 <img src={result} alt="Furniture preview in your room" className="absolute inset-0 h-full w-full object-cover" />
               ) : (
                 !generating && (
-                  <p className="text-sm text-muted-foreground text-center px-6">
-                    Your preview will appear here once a room photo and product are selected.
+                  <p className="px-6 text-center font-sans text-sm text-ink/50">
+                    Add a room photo and a piece. Your preview will appear here.
                   </p>
                 )
               )}
@@ -225,9 +329,14 @@ export function SeeInYourRoomTool({ products, initialProductSlug }: SeeInYourRoo
               type="button"
               onClick={handleGenerate}
               disabled={!canGenerate}
-              className="mt-3 w-full bg-foreground text-background font-semibold py-3 hover:bg-foreground/90 transition-colors disabled:opacity-40 disabled:pointer-events-none"
+              className="mt-4 w-full rounded-full bg-clay py-3.5 font-sans !text-sm font-medium !normal-case !tracking-normal text-white transition-colors hover:bg-umber disabled:pointer-events-none disabled:opacity-40"
             >
-              {generating ? "Generating preview…" : "Generate Preview"}
+              {generating ? (
+                <span className="inline-flex items-center justify-center gap-2">
+                  <Loader2 size={16} className="animate-spin" />
+                  Creating your preview
+                </span>
+              ) : "Generate preview"}
             </button>
 
             <div className="mt-3 flex gap-3">
@@ -235,7 +344,7 @@ export function SeeInYourRoomTool({ products, initialProductSlug }: SeeInYourRoo
                 <a
                   href={result}
                   download={`${selectedProduct?.slug ?? "aakar"}-in-your-room.png`}
-                  className="flex-1 inline-flex items-center justify-center gap-2 border border-foreground/20 text-foreground font-semibold py-3 hover:bg-foreground hover:text-background transition-colors"
+                  className="inline-flex flex-1 items-center justify-center gap-2 rounded-full border border-ink/20 py-3 font-sans !text-[13px] font-medium !normal-case !tracking-normal text-ink transition-colors hover:bg-sand"
                 >
                   <Download size={16} />
                   Save
@@ -243,14 +352,11 @@ export function SeeInYourRoomTool({ products, initialProductSlug }: SeeInYourRoo
               )}
               <Link
                 href={quoteHref}
-                className={`${result ? "flex-1" : "w-full"} block text-center bg-primary text-primary-foreground font-semibold py-3 hover:bg-umber transition-colors`}
+                className={`${result ? "flex-1" : "w-full"} block rounded-full bg-ink py-3 text-center font-sans !text-[13px] font-medium !normal-case !tracking-normal text-sand transition-colors hover:bg-umber`}
               >
-                Request a Quote
+                Request a quote
               </Link>
             </div>
-            <p className="mt-3 text-xs text-muted-foreground">
-              This is an approximate visual, not an exact scale or AR overlay.
-            </p>
           </div>
         </div>
       </div>
@@ -273,11 +379,11 @@ export function SeeInYourRoomTool({ products, initialProductSlug }: SeeInYourRoo
                     setPickerOpen(false)
                     resetPreview()
                   }}
-                  className={`text-left border p-2 transition-colors ${
-                    isActive ? "border-foreground" : "border-border hover:border-foreground/40"
+                  className={`overflow-hidden rounded-2xl border p-2 text-left transition-colors ${
+                    isActive ? "border-clay bg-sand" : "border-[#E7E0D8] hover:border-clay/60"
                   }`}
                 >
-                  <div className="relative mb-2 aspect-[4/3] overflow-hidden bg-muted">
+                  <div className="relative mb-2 aspect-[4/3] overflow-hidden rounded-xl bg-sand">
                     <Image src={product.image} alt="" fill className="object-cover" />
                   </div>
                   <p className="text-sm font-medium text-foreground line-clamp-2">{product.name}</p>

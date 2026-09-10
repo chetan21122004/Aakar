@@ -18,6 +18,7 @@ yarn-error.log*
 
 # env files
 .env*
+/.room-preview-tests/
 
 # Cursor MCP config (contains access tokens)
 .cursor/mcp.json

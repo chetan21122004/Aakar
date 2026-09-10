@@ -2,13 +2,38 @@ import { NextResponse } from "next/server"
 import { getProductBySlugFromDb } from "@/lib/catalog"
 import { catalogProducts } from "@/lib/products"
 import {
-  composeFurnitureInRoom,
   loadProductImage,
   mimeFromFilename,
 } from "@/lib/gemini-see-in-room"
+import { composeFurnitureInRoom } from "@/lib/openai-see-in-room"
+import { mkdir, open, readdir } from "node:fs/promises"
+import path from "node:path"
+import { randomUUID } from "node:crypto"
 
 export const runtime = "nodejs"
-export const maxDuration = 60
+export const maxDuration = 180
+
+async function reserveTestAttempt() {
+  // Local test mode only. Persistent files prevent refresh/restart from resetting the cap.
+  // Production requires a shared quota store before enabling paid requests.
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("Room previews are currently available in local testing only.")
+  }
+  const directory = path.join(process.cwd(), ".room-preview-tests")
+  await mkdir(directory, { recursive: true })
+  const lock = await open(path.join(directory, "lock"), "wx").catch(() => null)
+  if (!lock) throw new Error("Another preview request is being prepared. Please try again shortly.")
+  try {
+    const attempts = (await readdir(directory)).filter(name => name.endsWith(".attempt"))
+    if (attempts.length >= 3) throw new Error("The three-preview local test limit has been reached.")
+    const marker = await open(path.join(directory, `${randomUUID()}.attempt`), "wx")
+    await marker.close()
+  } finally {
+    await lock.close()
+    const { unlink } = await import("node:fs/promises")
+    await unlink(path.join(directory, "lock"))
+  }
+}
 
 const ALLOWED_ROOM_TYPES = new Set(["image/jpeg", "image/png", "image/webp"])
 const MAX_ROOM_BYTES = 8 * 1024 * 1024
@@ -51,6 +76,10 @@ export async function POST(request: Request) {
     const roomBuffer = Buffer.from(await roomPhoto.arrayBuffer())
     const productImage = await loadProductImage(product.image)
 
+    if (!process.env.OPENAI_API_KEY?.trim()) {
+      return NextResponse.json({ error: "Room previews are not configured yet." }, { status: 503 })
+    }
+    await reserveTestAttempt()
     const preview = await composeFurnitureInRoom({
       room: { mimeType: roomMime, data: roomBuffer.toString("base64") },
       product: productImage,
@@ -63,10 +92,11 @@ export async function POST(request: Request) {
       image: `data:${preview.mimeType};base64,${preview.data}`,
       productName: product.name,
       productSlug: product.slug,
-    })
+    }, { headers: { "Cache-Control": "no-store" } })
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Couldn't create a preview. Please try again later."
-    console.error("POST /api/see-in-your-room", error)
+    const message = error instanceof Error && error.name === "TimeoutError"
+      ? "The preview took too long. Please try again later."
+      : error instanceof Error ? error.message : "Couldn't create a preview. Please try again later."
     return NextResponse.json({ error: message }, { status: 502 })
   }
 }

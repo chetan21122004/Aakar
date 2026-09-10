@@ -374,19 +374,24 @@ export function ModularHomesSection() {
                 className="object-cover object-[center_20%] transition-transform duration-700 group-hover:scale-[1.02]"
               />
               <div
-                className="absolute inset-0 bg-gradient-to-t from-black/92 via-black/55 via-35% to-transparent"
+                className="absolute inset-x-0 bottom-0 h-[55%] bg-gradient-to-t from-[#1F1A17]/55 via-[#1F1A17]/15 to-transparent"
                 aria-hidden
               />
-              <div className="relative z-10 mt-auto px-6 pb-7 pt-16 text-center md:px-8 md:pb-9">
-                <h3 className="font-condensed text-[1.25rem] font-semibold uppercase tracking-[0.06em] text-white md:text-[1.4rem]">
-                  See It in Your Space
-                </h3>
-                <p className="mx-auto mt-2 max-w-xs font-hero text-[0.92rem] font-light leading-relaxed text-white/80 md:text-[0.98rem]">
-                  Preview how Aakar pieces look in your room before you order.
-                </p>
-                <span className="mt-6 inline-flex rounded-full bg-primary px-8 py-3.5 font-condensed text-[0.78rem] font-semibold uppercase tracking-[0.16em] text-white transition-colors group-hover:bg-secondary md:text-[0.8rem]">
-                  Try Now
-                </span>
+              <div className="relative z-10 mt-auto p-5 md:p-6 lg:p-7">
+                <div className="rounded-[1.5rem] border border-white/40 bg-[#F6EFE5]/92 px-6 py-6 text-left shadow-[0_16px_40px_rgba(31,26,23,0.18)] backdrop-blur-md md:px-7 md:py-7">
+                  <p className="font-condensed text-[11px] font-semibold uppercase tracking-[0.18em] text-clay">
+                    Visual preview
+                  </p>
+                  <h3 className="mt-2 font-hero !text-[1.45rem] !font-medium !normal-case !leading-snug !tracking-[-0.03em] text-ink md:!text-[1.65rem]">
+                    See it in your space
+                  </h3>
+                  <p className="mt-2 max-w-sm font-hero text-[0.95rem] font-light leading-relaxed text-ink/70">
+                    Upload a room photo and preview how an Aakar piece sits before you order.
+                  </p>
+                  <span className="mt-5 inline-flex rounded-full bg-clay px-7 py-3 font-sans !text-[13px] font-medium !normal-case !tracking-normal text-white transition-colors group-hover:bg-umber">
+                    Try now
+                  </span>
+                </div>
               </div>
             </Link>
           </motion.div>
