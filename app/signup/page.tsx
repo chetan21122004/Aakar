@@ -10,7 +10,7 @@ import { FooterSection } from "@/components/sections/footer-section"
 import { PasswordInput } from "@/components/password-input"
 import { createClient } from "@/lib/supabase/client"
 import { getGuestToken } from "@/lib/guest-token"
-import { rememberVerifiedLogin, registerLocalAccount } from "@/lib/local-auth"
+import { persistCloudSession } from "@/lib/local-auth"
 import { safeNextPath } from "@/lib/safe-redirect"
 
 function SignupForm() {
@@ -28,26 +28,49 @@ function SignupForm() {
   const onSubmit = async (data: { name: string; email: string; phone: string; password: string }) => {
     setLoading(true)
     try {
-      await registerLocalAccount(data)
+      const response = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      })
+      const result = (await response.json()) as { error?: string }
+      if (!response.ok) {
+        throw new Error(result.error || "Could not create the account.")
+      }
+
+      const supabase = createClient()
+      let { data: signedIn, error } = await supabase.auth.signInWithPassword({
+        email: data.email.trim(),
+        password: data.password,
+      })
+      if (error && /not confirmed/i.test(error.message)) {
+        await fetch("/api/auth/confirm-login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: data.email.trim(), password: data.password }),
+        })
+        const retry = await supabase.auth.signInWithPassword({
+          email: data.email.trim(),
+          password: data.password,
+        })
+        signedIn = retry.data
+        error = retry.error
+      }
+      if (error || !signedIn.user) {
+        throw new Error(error?.message || "Account created. Please sign in.")
+      }
+
+      persistCloudSession({
+        email: signedIn.user.email || data.email,
+        name: data.name,
+        phone: data.phone,
+      })
     } catch (error) {
       toast.error("Registration failed", {
         description: error instanceof Error ? error.message : "Could not create the account.",
       })
       setLoading(false)
       return
-    }
-
-    try {
-      const supabase = createClient()
-      await supabase.auth.signUp({
-        email: data.email,
-        password: data.password,
-        options: { data: { full_name: data.name, phone: data.phone } },
-      })
-      await supabase.auth.signInWithPassword({ email: data.email, password: data.password })
-      await rememberVerifiedLogin(data)
-    } catch {
-      /* local account is enough to stay signed in */
     }
 
     const guestToken = getGuestToken()
@@ -71,7 +94,9 @@ function SignupForm() {
       <section className="pt-32 pb-20 px-6 md:px-12 lg:px-20">
         <div className="max-w-md mx-auto">
           <h1 className="type-h1 mb-2 text-center">Create Account</h1>
-          <p className="type-body text-center mb-10">Save your details for faster checkout.</p>
+          <p className="type-body text-center mb-10">
+            Create one account and use it on any phone or computer.
+          </p>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <div>
               <label className="type-label block mb-2">Full Name</label>

@@ -84,6 +84,14 @@ function startSession(account: Pick<StoredAccount, "email" | "name" | "phone">):
   return session
 }
 
+export function persistCloudSession(input: { email: string; name?: string; phone?: string }) {
+  return startSession({
+    email: input.email.trim().toLowerCase(),
+    name: input.name?.trim() || input.email,
+    phone: input.phone?.trim() || "",
+  })
+}
+
 export async function registerLocalAccount(input: {
   name: string
   email: string

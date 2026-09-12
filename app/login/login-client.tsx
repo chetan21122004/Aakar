@@ -10,8 +10,16 @@ import { FooterSection } from "@/components/sections/footer-section"
 import { PasswordInput } from "@/components/password-input"
 import { createClient } from "@/lib/supabase/client"
 import { getGuestToken } from "@/lib/guest-token"
-import { rememberVerifiedLogin, verifyLocalLogin } from "@/lib/local-auth"
+import { persistCloudSession } from "@/lib/local-auth"
 import { safeNextPath } from "@/lib/safe-redirect"
+
+function authErrorMessage(message: string) {
+  const text = message.toLowerCase()
+  if (text.includes("invalid login") || text.includes("invalid credentials") || text.includes("not confirmed")) {
+    return "Email or password is incorrect. Create an account if you are new."
+  }
+  return message
+}
 
 export default function LoginPage() {
   const router = useRouter()
@@ -21,7 +29,8 @@ export default function LoginPage() {
   const { register, handleSubmit } = useForm<{ email: string; password: string }>()
   const [loading, setLoading] = useState(false)
 
-  const finishLogin = async () => {
+  const finishLogin = async (email: string, name?: string) => {
+    persistCloudSession({ email, name })
     const guestToken = getGuestToken()
     if (guestToken) {
       await fetch("/api/cart/merge", {
@@ -38,30 +47,34 @@ export default function LoginPage() {
   const onSubmit = async (data: { email: string; password: string }) => {
     setLoading(true)
     try {
-      await verifyLocalLogin(data.email, data.password)
-      await finishLogin()
-      return
-    } catch (localError) {
-      try {
-        const supabase = createClient()
-        const { data: signedIn, error } = await supabase.auth.signInWithPassword({
-          email: data.email,
+      const supabase = createClient()
+      let { data: signedIn, error } = await supabase.auth.signInWithPassword({
+        email: data.email.trim(),
+        password: data.password,
+      })
+      if (error && /not confirmed/i.test(error.message)) {
+        await fetch("/api/auth/confirm-login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: data.email.trim(), password: data.password }),
+        })
+        const retry = await supabase.auth.signInWithPassword({
+          email: data.email.trim(),
           password: data.password,
         })
-        if (!error && signedIn.user) {
-          await rememberVerifiedLogin({
-            email: data.email,
-            name: (signedIn.user.user_metadata?.full_name as string | undefined) || data.email,
-            password: data.password,
-          })
-          await finishLogin()
-          return
-        }
-      } catch {
-        /* fall through to local error */
+        signedIn = retry.data
+        error = retry.error
       }
+      if (error || !signedIn.user) {
+        throw new Error(authErrorMessage(error?.message || "Could not sign in."))
+      }
+      await finishLogin(
+        signedIn.user.email || data.email,
+        (signedIn.user.user_metadata?.full_name as string | undefined) || data.email,
+      )
+    } catch (error) {
       toast.error("Sign in failed", {
-        description: localError instanceof Error ? localError.message : "Check your email and password.",
+        description: error instanceof Error ? error.message : "Check your email and password.",
       })
       setLoading(false)
     }
@@ -75,8 +88,8 @@ export default function LoginPage() {
           <h1 className="type-h1 mb-2 text-center">Sign In</h1>
           <p className="type-body text-center mb-10">
             {fromRoomPreview
-              ? "Sign in to preview furniture in your room."
-              : "Enter your email and password to continue."}
+              ? "Sign in to preview furniture in your room. Works on any device."
+              : "Use the same email and password on any phone or computer."}
           </p>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <div>

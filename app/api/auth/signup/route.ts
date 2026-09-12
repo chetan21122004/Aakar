@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { createAdminClient } from "@/lib/supabase/admin"
+import { tryCreateAdminClient } from "@/lib/supabase/admin"
+import { confirmAuthUserEmail } from "@/lib/supabase/confirm-user"
 
 const signupSchema = z.object({
   name: z.string().min(1),
@@ -12,16 +13,38 @@ const signupSchema = z.object({
 export async function POST(request: Request) {
   try {
     const body = signupSchema.parse(await request.json())
-    const admin = createAdminClient()
+    const email = body.email.trim().toLowerCase()
+    const admin = tryCreateAdminClient()
+
+    if (!admin) {
+      return NextResponse.json(
+        { error: "Account service is not configured on the server." },
+        { status: 503 },
+      )
+    }
+
     const { data, error } = await admin.auth.admin.createUser({
-      email: body.email,
+      email,
       password: body.password,
       email_confirm: true,
       user_metadata: { full_name: body.name, phone: body.phone },
     })
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 400 })
+      const alreadyExists = /already|registered|exists/i.test(error.message)
+      if (!alreadyExists) {
+        return NextResponse.json({ error: error.message }, { status: 400 })
+      }
+      const existing = await confirmAuthUserEmail(admin, email)
+      if (!existing) {
+        return NextResponse.json({ error: "An account with this email already exists." }, { status: 400 })
+      }
+      await admin.from("profiles").upsert({
+        id: existing.id,
+        full_name: body.name,
+        phone: body.phone,
+      })
+      return NextResponse.json({ ok: true })
     }
 
     if (data.user) {
