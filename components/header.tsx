@@ -153,7 +153,7 @@ export function Header() {
               <ShoppingBag size={20} />
               {cartBadge}
             </button>
-            <Link href="/login" className={NAV_ICON} aria-label="Account">
+            <Link href="/account" className={NAV_ICON} aria-label="Account">
               <User size={20} />
             </Link>
           </div>

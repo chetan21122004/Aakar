@@ -2,13 +2,19 @@
 
 import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
+import { clearLocalSession } from "@/lib/local-auth"
 
 export function SignOutButton() {
   const router = useRouter()
 
   const handleSignOut = async () => {
-    const supabase = createClient()
-    await supabase.auth.signOut()
+    clearLocalSession()
+    try {
+      const supabase = createClient()
+      await supabase.auth.signOut()
+    } catch {
+      /* local sign-out is enough */
+    }
     router.push("/")
     router.refresh()
   }

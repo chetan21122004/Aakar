@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr"
 import { NextResponse, type NextRequest } from "next/server"
+import { AUTH_COOKIE, parseAuthCookie } from "@/lib/auth-session"
 
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
@@ -23,18 +24,24 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  let user = null
+  try {
+    const result = await supabase.auth.getUser()
+    user = result.data.user
+  } catch {
+    user = null
+  }
+  const localSession = parseAuthCookie(request.cookies.get(AUTH_COOKIE)?.value)
+  const signedIn = Boolean(user || localSession)
 
-  if (!user && request.nextUrl.pathname.startsWith("/account")) {
+  if (!signedIn && request.nextUrl.pathname.startsWith("/account")) {
     const url = request.nextUrl.clone()
     url.pathname = "/login"
     url.searchParams.set("redirect", `${request.nextUrl.pathname}${request.nextUrl.search}`)
     return NextResponse.redirect(url)
   }
 
-  if (!user && request.nextUrl.pathname.startsWith("/see-in-your-room")) {
+  if (!signedIn && request.nextUrl.pathname.startsWith("/see-in-your-room")) {
     const url = request.nextUrl.clone()
     url.pathname = "/login"
     url.search = ""

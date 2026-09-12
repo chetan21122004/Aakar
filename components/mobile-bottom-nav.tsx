@@ -11,7 +11,7 @@ const items = [
   { href: "/shop", label: "Shop", icon: LayoutGrid, match: "prefix" as const },
   { href: "/collections", label: "Collections", icon: Library, match: "prefix" as const },
   { href: "/cart", label: "Cart", icon: ShoppingBag, match: "prefix" as const },
-  { href: "/login", label: "Account", icon: User, match: "prefix" as const },
+  { href: "/account", label: "Account", icon: User, match: "prefix" as const },
 ]
 
 export function MobileBottomNav({ onCartClick }: { onCartClick: () => void }) {
@@ -27,7 +27,7 @@ export function MobileBottomNav({ onCartClick }: { onCartClick: () => void }) {
       <ul className="mx-auto grid max-w-lg grid-cols-5">
         {items.map((item) => {
           const active =
-            item.href === "/login"
+            item.href === "/account"
               ? pathname.startsWith("/login") || pathname.startsWith("/account") || pathname.startsWith("/signup")
               : item.match === "exact"
                 ? pathname === item.href

@@ -1,24 +1,28 @@
 import Link from "next/link"
+import { cookies } from "next/headers"
 import { Header } from "@/components/header"
 import { FooterSection } from "@/components/sections/footer-section"
 import { createClient } from "@/lib/supabase/server"
 import { createAdminClient } from "@/lib/supabase/admin"
+import { AUTH_COOKIE, parseAuthCookie } from "@/lib/auth-session"
 import { formatINR } from "@/lib/format"
 import { SignOutButton } from "@/components/sign-out-button"
 
 export default async function AccountPage() {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  const cookieStore = await cookies()
+  const localSession = parseAuthCookie(cookieStore.get(AUTH_COOKIE)?.value)
 
-  if (!user) {
+  if (!user && !localSession) {
     return null
   }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("full_name, phone")
-    .eq("id", user.id)
-    .maybeSingle()
+  const { data: profile } = user
+    ? await supabase.from("profiles").select("full_name, phone").eq("id", user.id).maybeSingle()
+    : { data: null }
 
   let orders: {
     id: string
@@ -28,18 +32,24 @@ export default async function AccountPage() {
     placed_at: string
   }[] = []
 
-  try {
-    const admin = createAdminClient()
-    const { data } = await admin
-      .from("orders")
-      .select("id, order_number, status, total_paise, placed_at")
-      .eq("user_id", user.id)
-      .order("placed_at", { ascending: false })
-      .limit(10)
-    orders = data ?? []
-  } catch {
-    orders = []
+  if (user) {
+    try {
+      const admin = createAdminClient()
+      const { data } = await admin
+        .from("orders")
+        .select("id, order_number, status, total_paise, placed_at")
+        .eq("user_id", user.id)
+        .order("placed_at", { ascending: false })
+        .limit(10)
+      orders = data ?? []
+    } catch {
+      orders = []
+    }
   }
+
+  const displayName = profile?.full_name || localSession?.name || user?.email || ""
+  const email = user?.email || localSession?.email || ""
+  const phone = profile?.phone || localSession?.phone
 
   return (
     <main className="min-h-screen bg-background">
@@ -49,7 +59,7 @@ export default async function AccountPage() {
           <div className="flex items-start justify-between gap-4 mb-10">
             <div>
               <h1 className="type-h1 mb-2">My Account</h1>
-              <p className="type-body">{profile?.full_name || user.email}</p>
+              <p className="type-body">{displayName}</p>
             </div>
             <SignOutButton />
           </div>
@@ -59,12 +69,12 @@ export default async function AccountPage() {
             <dl className="space-y-2 font-sans text-sm">
               <div className="flex justify-between gap-4">
                 <dt className="text-muted-foreground">Email</dt>
-                <dd>{user.email}</dd>
+                <dd>{email}</dd>
               </div>
-              {profile?.phone && (
+              {phone && (
                 <div className="flex justify-between gap-4">
                   <dt className="text-muted-foreground">Phone</dt>
-                  <dd>{profile.phone}</dd>
+                  <dd>{phone}</dd>
                 </div>
               )}
             </dl>

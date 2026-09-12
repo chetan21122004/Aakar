@@ -5,7 +5,8 @@ import { isLocalhostHost, ROOM_PREVIEW_DAILY_LIMIT } from "@/lib/constants"
 import { catalogProducts } from "@/lib/products"
 import { getRoomPreviewRemaining } from "@/lib/room-preview-quota"
 import { createClient } from "@/lib/supabase/server"
-import { headers } from "next/headers"
+import { cookies, headers } from "next/headers"
+import { AUTH_COOKIE, parseAuthCookie } from "@/lib/auth-session"
 import { SeeInYourRoomTool, type SeeInRoomProduct } from "./see-in-your-room-tool"
 
 export const metadata = {
@@ -42,10 +43,16 @@ export default async function SeeInYourRoomPage({
   const {
     data: { user },
   } = await supabase.auth.getUser()
+  const cookieStore = await cookies()
+  const localSession = parseAuthCookie(cookieStore.get(AUTH_COOKIE)?.value)
   const remainingPreviews =
-    skipQuota || !user
+    skipQuota
       ? null
-      : await getRoomPreviewRemaining(supabase, user.id).catch(() => ROOM_PREVIEW_DAILY_LIMIT)
+      : user
+        ? await getRoomPreviewRemaining(supabase, user.id).catch(() => ROOM_PREVIEW_DAILY_LIMIT)
+        : localSession
+          ? await getRoomPreviewRemaining(supabase, localSession.email).catch(() => ROOM_PREVIEW_DAILY_LIMIT)
+          : 0
   const dbProducts = await getCatalogProducts()
   const products = toToolProducts(dbProducts.length ? dbProducts : catalogProducts)
 

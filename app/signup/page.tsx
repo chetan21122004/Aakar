@@ -10,6 +10,7 @@ import { FooterSection } from "@/components/sections/footer-section"
 import { PasswordInput } from "@/components/password-input"
 import { createClient } from "@/lib/supabase/client"
 import { getGuestToken } from "@/lib/guest-token"
+import { rememberVerifiedLogin, registerLocalAccount } from "@/lib/local-auth"
 import { safeNextPath } from "@/lib/safe-redirect"
 
 function SignupForm() {
@@ -26,31 +27,27 @@ function SignupForm() {
 
   const onSubmit = async (data: { name: string; email: string; phone: string; password: string }) => {
     setLoading(true)
-
-    const response = await fetch("/api/auth/signup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    })
-    const result = (await response.json()) as { error?: string }
-
-    if (!response.ok) {
-      toast.error("Registration failed", { description: result.error })
+    try {
+      await registerLocalAccount(data)
+    } catch (error) {
+      toast.error("Registration failed", {
+        description: error instanceof Error ? error.message : "Could not create the account.",
+      })
       setLoading(false)
       return
     }
 
-    const supabase = createClient()
-    const { error } = await supabase.auth.signInWithPassword({
-      email: data.email,
-      password: data.password,
-    })
-
-    if (error) {
-      toast.error("Account created, but sign in failed", { description: error.message })
-      setLoading(false)
-      router.push(`/login?redirect=${encodeURIComponent(redirect)}`)
-      return
+    try {
+      const supabase = createClient()
+      await supabase.auth.signUp({
+        email: data.email,
+        password: data.password,
+        options: { data: { full_name: data.name, phone: data.phone } },
+      })
+      await supabase.auth.signInWithPassword({ email: data.email, password: data.password })
+      await rememberVerifiedLogin(data)
+    } catch {
+      /* local account is enough to stay signed in */
     }
 
     const guestToken = getGuestToken()
@@ -65,6 +62,7 @@ function SignupForm() {
     toast.success("Account created")
     router.push(redirect)
     router.refresh()
+    setLoading(false)
   }
 
   return (

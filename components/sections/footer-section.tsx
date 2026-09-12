@@ -39,9 +39,8 @@ function FooterNavLink({ href, children }: { href: string; children: React.React
   return (
     <Link
       href={href}
-      className="group inline-flex items-center gap-2 font-hero text-[0.95rem] font-light text-[#302A26]/80 transition-colors hover:text-[#302A26]"
+      className="flex min-h-11 items-center font-hero text-[0.95rem] font-light text-[#302A26]/80 transition-colors duration-200 hover:text-[#A86F47]"
     >
-      <span className="h-px w-0 bg-[#A86F47] transition-all duration-300 group-hover:w-4" />
       {children}
     </Link>
   );
@@ -127,13 +126,13 @@ export function FooterSection() {
             </Link>
           </FadeInUp>
 
-          <FadeInUp delay={0.06} className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:col-span-5">
+          <FadeInUp delay={0.06} className="grid grid-cols-1 gap-8 sm:grid-cols-3 lg:col-span-5">
             {linkGroups.map((group) => (
-              <div key={group.title}>
-                <h4 className="mb-5 font-condensed text-[0.7rem] font-semibold uppercase tracking-[0.24em] text-[#76513D]">
+              <div key={group.title} className="border-t border-[#D9C8B7]/80 pt-5 sm:border-0 sm:pt-0">
+                <h4 className="mb-3 font-condensed text-[0.7rem] font-semibold uppercase tracking-[0.24em] text-[#76513D] sm:mb-5">
                   {group.title}
                 </h4>
-                <ul className="space-y-3.5">
+                <ul className="grid grid-cols-2 gap-x-4 sm:grid-cols-1 sm:space-y-1">
                   {group.links.map((link) => (
                     <li key={link.label}>
                       <FooterNavLink href={link.href}>{link.label}</FooterNavLink>

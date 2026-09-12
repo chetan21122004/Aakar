@@ -2,16 +2,7 @@ import { NextResponse } from "next/server"
 import { getProductBySlugFromDb } from "@/lib/catalog"
 import { catalogProducts } from "@/lib/products"
 import { isLocalhostHost, ROOM_PREVIEW_DAILY_LIMIT } from "@/lib/constants"
-import {
-  loadProductImage,
-  mimeFromFilename,
-} from "@/lib/gemini-see-in-room"
-import { composeFurnitureInRoom } from "@/lib/openai-see-in-room"
-import {
-  consumeRoomPreviewSlot,
-  refundRoomPreviewSlot,
-} from "@/lib/room-preview-quota"
-import { createClient } from "@/lib/supabase/server"
+import { AUTH_COOKIE, parseAuthCookie } from "@/lib/auth-session"
 import {
   loadProductImage,
   mimeFromFilename,
@@ -60,7 +51,14 @@ export async function POST(request: Request) {
     const {
       data: { user },
     } = await supabase.auth.getUser()
-    if (!user) {
+    const cookieHeader = request.headers.get("cookie") ?? ""
+    const authCookie = cookieHeader
+      .split("; ")
+      .find((part) => part.startsWith(`${AUTH_COOKIE}=`))
+      ?.slice(`${AUTH_COOKIE}=`.length)
+    const localSession = parseAuthCookie(authCookie)
+    const accountId = user?.id ?? localSession?.email ?? null
+    if (!accountId) {
       return NextResponse.json(
         { error: "Sign in to use the room preview." },
         { status: 401 },
@@ -106,7 +104,7 @@ export async function POST(request: Request) {
     let remaining: number | null = null
 
     if (!skipQuota) {
-      const slot = await consumeRoomPreviewSlot(supabase, user.id)
+      const slot = await consumeRoomPreviewSlot(supabase, accountId)
       if (!slot.ok) {
         return NextResponse.json(
           {
@@ -116,7 +114,7 @@ export async function POST(request: Request) {
           { status: 429 },
         )
       }
-      consumedFor = user.id
+      consumedFor = accountId
       remaining = slot.remaining
     }
 

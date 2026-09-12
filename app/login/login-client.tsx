@@ -10,6 +10,7 @@ import { FooterSection } from "@/components/sections/footer-section"
 import { PasswordInput } from "@/components/password-input"
 import { createClient } from "@/lib/supabase/client"
 import { getGuestToken } from "@/lib/guest-token"
+import { rememberVerifiedLogin, verifyLocalLogin } from "@/lib/local-auth"
 import { safeNextPath } from "@/lib/safe-redirect"
 
 export default function LoginPage() {
@@ -20,32 +21,50 @@ export default function LoginPage() {
   const { register, handleSubmit } = useForm<{ email: string; password: string }>()
   const [loading, setLoading] = useState(false)
 
-  const onSubmit = async (data: { email: string; password: string }) => {
-    setLoading(true)
-    const supabase = createClient()
-    const { error } = await supabase.auth.signInWithPassword({
-      email: data.email,
-      password: data.password,
-    })
-
-    if (error) {
-      toast.error("Sign in failed", { description: error.message })
-      setLoading(false)
-      return
-    }
-
+  const finishLogin = async () => {
     const guestToken = getGuestToken()
     if (guestToken) {
       await fetch("/api/cart/merge", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ guestToken }),
-      })
+      }).catch(() => undefined)
     }
-
     toast.success("Welcome back")
     router.push(redirect)
     router.refresh()
+  }
+
+  const onSubmit = async (data: { email: string; password: string }) => {
+    setLoading(true)
+    try {
+      await verifyLocalLogin(data.email, data.password)
+      await finishLogin()
+      return
+    } catch (localError) {
+      try {
+        const supabase = createClient()
+        const { data: signedIn, error } = await supabase.auth.signInWithPassword({
+          email: data.email,
+          password: data.password,
+        })
+        if (!error && signedIn.user) {
+          await rememberVerifiedLogin({
+            email: data.email,
+            name: (signedIn.user.user_metadata?.full_name as string | undefined) || data.email,
+            password: data.password,
+          })
+          await finishLogin()
+          return
+        }
+      } catch {
+        /* fall through to local error */
+      }
+      toast.error("Sign in failed", {
+        description: localError instanceof Error ? localError.message : "Check your email and password.",
+      })
+      setLoading(false)
+    }
   }
 
   return (
@@ -56,8 +75,8 @@ export default function LoginPage() {
           <h1 className="type-h1 mb-2 text-center">Sign In</h1>
           <p className="type-body text-center mb-10">
             {fromRoomPreview
-              ? "Sign in to preview furniture in your room. Each account has 5 previews a day."
-              : "Access your orders and saved details."}
+              ? "Sign in to preview furniture in your room."
+              : "Enter your email and password to continue."}
           </p>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <div>
@@ -66,13 +85,14 @@ export default function LoginPage() {
                 {...register("email")}
                 type="email"
                 required
+                autoComplete="email"
                 className="w-full border border-border bg-input px-4 py-3 font-sans text-sm"
                 placeholder="you@example.com"
               />
             </div>
             <div>
               <label className="type-label block mb-2">Password</label>
-              <PasswordInput {...register("password")} required />
+              <PasswordInput {...register("password")} required autoComplete="current-password" />
             </div>
             <button type="submit" className="btn-primary w-full" disabled={loading}>
               {loading ? "Signing in..." : "Sign In"}
