@@ -5,7 +5,7 @@ import { Header } from "@/components/header"
 import { FooterSection } from "@/components/sections/footer-section"
 import { ProductCard } from "@/components/product-card"
 import { conceptCollections, getConceptBySlug } from "@/lib/concepts"
-import { getCatalogProducts } from "@/lib/catalog"
+import { getCatalogProducts, getCollectionLookbook } from "@/lib/catalog"
 
 export function generateStaticParams() {
   return conceptCollections.map((collection) => ({ slug: collection.slug }))
@@ -23,7 +23,10 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
   const collection = getConceptBySlug(slug)
   if (!collection) notFound()
 
-  const allProducts = await getCatalogProducts()
+  const [allProducts, lookbook] = await Promise.all([
+    getCatalogProducts(),
+    getCollectionLookbook(slug),
+  ])
   const products = allProducts.filter((product) => collection.productSlugs.includes(product.slug))
 
   return (
@@ -68,6 +71,24 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
           </div>
         </div>
       </section>
+
+      {lookbook.length > 0 && (
+        <section className="px-4 pb-10 md:px-10 md:pb-16 lg:px-16">
+          <div className="mx-auto max-w-7xl">
+            <p className="font-condensed text-[11px] font-semibold uppercase tracking-[.2em] text-umber md:text-xs">
+              The lookbook
+            </p>
+            <h2 className="mt-1 font-serif text-[1.75rem] font-light text-ink md:text-4xl">{collection.name}</h2>
+            <div className="mt-5 grid grid-cols-2 gap-2.5 sm:gap-4 md:mt-8 lg:grid-cols-3">
+              {lookbook.map((image) => (
+                <div key={image.src} className="relative aspect-[3/4] overflow-hidden rounded-[1.25rem] bg-sand">
+                  <Image src={image.src} alt={image.alt} fill sizes="(min-width: 1024px) 30vw, 50vw" className="object-contain" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       <section className="bg-stone px-4 py-8 md:px-10 md:py-16 lg:px-16">
         <div className="mx-auto max-w-7xl">

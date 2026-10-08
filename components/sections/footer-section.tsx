@@ -84,7 +84,7 @@ export function FooterSection() {
                 <p className="font-condensed text-[0.72rem] font-semibold uppercase tracking-[0.28em] text-[#A86F47]">
                   Aakar Woodcraft
                 </p>
-                <h2 className="mt-3 font-serif text-[clamp(2.25rem,6vw,4.5rem)] font-light leading-[1.02] tracking-[-0.03em] text-[#302A26]">
+                <h2 className="mt-3 font-display text-[clamp(2.25rem,6vw,4.5rem)] font-light leading-[1.02] tracking-[-0.03em] text-[#302A26]">
                   Objects. Spaces. Stories.
                 </h2>
               </div>
@@ -104,7 +104,7 @@ export function FooterSection() {
             <Link href="/" className="inline-flex items-center gap-3" aria-label="Aakar Woodcraft home">
               <Image src="/aakar_mark.png" alt="" width={56} height={56} className="h-14 w-14 object-contain" />
               <span className="flex flex-col leading-none">
-                <span className="font-serif text-[1.25rem] font-normal tracking-[-0.02em] lowercase text-[#5c3d2e]">
+                <span className="font-logo text-[1.25rem] font-normal tracking-[-0.02em] lowercase text-[#5c3d2e]">
                   aakarwood
                 </span>
                 <span className="mt-1.5 flex items-center gap-1.5 font-sans text-[0.55rem] font-medium uppercase tracking-[0.28em] text-[#6b4423]">

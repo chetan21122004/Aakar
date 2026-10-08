@@ -33,7 +33,7 @@ function BrandLogo() {
         className="h-8 w-8 object-contain lg:h-10 lg:w-10"
       />
       <span className="flex flex-col leading-none">
-        <span className="font-serif text-[0.95rem] font-normal tracking-[-0.02em] lowercase text-[#5c3d2e] lg:text-[1.1rem]">
+        <span className="font-logo text-[0.95rem] font-normal tracking-[-0.02em] lowercase text-[#5c3d2e] lg:text-[1.1rem]">
           aakarwood
         </span>
         <span className="mt-1 flex items-center gap-1.5 font-sans text-[0.45rem] font-medium uppercase tracking-[0.28em] text-[#6b4423] lg:text-[0.55rem]">

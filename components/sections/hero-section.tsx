@@ -126,7 +126,7 @@ export function HeroSection() {
                 : "translate-y-4 opacity-0"
           }`}
         >
-          <h1 className="whitespace-nowrap font-hero text-[clamp(1.5rem,4.2vw,2.85rem)] font-normal leading-[1.05] tracking-[-0.015em] text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.55)]">
+          <h1 className="whitespace-nowrap font-display text-[clamp(1.5rem,4.2vw,2.85rem)] font-normal leading-[1.05] tracking-[-0.015em] text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.55)]">
             Objects. Spaces. Stories.
           </h1>
           <p className="mt-2 font-hero text-[clamp(0.8rem,1.15vw,0.95rem)] font-light leading-snug tracking-[0.01em] text-white/90 drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)] md:mt-2.5">

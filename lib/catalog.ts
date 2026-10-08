@@ -1,3 +1,5 @@
+import fs from "fs"
+import path from "path"
 import { createStaticClient } from "@/lib/supabase/static"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { formatStartingPrice } from "@/lib/format"
@@ -173,6 +175,59 @@ export async function getCollectionsFromDb() {
 export async function getCollectionBySlugFromDb(slug: string) {
   const collections = await getCollectionsFromDb()
   return collections.find((c) => c.slug === slug) ?? null
+}
+
+const LOCAL_LOOKBOOKS: Record<string, { dir: string; name: string }> = {
+  "hampi-rift": { dir: "Hampi Collection", name: "Hampi Rift" },
+  "still-mandu": { dir: "Still Mandu Collection", name: "Still Mandu" },
+}
+
+export type LookbookImage = { src: string; alt: string }
+
+function pageNumber(filename: string) {
+  const match = filename.match(/page-(\d+)/i)
+  return match ? Number(match[1]) : 0
+}
+
+export function getLocalLookbook(slug: string): LookbookImage[] {
+  const folder = LOCAL_LOOKBOOKS[slug]
+  if (!folder) return []
+  const directory = path.join(process.cwd(), "public", "collections", folder.dir)
+  if (!fs.existsSync(directory)) return []
+  return fs
+    .readdirSync(directory)
+    .filter((file) => file.toLowerCase().endsWith(".webp"))
+    .sort((a, b) => pageNumber(a) - pageNumber(b))
+    .map((file) => ({
+      src: `/collections/${encodeURIComponent(folder.dir)}/${encodeURIComponent(file)}`,
+      alt: `${folder.name} lookbook, page ${pageNumber(file)}`,
+    }))
+}
+
+export async function getCollectionLookbook(slug: string): Promise<LookbookImage[]> {
+  try {
+    const supabase = createStaticClient()
+    const { data: collection, error: collectionError } = await supabase
+      .from("collections")
+      .select("id")
+      .eq("slug", slug)
+      .maybeSingle()
+    if (collectionError || !collection) return getLocalLookbook(slug)
+
+    const { data, error } = await supabase
+      .from("collection_images")
+      .select("path, alt, sort_order")
+      .eq("collection_id", collection.id)
+      .order("sort_order")
+
+    if (error || !data?.length) return getLocalLookbook(slug)
+    return data.map((image) => ({
+      src: image.path,
+      alt: image.alt ?? "Collection lookbook",
+    }))
+  } catch {
+    return getLocalLookbook(slug)
+  }
 }
 
 export async function getCategoriesFromDb() {
