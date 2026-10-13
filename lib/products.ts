@@ -1,6 +1,5 @@
 import { products as rawProducts, type Product as BaseProduct } from "@/lib/data"
 import { formatStartingPrice } from "@/lib/format"
-import { getConceptForProduct } from "@/lib/concepts"
 
 export type ProductVariant = {
   id: string
@@ -20,13 +19,6 @@ export type CatalogProduct = BaseProduct & {
 }
 
 export type StockStatus = "in_stock" | "low_stock" | "made_to_order"
-
-const COLLECTION_GALLERIES: Record<string, string[]> = {
-  "still-mandu": ["/catalog/still-mandu-bed.webp", "/catalog/still-mandu-lounge-chair.webp", "/catalog/still-mandu-coffee-table.webp", "/catalog/still-mandu-dining-table.webp"],
-  "hampi-rift": ["/catalog/hampi-rift-console.webp", "/catalog/hampi-rift-media-unit.webp", "/catalog/hampi-rift-sofa.webp"],
-  "fatehpur-sikri": ["/catalog/fatehpur-sikri-armchair.webp", "/catalog/fatehpur-sikri-sofa.webp", "/catalog/fatehpur-sikri-media-unit.webp"],
-  "bishnupur-temples": ["/catalog/bishnupur-bed.webp", "/catalog/bishnupur-armchair.webp", "/catalog/bishnupur-dining-table.webp", "/catalog/bishnupur-console.webp"],
-}
 
 function parsePricePaise(price: string): number {
   const match = price.match(/[\d,]+/)
@@ -59,10 +51,8 @@ function buildVariants(product: BaseProduct, productIndex: number): ProductVaria
   }))
 }
 
-export function expandProductImages(slug: string, images: string[]): string[] {
-  const collection = getConceptForProduct(slug)
-  const extras = collection ? COLLECTION_GALLERIES[collection.slug] ?? [] : []
-  return [...new Set([...images.filter(Boolean), ...extras])]
+export function expandProductImages(_slug: string, images: string[]): string[] {
+  return [...new Set(images.filter(Boolean))]
 }
 
 function buildImages(product: BaseProduct, _index: number): string[] {

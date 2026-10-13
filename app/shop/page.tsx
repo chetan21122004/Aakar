@@ -1,12 +1,12 @@
 import { Header } from "@/components/header"
 import { FooterSection } from "@/components/sections/footer-section"
 import { ShopGrid } from "@/components/shop-grid"
-import { getCatalogProducts } from "@/lib/catalog"
+import { getCatalogProducts, getPublishedCollectionMembership } from "@/lib/catalog"
 
 export const metadata = {
   title: "Shop Custom Wooden Furniture | Aakar Woodcraft",
   description:
-    "Browse furniture from Still Mandu, Hampi Rift, Fatehpur Sikri, and Bishnupur Temples.",
+    "Browse furniture from the Hampi Rift and Still Mandu collections.",
 }
 
 export default async function ShopPage({
@@ -15,7 +15,12 @@ export default async function ShopPage({
   searchParams: Promise<{ collection?: string }>
 }) {
   const { collection } = await searchParams
-  const products = await getCatalogProducts()
+  const [catalog, membership] = await Promise.all([
+    getCatalogProducts(),
+    getPublishedCollectionMembership(),
+  ])
+  const allowed = new Set(membership.flatMap((item) => item.productSlugs))
+  const products = catalog.filter((product) => allowed.has(product.slug))
 
   return (
     <main className="min-h-screen bg-background">
@@ -38,7 +43,7 @@ export default async function ShopPage({
               <p className="type-label mb-4">The collection</p>
               <h1 className="type-h1 mb-4">Furniture shaped by architecture</h1>
               <p className="type-body max-w-2xl text-lg">
-                Explore pieces from four architecture-led collections using the original concept renders.
+                Explore pieces from Hampi Rift and Still Mandu.
               </p>
             </div>
             <div className="font-condensed text-sm uppercase tracking-[.12em] text-ink/55">
@@ -46,7 +51,7 @@ export default async function ShopPage({
             </div>
           </div>
 
-          <ShopGrid products={products} initialCollection={collection} />
+          <ShopGrid products={products} collections={membership} initialCollection={collection} />
         </div>
       </section>
 

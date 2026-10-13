@@ -5,7 +5,7 @@ import { Header } from "@/components/header"
 import { FooterSection } from "@/components/sections/footer-section"
 import { ProductCard } from "@/components/product-card"
 import { conceptCollections, getConceptBySlug } from "@/lib/concepts"
-import { getCatalogProducts, getCollectionLookbook } from "@/lib/catalog"
+import { getCatalogProducts, getCollectionLookbook, getPublishedCollectionMembership } from "@/lib/catalog"
 
 export function generateStaticParams() {
   return conceptCollections.map((collection) => ({ slug: collection.slug }))
@@ -23,11 +23,13 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
   const collection = getConceptBySlug(slug)
   if (!collection) notFound()
 
-  const [allProducts, lookbook] = await Promise.all([
+  const [allProducts, lookbook, membership] = await Promise.all([
     getCatalogProducts(),
     getCollectionLookbook(slug),
+    getPublishedCollectionMembership(),
   ])
-  const products = allProducts.filter((product) => collection.productSlugs.includes(product.slug))
+  const memberSlugs = membership.find((item) => item.slug === slug)?.productSlugs ?? collection.productSlugs
+  const products = allProducts.filter((product) => memberSlugs.includes(product.slug))
 
   return (
     <main className="min-h-screen bg-sand">

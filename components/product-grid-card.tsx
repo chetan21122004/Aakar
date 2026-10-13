@@ -1,7 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
+import { ProductImageSwitcher } from "@/components/product-image-switcher";
 import { useEffect, useState } from "react";
 import { Heart } from "lucide-react";
 import { toast } from "sonner";
@@ -20,7 +20,7 @@ export function ProductGridCard({ product, image }: ProductGridCardProps) {
   const [wishlisted, setWishlisted] = useState(false);
   const defaultVariant = getDefaultVariant(product);
   const href = `/products/${product.slug}`;
-  const imageSrc = image ?? product.images[0];
+  const gallery = image ? [image] : product.images;
 
   useEffect(() => {
     const guestToken = getOrCreateGuestToken();
@@ -71,15 +71,13 @@ export function ProductGridCard({ product, image }: ProductGridCardProps) {
   return (
     <article className="group flex h-full flex-col rounded-2xl border border-border/60 bg-card p-3.5 pb-3.5 shadow-[0_1px_0_rgba(48,42,38,0.04)] transition-shadow duration-300 hover:shadow-[0_10px_28px_rgba(48,42,38,0.07)] md:p-4">
       <div className="relative mb-3 aspect-[4/5] overflow-hidden rounded-xl bg-background">
-        <Link href={href} className="absolute inset-0 block">
-          <Image
-            src={imageSrc}
-            alt={product.name}
-            fill
-            sizes="(max-width: 768px) 50vw, 20vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
-          />
-        </Link>
+        <ProductImageSwitcher
+          href={href}
+          images={gallery}
+          alt={product.name}
+          sizes="(max-width: 768px) 50vw, 20vw"
+          imageClassName="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+        />
         <button
           type="button"
           onClick={handleWishlist}

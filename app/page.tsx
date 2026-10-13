@@ -19,7 +19,7 @@ export default async function Home() {
       <Header />
       <HeroSection />
       <ShopByCategorySection products={products} />
-      <CraftDetailsSection />
+      <CraftDetailsSection products={products} />
       <BrandPhilosophySection />
       <CraftMaterialsShowcaseSection />
       <ModularHomesSection />

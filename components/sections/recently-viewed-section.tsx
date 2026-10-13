@@ -10,19 +10,11 @@ import {
 
 const RECENT_SLUGS = [
   "fluted-console",
-  "dining-chair",
   "rounded-edge-console",
-  "heritage-console",
+  "signature-dining-table",
   "coffee-table",
+  "dining-chair",
 ] as const;
-
-const DISPLAY_IMAGE: Record<string, string> = {
-  "fluted-console": "/catalog/hampi-rift-console.webp",
-  "dining-chair": "/catalog/still-mandu-lounge-chair.webp",
-  "rounded-edge-console": "/catalog/hampi-rift-media-unit.webp",
-  "heritage-console": "/catalog/bishnupur-console.webp",
-  "coffee-table": "/catalog/still-mandu-coffee-table.webp",
-};
 
 const SECTION_HEADING =
   "mb-5 text-center font-condensed text-[1.35rem] font-semibold uppercase tracking-[0.12em] text-ink md:mb-6 md:text-[1.65rem] md:tracking-[0.14em]";
@@ -43,10 +35,7 @@ export function RecentlyViewedSection({ products }: { products: CatalogProduct[]
         >
           {displayProducts.map((product) => (
             <StaggerItem key={product.id} className="h-full">
-              <ProductGridCard
-                product={product}
-                image={DISPLAY_IMAGE[product.slug]}
-              />
+              <ProductGridCard product={product} />
             </StaggerItem>
           ))}
         </StaggerContainer>

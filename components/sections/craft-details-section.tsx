@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { ProductImageSwitcher } from "@/components/product-image-switcher";
 import Link from "next/link";
 import { useRef } from "react";
 import {
@@ -74,28 +75,12 @@ const gallery = [
 
 /** Five Echoes of Mandu collection picks */
 const FEATURED_SLUGS = [
-  "signature-dining-table",
-  "dining-chair",
   "fluted-console",
+  "rounded-edge-console",
+  "signature-dining-table",
   "coffee-table",
-  "heritage-console",
+  "dining-chair",
 ] as const;
-
-const DISPLAY_NAME: Record<string, string> = {
-  "signature-dining-table": "Mandu Dining Table",
-  "dining-chair": "Arch Lounge Chair",
-  "fluted-console": "Colonnade Console",
-  "coffee-table": "Reservoir Table",
-  "heritage-console": "Pavilion Console",
-};
-
-const DISPLAY_IMAGE: Record<string, string> = {
-  "signature-dining-table": "/images/featured/product-dining.jpg",
-  "dining-chair": "/images/featured/product-lounge.jpg",
-  "fluted-console": "/images/featured/product-console.jpg",
-  "coffee-table": "/images/featured/product-coffee.jpg",
-  "heritage-console": "/images/featured/product-pavilion.jpg",
-};
 
 const SECTION_HEADING =
   "mb-5 text-center font-condensed text-[1.35rem] font-semibold uppercase tracking-[0.12em] text-ink md:mb-6 md:text-[1.65rem] md:tracking-[0.14em]";
@@ -334,8 +319,6 @@ function FeaturedProductCard({ product }: { product: CatalogProduct }) {
   const { addItem } = useCart();
   const defaultVariant = getDefaultVariant(product);
   const href = `/products/${product.slug}`;
-  const title = DISPLAY_NAME[product.slug] ?? product.name;
-  const image = DISPLAY_IMAGE[product.slug] ?? product.images[0];
   const swatches = product.options.finish.slice(0, 3);
 
   const handleAddToCart = (e: React.MouseEvent) => {
@@ -354,23 +337,20 @@ function FeaturedProductCard({ product }: { product: CatalogProduct }) {
 
   return (
     <article className="group flex h-full flex-col rounded-2xl border border-border/60 bg-card p-3.5 pb-3.5 shadow-[0_1px_0_rgba(48,42,38,0.04)] transition-shadow duration-300 hover:shadow-[0_10px_28px_rgba(48,42,38,0.07)] md:p-4">
-      <Link
-        href={href}
-        className="relative mb-3 block aspect-[4/5] overflow-hidden rounded-xl bg-background"
-      >
-        <Image
-          src={image}
-          alt={title}
-          fill
+      <div className="relative mb-3 aspect-[4/5] overflow-hidden rounded-xl bg-background">
+        <ProductImageSwitcher
+          href={href}
+          images={product.images}
+          alt={product.name}
           sizes="(max-width: 768px) 50vw, 20vw"
-          className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+          imageClassName="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
         />
-      </Link>
+      </div>
 
       <div className="flex flex-1 flex-col px-0.5">
         <Link href={href} className="block">
           <h3 className="font-condensed text-[0.95rem] font-semibold uppercase leading-tight tracking-[0.04em] text-ink md:text-[1.05rem]">
-            {title}
+            {product.name}
           </h3>
         </Link>
 
@@ -402,9 +382,9 @@ function FeaturedProductCard({ product }: { product: CatalogProduct }) {
   );
 }
 
-export function CraftDetailsSection() {
+export function CraftDetailsSection({ products = catalogProducts }: { products?: CatalogProduct[] }) {
   const featured = FEATURED_SLUGS.map((slug) =>
-    catalogProducts.find((p) => p.slug === slug)
+    products.find((p) => p.slug === slug)
   ).filter(Boolean) as CatalogProduct[];
 
   return (

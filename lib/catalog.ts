@@ -4,6 +4,7 @@ import { createStaticClient } from "@/lib/supabase/static"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { formatStartingPrice } from "@/lib/format"
 import { expandProductImages, type CatalogProduct, type ProductVariant } from "@/lib/products"
+import { conceptCollections } from "@/lib/concepts"
 
 type DbProduct = {
   id: string
@@ -175,6 +176,32 @@ export async function getCollectionsFromDb() {
 export async function getCollectionBySlugFromDb(slug: string) {
   const collections = await getCollectionsFromDb()
   return collections.find((c) => c.slug === slug) ?? null
+}
+
+export type CollectionMembership = {
+  slug: string
+  name: string
+  productSlugs: string[]
+}
+
+export async function getPublishedCollectionMembership(): Promise<CollectionMembership[]> {
+  const collections = await getCollectionsFromDb()
+  if (!collections.length) {
+    return conceptCollections.map((collection) => ({
+      slug: collection.slug,
+      name: collection.name,
+      productSlugs: collection.productSlugs,
+    }))
+  }
+
+  return collections.map((collection) => ({
+    slug: collection.slug,
+    name: collection.name,
+    productSlugs: [...collection.collection_products]
+      .sort((a, b) => a.sort_order - b.sort_order)
+      .map((item) => item.products?.slug)
+      .filter((slug): slug is string => Boolean(slug)),
+  }))
 }
 
 const LOCAL_LOOKBOOKS: Record<string, { dir: string; name: string }> = {

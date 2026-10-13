@@ -2,19 +2,16 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { useState } from "react"
 import { ProductCard } from "@/components/product-card"
 import { conceptCollections } from "@/lib/concepts"
 import type { CatalogProduct } from "@/lib/products"
-import { cn } from "@/lib/utils"
 
 type CollectionsHubProps = {
   products: CatalogProduct[]
 }
 
 export function CollectionsHub({ products }: CollectionsHubProps) {
-  const [activeSlug, setActiveSlug] = useState(conceptCollections[0].slug)
-  const active = conceptCollections.find((collection) => collection.slug === activeSlug) ?? conceptCollections[0]
+  const active = conceptCollections[0]
   const productsInCollection = products.filter((product) => active.productSlugs.includes(product.slug))
 
   return (
@@ -22,14 +19,10 @@ export function CollectionsHub({ products }: CollectionsHubProps) {
       <section className="px-4 pb-8 md:px-10 md:pb-16 lg:px-16">
         <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden lg:hidden">
           {conceptCollections.map((collection) => (
-            <button
+            <Link
               key={collection.slug}
-              type="button"
-              onClick={() => setActiveSlug(collection.slug)}
-              className={cn(
-                "relative aspect-[4/5] w-[68vw] max-w-[280px] shrink-0 snap-center overflow-hidden rounded-[1.5rem] text-left transition-opacity duration-200",
-                activeSlug === collection.slug ? "ring-2 ring-ink ring-offset-2 ring-offset-sand" : "opacity-75",
-              )}
+              href={`/collections/${collection.slug}`}
+              className="relative aspect-[4/5] w-[68vw] max-w-[280px] shrink-0 snap-center overflow-hidden rounded-[1.5rem] text-left transition-opacity duration-200"
             >
               <Image
                 src={collection.image}
@@ -45,20 +38,16 @@ export function CollectionsHub({ products }: CollectionsHubProps) {
                 </span>
                 <span className="mt-1 block font-serif text-[1.65rem] font-light leading-none">{collection.name}</span>
               </span>
-            </button>
+            </Link>
           ))}
         </div>
 
         <div className="mx-auto hidden max-w-7xl grid-cols-1 gap-4 sm:grid-cols-2 lg:grid lg:grid-cols-4">
           {conceptCollections.map((collection) => (
-            <button
+            <Link
               key={collection.slug}
-              type="button"
-              onClick={() => setActiveSlug(collection.slug)}
-              className={cn(
-                "group relative aspect-[4/5] cursor-pointer overflow-hidden rounded-[1.75rem] text-left transition-all duration-200",
-                activeSlug === collection.slug ? "ring-2 ring-ink ring-offset-4 ring-offset-sand" : "opacity-80 hover:opacity-100",
-              )}
+              href={`/collections/${collection.slug}`}
+              className="group relative aspect-[4/5] cursor-pointer overflow-hidden rounded-[1.75rem] text-left opacity-80 transition-all duration-200 hover:opacity-100"
             >
               <Image
                 src={collection.image}
@@ -74,7 +63,7 @@ export function CollectionsHub({ products }: CollectionsHubProps) {
                 </span>
                 <span className="mt-1 block font-serif text-3xl font-light">{collection.name}</span>
               </span>
-            </button>
+            </Link>
           ))}
         </div>
       </section>

@@ -5,23 +5,38 @@ import { ProductCard } from "@/components/product-card"
 import { conceptCollections } from "@/lib/concepts"
 import type { CatalogProduct } from "@/lib/products"
 
-const filters = [
+export type ShopCollection = {
+  slug: string
+  name: string
+  productSlugs: string[]
+}
+
+const fallbackFilters = [
   { label: "All", slug: "all" },
   ...conceptCollections.map((collection) => ({ label: collection.name, slug: collection.slug })),
 ]
 
 type ShopGridProps = {
   products: CatalogProduct[]
+  collections?: ShopCollection[]
   initialCollection?: string
 }
 
-export function ShopGrid({ products, initialCollection }: ShopGridProps) {
-  const startingFilter = filters.some((filter) => filter.slug === initialCollection)
+export function ShopGrid({ products, collections, initialCollection }: ShopGridProps) {
+  const source = (collections?.length ? collections : conceptCollections).filter((collection) =>
+    products.some((product) => collection.productSlugs.includes(product.slug)),
+  )
+  const filters = [
+    { label: "All", slug: "all" },
+    ...source.map((collection) => ({ label: collection.name, slug: collection.slug })),
+  ]
+  const visibleFilters = filters.length > 1 ? filters : fallbackFilters
+  const startingFilter = visibleFilters.some((filter) => filter.slug === initialCollection)
     ? initialCollection!
     : "all"
   const [activeFilter, setActiveFilter] = useState(startingFilter)
 
-  const activeCollection = conceptCollections.find((collection) => collection.slug === activeFilter)
+  const activeCollection = source.find((collection) => collection.slug === activeFilter)
   const filteredProducts = useMemo(
     () =>
       activeCollection
@@ -37,7 +52,7 @@ export function ShopGrid({ products, initialCollection }: ShopGridProps) {
           {filteredProducts.length} {filteredProducts.length === 1 ? "piece" : "pieces"}
         </p>
         <div className="-mx-4 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden md:mx-0 md:flex-wrap md:overflow-visible md:px-0">
-          {filters.map((filter) => (
+          {visibleFilters.map((filter) => (
             <button
               key={filter.slug}
               type="button"

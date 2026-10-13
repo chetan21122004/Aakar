@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import Image from "next/image"
+import { ProductImageSwitcher } from "@/components/product-image-switcher"
 import { Camera } from "lucide-react"
 import { toast } from "sonner"
 import { useCart } from "@/contexts/cart-context"
@@ -39,15 +39,13 @@ export function ProductCard({ product }: ProductCardProps) {
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-[#E7E0D8] bg-[#FFFcf8] transition-shadow duration-200 hover:shadow-[0_8px_24px_rgba(48,42,38,0.08)] md:rounded-xl">
       <div className="relative aspect-[4/5] overflow-hidden bg-[#F3EDE4] md:aspect-square">
-        <Link href={href} className="absolute inset-0 block">
-          <Image
-            src={product.images[0]}
-            alt={product.name}
-            fill
-            sizes="(max-width: 640px) 50vw, (max-width: 1280px) 50vw, 25vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
-          />
-        </Link>
+        <ProductImageSwitcher
+          href={href}
+          images={product.images}
+          alt={product.name}
+          sizes="(max-width: 640px) 50vw, (max-width: 1280px) 50vw, 25vw"
+          imageClassName="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+        />
         <Link
           href={`/see-in-your-room?product=${encodeURIComponent(product.slug)}`}
           className="absolute right-2 top-2 z-10 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-white/95 text-[#302A26] shadow-sm transition-colors duration-200 hover:text-[#A86F47] md:right-2.5 md:top-2.5 md:h-9 md:w-9"
