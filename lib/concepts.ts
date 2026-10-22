@@ -8,7 +8,9 @@ export type ConceptCollection = {
   productSlugs: string[]
 }
 
-export const conceptCollections: ConceptCollection[] = [
+import { pdfMembership } from "@/lib/pdf-catalog"
+
+const originalCollections: ConceptCollection[] = [
   {
     slug: "still-mandu",
     name: "Still Mandu",
@@ -46,6 +48,9 @@ export const conceptCollections: ConceptCollection[] = [
     productSlugs: ["heritage-console", "teak-platform-bed", "storage-cabinet"],
   },
 ]
+
+export const conceptCollections: ConceptCollection[] = originalCollections
+  .map((collection) => ({ ...collection, productSlugs: pdfMembership.find((member) => member.slug === collection.slug)?.productSlugs ?? [] }))
 
 export function getConceptForProduct(productSlug: string) {
   return conceptCollections.find((collection) => collection.productSlugs.includes(productSlug))

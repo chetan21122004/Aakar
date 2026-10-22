@@ -4,7 +4,8 @@ import { createStaticClient } from "@/lib/supabase/static"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { formatStartingPrice } from "@/lib/format"
 import { expandProductImages, type CatalogProduct, type ProductVariant } from "@/lib/products"
-import { conceptCollections } from "@/lib/concepts"
+import { getProductDetails } from "@/lib/product-details"
+import { alignPdfCatalog, pdfMembership } from "@/lib/pdf-catalog"
 
 type DbProduct = {
   id: string
@@ -83,6 +84,7 @@ function mapProduct(row: DbProduct): CatalogProduct {
     ),
     options: { finish: finishOptions.length ? finishOptions : ["Natural Oil"] },
     variants,
+    ...getProductDetails(row),
   }
 }
 
@@ -98,7 +100,7 @@ export async function getCatalogProducts(): Promise<CatalogProduct[]> {
     return getCatalogProductsAdmin()
   }
 
-  return (data as DbProduct[]).map(mapProduct)
+  return alignPdfCatalog((data as DbProduct[]).map(mapProduct))
 }
 
 async function getCatalogProductsAdmin(): Promise<CatalogProduct[]> {
@@ -109,36 +111,15 @@ async function getCatalogProductsAdmin(): Promise<CatalogProduct[]> {
       .select(PRODUCT_SELECT)
       .eq("is_published", true)
       .order("name")
-    if (error || !data) return []
-    return (data as DbProduct[]).map(mapProduct)
+    if (error || !data) return alignPdfCatalog([])
+    return alignPdfCatalog((data as DbProduct[]).map(mapProduct))
   } catch {
-    return []
+    return alignPdfCatalog([])
   }
 }
 
 export async function getProductBySlugFromDb(slug: string): Promise<CatalogProduct | null> {
-  const supabase = createStaticClient()
-  const { data, error } = await supabase
-    .from("products")
-    .select(PRODUCT_SELECT)
-    .eq("slug", slug)
-    .eq("is_published", true)
-    .maybeSingle()
-
-  if (!error && data) return mapProduct(data as DbProduct)
-
-  try {
-    const admin = createAdminClient()
-    const { data: adminData } = await admin
-      .from("products")
-      .select(PRODUCT_SELECT)
-      .eq("slug", slug)
-      .eq("is_published", true)
-      .maybeSingle()
-    return adminData ? mapProduct(adminData as DbProduct) : null
-  } catch {
-    return null
-  }
+  return (await getCatalogProducts()).find((product) => product.slug === slug) ?? null
 }
 
 export async function getProductSlugs(): Promise<string[]> {
@@ -185,23 +166,7 @@ export type CollectionMembership = {
 }
 
 export async function getPublishedCollectionMembership(): Promise<CollectionMembership[]> {
-  const collections = await getCollectionsFromDb()
-  if (!collections.length) {
-    return conceptCollections.map((collection) => ({
-      slug: collection.slug,
-      name: collection.name,
-      productSlugs: collection.productSlugs,
-    }))
-  }
-
-  return collections.map((collection) => ({
-    slug: collection.slug,
-    name: collection.name,
-    productSlugs: [...collection.collection_products]
-      .sort((a, b) => a.sort_order - b.sort_order)
-      .map((item) => item.products?.slug)
-      .filter((slug): slug is string => Boolean(slug)),
-  }))
+  return pdfMembership
 }
 
 const LOCAL_LOOKBOOKS: Record<string, { dir: string; name: string }> = {

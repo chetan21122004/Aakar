@@ -47,7 +47,7 @@ export function ProductPurchasePanel({ product, ratingAverage, ratingCount }: Pr
   )
 
   const [selected, setSelected] = useState({
-    finish: defaultVariant.options.finish,
+    finish: defaultVariant?.options.finish,
   })
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState(0)
@@ -60,10 +60,10 @@ export function ProductPurchasePanel({ product, ratingAverage, ratingCount }: Pr
     () => resolveVariant(product, selected) ?? defaultVariant,
     [product, selected, defaultVariant]
   )
-  const stockStatus = getStockStatus(activeVariant.stockQty)
+  const stockStatus = getStockStatus(activeVariant?.stockQty ?? 0)
 
   const whatsappHref = `https://wa.me/${contactInfo.whatsapp}?text=${encodeURIComponent(
-    `Hi, I'm interested in the ${product.name} (${formatOptionsLabel(activeVariant.options)}).`
+    `Hi, I'm interested in the ${product.name} (${formatOptionsLabel(activeVariant?.options ?? {})}).`
   )}`
 
   const onThumbClick = useCallback(
@@ -109,7 +109,7 @@ export function ProductPurchasePanel({ product, ratingAverage, ratingCount }: Pr
       pricePaise: activeVariant.pricePaise,
     })
     toast.success("Added to cart", {
-      description: `${product.name} - ${formatINR(activeVariant.pricePaise)}`,
+      description: `${product.name} - ${formatINR(activeVariant?.pricePaise ?? product.basePricePaise)}`,
     })
     if (redirectToCheckout) router.push("/checkout")
   }
@@ -232,9 +232,9 @@ export function ProductPurchasePanel({ product, ratingAverage, ratingCount }: Pr
           )}
 
           <p className="mt-4 font-sans text-[2rem] font-semibold tabular-nums leading-none text-[#0F1111]">
-            {formatINR(activeVariant.pricePaise)}
+            {formatINR(activeVariant?.pricePaise ?? product.basePricePaise)}
           </p>
-          <p className="mt-1 font-sans text-[12px] text-[#6B5E54]">Inclusive of taxes</p>
+          <p className="mt-1 font-sans text-[12px] text-[#6B5E54]">{"Inclusive of taxes"}</p>
           <p
             className={cn(
               "mt-2 font-sans text-sm font-medium",
@@ -243,7 +243,7 @@ export function ProductPurchasePanel({ product, ratingAverage, ratingCount }: Pr
               stockStatus === "made_to_order" && "text-[#8A6A4F]",
             )}
           >
-            {getStockLabel(activeVariant.stockQty)}
+            {activeVariant ? getStockLabel(activeVariant.stockQty) : "Made to order"}
           </p>
 
           {product.description && (
@@ -269,7 +269,7 @@ export function ProductPurchasePanel({ product, ratingAverage, ratingCount }: Pr
 
           <div className="mt-5 border-t border-[#E7E0D8] pt-4">
             <p className="font-sans text-sm text-[#0F1111]">
-              <span className="font-semibold">Finish:</span> {selected.finish}
+              <span className="font-semibold">Finish:</span> {selected.finish ?? "Discuss available finishes"}
             </p>
             <div className="mt-2.5 flex flex-wrap gap-2">
               {product.options.finish.map((option) => {
@@ -301,14 +301,16 @@ export function ProductPurchasePanel({ product, ratingAverage, ratingCount }: Pr
           <div className="mt-5 hidden flex-col gap-3 sm:flex">
             <button
               type="button"
-              className="w-full rounded-full bg-[#A86F47] py-3.5 font-sans !text-sm font-medium !normal-case !tracking-normal text-white transition-colors hover:bg-[#8F5B38]"
+              className="w-full disabled:cursor-not-allowed disabled:opacity-50 rounded-full bg-[#A86F47] py-3.5 font-sans !text-sm font-medium !normal-case !tracking-normal text-white transition-colors hover:bg-[#8F5B38]"
+              disabled={!activeVariant}
               onClick={() => handleAddToCart(false)}
             >
               Add to cart
             </button>
             <button
               type="button"
-              className="w-full rounded-full border border-[#302A26] bg-[#302A26] py-3.5 font-sans !text-sm font-medium !normal-case !tracking-normal text-white transition-colors hover:bg-[#1F1A17]"
+              className="w-full disabled:cursor-not-allowed disabled:opacity-50 rounded-full border border-[#302A26] bg-[#302A26] py-3.5 font-sans !text-sm font-medium !normal-case !tracking-normal text-white transition-colors hover:bg-[#1F1A17]"
+              disabled={!activeVariant}
               onClick={() => handleAddToCart(true)}
             >
               Buy now
@@ -342,9 +344,9 @@ export function ProductPurchasePanel({ product, ratingAverage, ratingCount }: Pr
         </div>
       </div>
 
-      <details className="mt-12 rounded-[1.75rem] border border-[#E7E0D8] bg-[#FFFcf8] p-6 md:rounded-[2rem] md:p-8">
+      <details id="product-enquiry" className="mt-12 rounded-[1.75rem] border border-[#E7E0D8] bg-[#FFFcf8] p-6 md:rounded-[2rem] md:p-8">
         <summary className="cursor-pointer font-hero !text-lg !font-medium !normal-case !tracking-[-0.02em] text-[#0F1111]">
-          Need custom sizing? Request a quote
+          Request a quote or custom sizing
         </summary>
         <div className="mt-4">
           <EnquiryForm source="product" productSlug={product.slug} />
@@ -413,7 +415,7 @@ export function ProductPurchasePanel({ product, ratingAverage, ratingCount }: Pr
         <div className="flex items-center gap-3">
           <div className="min-w-0 flex-1">
             <p className="font-sans text-lg font-semibold tabular-nums text-[#0F1111]">
-              {formatINR(activeVariant.pricePaise)}
+              {formatINR(activeVariant?.pricePaise ?? product.basePricePaise)}
             </p>
           </div>
           <Link
@@ -426,7 +428,8 @@ export function ProductPurchasePanel({ product, ratingAverage, ratingCount }: Pr
           <button
             type="button"
             className="rounded-full bg-[#A86F47] px-5 py-2.5 font-sans !text-sm font-medium !normal-case !tracking-normal text-white"
-            onClick={() => handleAddToCart(false)}
+            disabled={!activeVariant}
+              onClick={() => handleAddToCart(false)}
           >
             Add to cart
           </button>

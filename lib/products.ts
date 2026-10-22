@@ -1,5 +1,7 @@
 import { products as rawProducts, type Product as BaseProduct } from "@/lib/data"
 import { formatStartingPrice } from "@/lib/format"
+import { getProductDetails } from "@/lib/product-details"
+import { alignPdfCatalog } from "@/lib/pdf-catalog"
 
 export type ProductVariant = {
   id: string
@@ -64,6 +66,7 @@ function enrichProduct(product: BaseProduct, index: number): CatalogProduct {
 
   return {
     ...product,
+    ...getProductDetails(product),
     price: formatStartingPrice(basePricePaise),
     basePricePaise,
     images: buildImages(product, index),
@@ -74,7 +77,7 @@ function enrichProduct(product: BaseProduct, index: number): CatalogProduct {
   }
 }
 
-export const catalogProducts: CatalogProduct[] = rawProducts.map(enrichProduct)
+export const catalogProducts: CatalogProduct[] = alignPdfCatalog(rawProducts.map(enrichProduct))
 
 export function getProductBySlug(slug: string): CatalogProduct | undefined {
   return catalogProducts.find((p) => p.slug === slug)

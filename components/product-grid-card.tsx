@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { ProductImageSwitcher } from "@/components/product-image-switcher";
 import { useEffect, useState } from "react";
-import { Heart } from "lucide-react";
+import { Camera, Heart } from "lucide-react";
 import { toast } from "sonner";
 import { formatINR } from "@/lib/format";
 import { getDefaultVariant, type CatalogProduct } from "@/lib/products";
@@ -23,6 +23,13 @@ export function ProductGridCard({ product, image }: ProductGridCardProps) {
   const gallery = image ? [image] : product.images;
 
   useEffect(() => {
+    if (defaultVariant?.id.startsWith("demo:")) {
+      try {
+        const saved: string[] = JSON.parse(localStorage.getItem("aakar-demo-wishlist") ?? "[]");
+        setWishlisted(saved.includes(product.slug));
+      } catch { setWishlisted(false); }
+      return;
+    }
     const guestToken = getOrCreateGuestToken();
     fetch("/api/wishlist", { headers: { "x-guest-token": guestToken } })
       .then((res) => res.json())
@@ -30,7 +37,7 @@ export function ProductGridCard({ product, image }: ProductGridCardProps) {
         if (data.productIds?.includes(product.id)) setWishlisted(true);
       })
       .catch(() => undefined);
-  }, [product.id]);
+  }, [product.id, product.slug, defaultVariant?.id]);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -49,6 +56,17 @@ export function ProductGridCard({ product, image }: ProductGridCardProps) {
   const handleWishlist = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    if (defaultVariant?.id.startsWith("demo:")) {
+      try {
+        const saved: string[] = JSON.parse(localStorage.getItem("aakar-demo-wishlist") ?? "[]");
+        const next = !wishlisted;
+        localStorage.setItem("aakar-demo-wishlist", JSON.stringify(next
+          ? [...new Set([...saved, product.slug])]
+          : saved.filter((slug) => slug !== product.slug)));
+        setWishlisted(next);
+      } catch { toast.error("Could not update wishlist"); }
+      return;
+    }
     const guestToken = getOrCreateGuestToken();
     const next = !wishlisted;
     setWishlisted(next)
@@ -69,7 +87,7 @@ export function ProductGridCard({ product, image }: ProductGridCardProps) {
   };
 
   return (
-    <article className="group flex h-full flex-col rounded-2xl border border-border/60 bg-card p-3.5 pb-3.5 shadow-[0_1px_0_rgba(48,42,38,0.04)] transition-shadow duration-300 hover:shadow-[0_10px_28px_rgba(48,42,38,0.07)] md:p-4">
+    <article className="product-grid-card group relative flex h-full flex-col rounded-2xl border border-border/60 bg-card p-3.5 pb-3.5 shadow-[0_1px_0_rgba(48,42,38,0.04)] transition-shadow duration-300 hover:shadow-[0_10px_28px_rgba(48,42,38,0.07)] md:p-4">
       <div className="relative mb-3 aspect-[4/5] overflow-hidden rounded-xl bg-background">
         <ProductImageSwitcher
           href={href}
@@ -81,7 +99,7 @@ export function ProductGridCard({ product, image }: ProductGridCardProps) {
         <button
           type="button"
           onClick={handleWishlist}
-          className="absolute right-2.5 top-2.5 flex h-8 w-8 items-center justify-center rounded-full bg-card/90 text-foreground backdrop-blur-sm transition-colors hover:bg-background md:h-9 md:w-9"
+          className="absolute right-2.5 top-2.5 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-card/90 text-foreground backdrop-blur-sm transition-colors hover:bg-background md:h-9 md:w-9"
           aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
           aria-pressed={wishlisted}
         >
@@ -91,10 +109,13 @@ export function ProductGridCard({ product, image }: ProductGridCardProps) {
             className={wishlisted ? "fill-ink text-ink" : "text-ink"}
           />
         </button>
+        <Link href={`/see-in-your-room?product=${encodeURIComponent(product.slug)}`} aria-label={`See ${product.name} in your room`} className="absolute left-2.5 top-2.5 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-card/90 text-foreground backdrop-blur-sm md:h-9 md:w-9">
+          <Camera size={16} />
+        </Link>
       </div>
 
-      <div className="flex flex-1 flex-col px-0.5">
-        <Link href={href} className="block">
+      <div className="flex flex-1 flex-col gap-3.5 px-0.5 md:gap-4">
+        <Link href={href} className="block after:absolute after:inset-0 after:rounded-2xl after:content-[''] focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-primary">
           <h3 className="font-condensed text-[0.95rem] font-semibold uppercase leading-tight tracking-[0.04em] text-ink md:text-[1.05rem]">
             {product.name}
           </h3>
@@ -109,7 +130,7 @@ export function ProductGridCard({ product, image }: ProductGridCardProps) {
         <button
           type="button"
           onClick={handleAddToCart}
-          className="mt-3.5 w-full rounded-full bg-primary py-2.5 font-condensed text-[0.8rem] font-semibold uppercase tracking-[0.14em] text-primary-foreground transition-colors hover:bg-secondary md:mt-4 md:py-3 md:text-[0.85rem]"
+          className="relative z-10 mt-auto w-full rounded-full bg-primary py-2.5 font-condensed text-[0.8rem] font-semibold uppercase tracking-[0.14em] text-primary-foreground transition-colors hover:bg-secondary md:py-3 md:text-[0.85rem]"
         >
           Add to Cart
         </button>

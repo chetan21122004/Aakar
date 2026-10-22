@@ -324,6 +324,10 @@ function FeaturedProductCard({ product }: { product: CatalogProduct }) {
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    if (!defaultVariant) {
+      window.location.href = href;
+      return;
+    }
     addItem({
       variantId: defaultVariant.id,
       productSlug: product.slug,
@@ -375,7 +379,7 @@ function FeaturedProductCard({ product }: { product: CatalogProduct }) {
           onClick={handleAddToCart}
           className="mt-3.5 w-full rounded-full bg-primary py-2.5 font-condensed text-[0.8rem] font-semibold uppercase tracking-[0.14em] text-primary-foreground transition-colors hover:bg-secondary md:mt-4 md:py-3 md:text-[0.85rem]"
         >
-          Add to Cart
+          {product.variants.length ? "Add to Cart" : "View details & enquire"}
         </button>
       </div>
     </article>

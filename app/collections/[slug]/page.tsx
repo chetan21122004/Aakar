@@ -1,11 +1,10 @@
 import Image from "next/image"
-import Link from "next/link"
 import { notFound } from "next/navigation"
 import { Header } from "@/components/header"
 import { FooterSection } from "@/components/sections/footer-section"
 import { ProductCard } from "@/components/product-card"
 import { conceptCollections, getConceptBySlug } from "@/lib/concepts"
-import { getCatalogProducts, getCollectionLookbook, getPublishedCollectionMembership } from "@/lib/catalog"
+import { getCatalogProducts, getPublishedCollectionMembership } from "@/lib/catalog"
 
 export function generateStaticParams() {
   return conceptCollections.map((collection) => ({ slug: collection.slug }))
@@ -23,16 +22,15 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
   const collection = getConceptBySlug(slug)
   if (!collection) notFound()
 
-  const [allProducts, lookbook, membership] = await Promise.all([
+  const [allProducts, membership] = await Promise.all([
     getCatalogProducts(),
-    getCollectionLookbook(slug),
     getPublishedCollectionMembership(),
   ])
   const memberSlugs = membership.find((item) => item.slug === slug)?.productSlugs ?? collection.productSlugs
   const products = allProducts.filter((product) => memberSlugs.includes(product.slug))
 
   return (
-    <main className="min-h-screen bg-sand">
+    <main className="collections-page min-h-screen bg-sand">
       <Header />
 
       <section className="px-4 pb-8 pt-24 md:px-10 md:pb-16 md:pt-32 lg:px-16">
@@ -74,7 +72,7 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
         </div>
       </section>
 
-      {lookbook.length > 0 && (
+      {products.length > 0 ? (
         <section className="px-4 pb-10 md:px-10 md:pb-16 lg:px-16">
           <div className="mx-auto max-w-7xl">
             <p className="font-condensed text-[11px] font-semibold uppercase tracking-[.2em] text-umber md:text-xs">
@@ -82,40 +80,20 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
             </p>
             <h2 className="mt-1 font-serif text-[1.75rem] font-light text-ink md:text-4xl">{collection.name}</h2>
             <div className="mt-5 grid grid-cols-2 gap-2.5 sm:gap-4 md:mt-8 lg:grid-cols-3">
-              {lookbook.map((image) => (
-                <div key={image.src} className="relative aspect-[3/4] overflow-hidden rounded-[1.25rem] bg-sand">
-                  <Image src={image.src} alt={image.alt} fill sizes="(min-width: 1024px) 30vw, 50vw" className="object-contain" />
-                </div>
+              {products.map((product) => (
+                <ProductCard key={product.slug} product={product} />
               ))}
             </div>
           </div>
         </section>
+      ) : (
+        <section className="px-4 pb-16 md:px-10 lg:px-16">
+          <div className="mx-auto max-w-7xl rounded-2xl border border-ink/10 bg-stone px-6 py-12 text-center">
+            <h2 className="font-serif text-3xl text-ink">The lookbook</h2>
+            <p className="mt-3 text-sm text-muted-foreground">No products in this collection yet.</p>
+          </div>
+        </section>
       )}
-
-      <section className="bg-stone px-4 py-8 md:px-10 md:py-16 lg:px-16">
-        <div className="mx-auto max-w-7xl">
-          <div className="flex items-end justify-between gap-4">
-            <div>
-              <p className="font-condensed text-[11px] font-semibold uppercase tracking-[.2em] text-umber md:text-xs">The pieces</p>
-              <h2 className="mt-1 font-serif text-[1.75rem] font-light text-ink md:text-4xl">Shop the collection</h2>
-            </div>
-            <p className="font-sans text-xs text-ink/55 md:text-sm">{products.length} pieces</p>
-          </div>
-          <div className="mt-5 grid grid-cols-2 gap-2.5 sm:gap-5 md:mt-9 lg:grid-cols-3">
-            {products.map((product) => (
-              <ProductCard key={product.slug} product={product} />
-            ))}
-          </div>
-          <div className="mt-8 md:hidden">
-            <Link
-              href="/shop"
-              className="flex min-h-11 cursor-pointer items-center justify-center rounded-full border border-ink/20 bg-transparent font-sans text-[13px] font-medium text-ink"
-            >
-              Browse all furniture
-            </Link>
-          </div>
-        </div>
-      </section>
       <FooterSection />
     </main>
   )

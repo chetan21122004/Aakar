@@ -63,21 +63,21 @@ export const collections: Collection[] = [
     name: "Hampi Rift",
     tagline: "Sculptural volumes inspired by Hampi's weathered stone landscape.",
     image: "/catalog/hampi-rift-sofa.webp",
-    pieceCount: 7,
+    pieceCount: 9,
   },
   {
     slug: "fatehpur-sikri",
     name: "Fatehpur Sikri",
     tagline: "Carved detail and ceremonial proportions translated into contemporary furniture.",
     image: "/catalog/fatehpur-sikri-sofa.webp",
-    pieceCount: 4,
+    pieceCount: 0,
   },
   {
     slug: "bishnupur-temples",
     name: "Bishnupur Temples",
     tagline: "Warm timber forms informed by Bishnupur's terracotta reliefs and temple geometry.",
     image: "/catalog/bishnupur-bed.webp",
-    pieceCount: 6,
+    pieceCount: 0,
   },
 ]
 

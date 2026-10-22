@@ -609,6 +609,19 @@
   border-radius: 1.5rem;
 }
 
+/* Keep collection cards distinct from the warm sand page surface. */
+.collections-page article.product-grid-card,
+.site-route--inner .collections-page article.product-grid-card {
+  background-color: #FFFCF8;
+  border-color: #D4C2B0;
+  box-shadow: 0 3px 12px rgba(48, 42, 38, 0.06);
+}
+
+.collections-page article.product-grid-card:hover,
+.site-route--inner .collections-page article.product-grid-card:hover {
+  box-shadow: 0 10px 28px rgba(48, 42, 38, 0.1);
+}
+
 @media (max-width: 767px) {
   .site-route--inner main > section:first-of-type::before {
     width: 100%;

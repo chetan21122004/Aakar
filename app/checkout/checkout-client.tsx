@@ -54,6 +54,10 @@ export default function CheckoutPage() {
   }, [isReady, items.length, paid, paying, router])
 
   const onSubmit = async (data: CheckoutForm) => {
+    if (items.some((item) => item.variantId.startsWith("demo:"))) {
+      setError("This cart includes products with demo prices. Please request a quote to confirm pricing before payment.")
+      return
+    }
     setPaying(true)
     setError(null)
     try {

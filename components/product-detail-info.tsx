@@ -31,7 +31,7 @@ export function ProductDetailInfo({ product }: { product: CatalogProduct }) {
           )}
           <div className="grid grid-cols-[8rem_1fr] gap-4 py-3 sm:grid-cols-[10rem_1fr]">
             <dt className="text-[#6B5E54]">Finishes</dt>
-            <dd>{product.options.finish.join(", ")}</dd>
+            <dd>{product.options.finish.join(", ") || "Discuss available finishes when requesting a quote"}</dd>
           </div>
           {product.productionTime && (
             <div className="grid grid-cols-[8rem_1fr] gap-4 py-3 sm:grid-cols-[10rem_1fr]">

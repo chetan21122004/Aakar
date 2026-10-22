@@ -14,7 +14,7 @@ export default async function CollectionsPage() {
   const products = await getCatalogProducts()
 
   return (
-    <main className="min-h-screen bg-background">
+    <main className="collections-page min-h-screen bg-background">
       <Header />
 
       <section className="px-4 pb-5 pt-24 md:px-12 md:pb-16 md:pt-32 lg:px-20">

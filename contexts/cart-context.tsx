@@ -81,7 +81,8 @@ async function pushServerCart(guestToken: string, items: CartItem[]) {
       "Content-Type": "application/json",
       "x-guest-token": guestToken,
     },
-    body: JSON.stringify({ items }),
+    // Demo catalog variants stay in the local cart until saved purchase records exist.
+    body: JSON.stringify({ items: items.filter((item) => !item.variantId.startsWith("demo:")) }),
   })
 }
 
@@ -108,7 +109,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
         server = []
       }
       if (!cancelled) {
-        setItems(server.length ? server : local)
+        setItems(server.length
+          ? [...server, ...local.filter((item) => item.variantId.startsWith("demo:") && !server.some((saved) => saved.variantId === item.variantId))]
+          : local)
         setIsReady(true)
       }
     }
