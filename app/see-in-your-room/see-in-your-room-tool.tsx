@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useRef, useState } from "react"
 import Image from "next/image"
-import Link from "next/link"
 import { Camera, Download, ImagePlus, Loader2, Sofa, Sparkles, Upload, X } from "lucide-react"
 import { toast } from "sonner"
 import {
@@ -19,6 +18,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { SeeInRoomStepper, computeSeeInRoomStep } from "@/components/see-in-room-stepper"
 
 export type SeeInRoomProduct = {
   slug: string
@@ -32,6 +32,7 @@ type SeeInYourRoomToolProps = {
   products: SeeInRoomProduct[]
   initialProductSlug?: string
   remainingPreviews: number | null
+  skipQuota?: boolean
 }
 
 type OverlayMarks = { rect: OverlayRect | null; strokes: { x: number; y: number }[][] }
@@ -106,7 +107,12 @@ function dataUrlToFile(dataUrl: string, name: string) {
   return new File([bytes], name, { type: mime })
 }
 
-export function SeeInYourRoomTool({ products, initialProductSlug, remainingPreviews }: SeeInYourRoomToolProps) {
+export function SeeInYourRoomTool({
+  products,
+  initialProductSlug,
+  remainingPreviews,
+  skipQuota = false,
+}: SeeInYourRoomToolProps) {
   const cameraInputRef = useRef<HTMLInputElement>(null)
   const uploadInputRef = useRef<HTMLInputElement>(null)
   const [hydrated, setHydrated] = useState(false)
@@ -273,21 +279,41 @@ export function SeeInYourRoomTool({ products, initialProductSlug, remainingPrevi
     }
   }
 
-  const quoteHref = selectedProduct
-    ? `/contact?product=${encodeURIComponent(selectedProduct.slug)}&source=see_in_room`
-    : "/contact"
+  const showPreviewPanel = Boolean(result)
+
+  const hasMark = Boolean(
+    placement || overlayMarks?.strokes?.some((stroke) => stroke.length > 0),
+  )
+  const activeStep = computeSeeInRoomStep({
+    hasPhoto: Boolean(roomPreview),
+    hasMark,
+    hasProduct: Boolean(selectedProduct),
+    generating,
+    hasResult: Boolean(result),
+  })
 
   return (
     <>
-      <div className="mx-auto max-w-7xl overflow-hidden rounded-[1.75rem] border border-[#E7E0D8] bg-[#FFFcf8] p-4 md:rounded-[2rem] md:p-6 lg:p-8">
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.05fr_1fr] lg:items-stretch lg:gap-8">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between gap-3">
-              <h2 className="font-hero !text-xl !font-medium !normal-case !tracking-[-0.03em] text-ink md:!text-2xl">
-                Your room
-              </h2>
-              {roomPreview && <span className="font-sans text-xs text-[#067D62]">Photo saved on this device</span>}
-            </div>
+      <div className="mx-auto mb-6 flex max-w-7xl flex-col gap-5 lg:mb-8 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
+        <div className="max-w-2xl">
+          <p className="type-label mb-2">Visual preview</p>
+          <h1 className="text-[clamp(2rem,4.2vw,3.4rem)] leading-[.95]">See the piece in your room.</h1>
+          <p className="mt-3 max-w-xl text-base font-light leading-relaxed text-ink/70 md:text-lg">
+            Sign in, upload a photo, mark the floor, then generate a preview
+            {skipQuota ? "." : `. Each account has ${ROOM_PREVIEW_DAILY_LIMIT} previews a day.`}
+          </p>
+        </div>
+        <SeeInRoomStepper activeStep={activeStep} />
+      </div>
+
+      <div className="mx-auto max-w-7xl space-y-6 lg:space-y-8">
+        <div className="space-y-4">
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="font-hero !text-xl !font-medium !normal-case !tracking-[-0.03em] text-ink md:!text-2xl">
+              Your room
+            </h2>
+            {roomPreview && <span className="font-sans text-xs text-[#067D62]">Photo saved on this device</span>}
+          </div>
             <input
               ref={cameraInputRef}
               type="file"
@@ -309,24 +335,25 @@ export function SeeInYourRoomTool({ products, initialProductSlug, remainingPrevi
                 event.currentTarget.value = ""
               }}
             />
-            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[1.5rem] border border-dashed border-[#C4B5A5] bg-sand lg:min-h-[28rem] lg:aspect-auto">
-              {roomPreview ? (
-                <>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={roomPreview} alt="Uploaded room" className="absolute inset-0 h-full w-full object-cover" />
-                  <RoomMarkOverlay
-                    key={roomSession}
-                    imageSrc={roomPreview}
-                    imageSize={roomImageSize}
-                    highlight={markHint}
-                    initialRect={overlayMarks?.rect ?? null}
-                    initialStrokes={overlayMarks?.strokes ?? []}
-                    onPlacementChange={setPlacement}
-                    onMarksChange={setOverlayMarks}
-                    onInteract={() => setMarkHint(false)}
-                  />
-                </>
-              ) : (
+            {roomPreview ? (
+              <RoomMarkOverlay
+                key={roomSession}
+                toolbarOutside
+                frameClassName="relative aspect-[4/3] w-full overflow-hidden rounded-[1.5rem] border border-dashed border-[#C4B5A5] bg-sand lg:min-h-[28rem] lg:aspect-auto"
+                imageSrc={roomPreview}
+                imageSize={roomImageSize}
+                highlight={markHint}
+                initialRect={overlayMarks?.rect ?? null}
+                initialStrokes={overlayMarks?.strokes ?? []}
+                onPlacementChange={setPlacement}
+                onMarksChange={setOverlayMarks}
+                onInteract={() => setMarkHint(false)}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={roomPreview} alt="Uploaded room" className="absolute inset-0 h-full w-full object-cover" />
+              </RoomMarkOverlay>
+            ) : (
+              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[1.5rem] border border-dashed border-[#C4B5A5] bg-sand lg:min-h-[28rem] lg:aspect-auto">
                 <button
                   type="button"
                   onClick={() => uploadInputRef.current?.click()}
@@ -335,8 +362,8 @@ export function SeeInYourRoomTool({ products, initialProductSlug, remainingPrevi
                   <ImagePlus size={22} />
                   Add a room photo to begin
                 </button>
-              )}
-            </div>
+              </div>
+            )}
             <div className="grid grid-cols-2 gap-3">
               <button
                 type="button"
@@ -381,103 +408,76 @@ export function SeeInYourRoomTool({ products, initialProductSlug, remainingPrevi
               </span>
               <span className="shrink-0 font-sans text-xs text-ink/50">{selectedProduct ? "Change" : "Choose"}</span>
             </button>
-          </div>
 
-          <div className="flex flex-col">
-            <h2 className="mb-4 font-hero !text-xl !font-medium !normal-case !tracking-[-0.03em] text-ink md:!text-2xl">
-              Preview
-            </h2>
-            {quotaEnabled && (
-              <p className="mb-3 font-sans text-xs text-ink/55">
-                {(remaining ?? 0) > 0
-                  ? `${remaining} of ${ROOM_PREVIEW_DAILY_LIMIT} previews left today`
-                  : `Daily limit reached. ${ROOM_PREVIEW_DAILY_LIMIT} previews per account each day.`}
-              </p>
+          {quotaEnabled && (
+            <p className="font-sans text-xs text-ink/55">
+              {(remaining ?? 0) > 0
+                ? `${remaining} of ${ROOM_PREVIEW_DAILY_LIMIT} previews left today`
+                : `Daily limit reached. ${ROOM_PREVIEW_DAILY_LIMIT} previews per account each day.`}
+            </p>
+          )}
+
+          {error && <p className="text-sm leading-relaxed text-destructive">{error}</p>}
+
+          <button
+            type="button"
+            onClick={() => void handleGenerate()}
+            disabled={!canGenerate}
+            className="w-full rounded-full bg-clay py-3.5 font-sans !text-sm font-medium !normal-case !tracking-normal text-white transition-colors hover:bg-umber disabled:pointer-events-none disabled:opacity-40"
+          >
+            {generating ? (
+              <span className="inline-flex items-center justify-center gap-2">
+                <Loader2 size={16} className="animate-spin" />
+                Creating your preview
+              </span>
+            ) : quotaEnabled && (remaining ?? 0) <= 0 ? (
+              "Daily limit reached"
+            ) : (
+              "Generate preview"
             )}
-            <div className="relative flex min-h-[16rem] flex-1 aspect-[4/3] w-full items-center justify-center overflow-hidden rounded-[1.5rem] border border-[#E7E0D8] bg-sand lg:min-h-[28rem] lg:aspect-auto">
-              {generating && (
-                <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-sand/95 px-6 text-center backdrop-blur-sm">
-                  <div className="relative mb-6 flex h-20 w-20 items-center justify-center">
-                    <span className="absolute inset-0 animate-ping rounded-full border border-primary/20 [animation-duration:2.4s]" />
-                    <span className="absolute inset-2 animate-spin rounded-full border border-ink/10 border-t-primary [animation-duration:1.8s]" />
-                    <span className="flex h-12 w-12 items-center justify-center rounded-full bg-ink text-sand shadow-lg">
-                      <Sparkles size={20} className="animate-pulse" />
-                    </span>
-                  </div>
+          </button>
 
-                  <p className="font-hero !text-lg !font-medium !normal-case !tracking-[-0.02em] text-ink">
-                    {generationStages[generationStage].title}
-                  </p>
-                  <p className="mt-2 max-w-sm font-sans text-sm leading-relaxed text-ink/60">
-                    {generationStages[generationStage].description}
-                  </p>
-
-                  <div className="mt-6 flex gap-1.5" aria-label={`Step ${generationStage + 1} of ${generationStages.length}`}>
-                    {generationStages.map((stage, index) => (
-                      <span
-                        key={stage.title}
-                        className={`h-1.5 rounded-full transition-all duration-500 ${
-                          index <= generationStage ? "w-7 bg-primary" : "w-3 bg-ink/15"
-                        }`}
-                      />
-                    ))}
-                  </div>
-
-                  <p className="mt-5 font-sans text-xs text-ink/45">Usually 1–3 minutes. Keep this page open.</p>
-                </div>
-              )}
-              {result ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={result} alt="Furniture preview in your room" className="absolute inset-0 h-full w-full object-cover" />
-              ) : (
-                !generating && (
-                  <p className="px-6 text-center font-sans text-sm text-ink/50">
-                    Your generated preview will appear here.
-                  </p>
-                )
-              )}
-            </div>
-
-            {error && <p className="mt-3 text-sm leading-relaxed text-destructive">{error}</p>}
-
-            <button
-              type="button"
-              onClick={() => void handleGenerate()}
-              disabled={!canGenerate}
-              className="mt-4 w-full rounded-full bg-clay py-3.5 font-sans !text-sm font-medium !normal-case !tracking-normal text-white transition-colors hover:bg-umber disabled:pointer-events-none disabled:opacity-40"
-            >
-              {generating ? (
-                <span className="inline-flex items-center justify-center gap-2">
-                  <Loader2 size={16} className="animate-spin" />
-                  Creating your preview
+          {generating && (
+            <div className="rounded-[1.25rem] border border-[#E7E0D8] bg-[#FFFcf8] px-5 py-6 text-center">
+              <div className="relative mx-auto mb-4 flex h-16 w-16 items-center justify-center">
+                <span className="absolute inset-0 animate-spin rounded-full border border-ink/10 border-t-primary [animation-duration:1.8s]" />
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-ink text-sand">
+                  <Sparkles size={18} className="animate-pulse" />
                 </span>
-              ) : quotaEnabled && (remaining ?? 0) <= 0 ? (
-                "Daily limit reached"
-              ) : (
-                "Generate preview"
-              )}
-            </button>
+              </div>
+              <p className="font-hero !text-base !font-medium !normal-case text-ink">
+                {generationStages[generationStage].title}
+              </p>
+              <p className="mt-2 font-sans text-sm text-ink/60">{generationStages[generationStage].description}</p>
+              <p className="mt-4 font-sans text-xs text-ink/45">Usually 1–3 minutes. Keep this page open.</p>
+            </div>
+          )}
+        </div>
 
-            <div className="mt-3 flex gap-3">
+        {showPreviewPanel && (
+          <div className="overflow-hidden rounded-[1.75rem] border border-[#E7E0D8] bg-[#FFFcf8] p-4 md:rounded-[2rem] md:p-6 lg:p-8">
+            <div className="flex flex-col">
+              <h2 className="mb-4 font-hero !text-xl !font-medium !normal-case !tracking-[-0.03em] text-ink md:!text-2xl">
+                Preview
+              </h2>
+              <div className="relative flex min-h-[16rem] aspect-[4/3] w-full items-center justify-center overflow-hidden rounded-[1.5rem] border border-[#E7E0D8] bg-sand lg:min-h-[28rem] lg:aspect-auto">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={result!} alt="Furniture preview in your room" className="absolute inset-0 h-full w-full object-cover" />
+              </div>
+
               {result && (
                 <a
                   href={result}
                   download={`${selectedProduct?.slug ?? "aakar"}-in-your-room.png`}
-                  className="inline-flex flex-1 items-center justify-center gap-2 rounded-full border border-ink/20 py-3 font-sans !text-[13px] font-medium !normal-case !tracking-normal text-ink transition-colors hover:bg-sand"
+                  className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full border border-ink/20 py-3 font-sans !text-[13px] font-medium !normal-case !tracking-normal text-ink transition-colors hover:bg-sand"
                 >
                   <Download size={16} />
-                  Save
+                  Save image
                 </a>
               )}
-              <Link
-                href={quoteHref}
-                className={`${result ? "flex-1" : "w-full"} block rounded-full bg-ink py-3 text-center font-sans !text-[13px] font-medium !normal-case !tracking-normal text-sand transition-colors hover:bg-umber`}
-              >
-                Request a quote
-              </Link>
             </div>
           </div>
-        </div>
+        )}
       </div>
 
       <Dialog open={pickerOpen} onOpenChange={setPickerOpen}>

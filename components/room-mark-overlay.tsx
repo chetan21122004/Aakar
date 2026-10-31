@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react"
 import { Eraser, PenLine, Square } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -65,6 +65,9 @@ export function RoomMarkOverlay({
   onPlacementChange,
   onMarksChange,
   onInteract,
+  toolbarOutside = false,
+  frameClassName,
+  children,
 }: {
   imageSrc: string
   imageSize: { width: number; height: number } | null
@@ -74,6 +77,10 @@ export function RoomMarkOverlay({
   onPlacementChange: (box: PlacementBox | null) => void
   onMarksChange?: (marks: { rect: OverlayRect | null; strokes: Point[][] }) => void
   onInteract?: () => void
+  /** When true, Square / Pen / Clear sit above the photo frame instead of on the canvas. */
+  toolbarOutside?: boolean
+  frameClassName?: string
+  children?: ReactNode
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [tool, setTool] = useState<Tool>("box")
@@ -220,7 +227,55 @@ export function RoomMarkOverlay({
     onPlacementChange(null)
   }
 
-  return (
+  const toolbar = (
+    <div
+      className={cn(
+        "flex w-fit max-w-full flex-wrap items-center gap-1 rounded-full border bg-[#F6EFE5]/95 p-1 shadow-sm",
+        toolbarOutside ? "relative" : "absolute left-3 top-3 z-10",
+        highlight ? "border-clay ring-4 ring-clay/35" : "border-[#E7E0D8]",
+      )}
+    >
+      <button
+        type="button"
+        onClick={() => setTool("box")}
+        className={cn(
+          "flex h-10 items-center justify-center gap-1.5 rounded-full px-3",
+          tool === "box" ? "bg-clay text-white" : "text-ink hover:bg-white",
+          highlight && tool === "box" && "animate-pulse",
+        )}
+        aria-label="Mark a rectangle"
+        title="Mark area"
+      >
+        <Square size={16} />
+        <span className="font-sans !text-[11px] font-medium !normal-case !tracking-normal">Square</span>
+      </button>
+      <button
+        type="button"
+        onClick={() => setTool("pen")}
+        className={cn(
+          "flex h-10 items-center justify-center gap-1.5 rounded-full px-3",
+          tool === "pen" ? "bg-clay text-white" : "text-ink hover:bg-white",
+          highlight && tool === "pen" && "ring-2 ring-clay/50",
+        )}
+        aria-label="Draw with pen"
+        title="Pen"
+      >
+        <PenLine size={16} />
+        <span className="font-sans !text-[11px] font-medium !normal-case !tracking-normal">Pen</span>
+      </button>
+      <button
+        type="button"
+        onClick={clear}
+        className="flex h-10 w-10 items-center justify-center rounded-full text-ink hover:bg-white"
+        aria-label="Clear marks"
+        title="Clear"
+      >
+        <Eraser size={16} />
+      </button>
+    </div>
+  )
+
+  const canvasLayer = (
     <div className="absolute inset-0">
       <canvas
         ref={canvasRef}
@@ -231,59 +286,37 @@ export function RoomMarkOverlay({
         onPointerCancel={onPointerUp}
       />
       {highlight && (
-        <div className="pointer-events-none absolute inset-x-3 top-14 z-10 rounded-2xl bg-[#1F1A17]/88 px-4 py-3 text-center shadow-lg">
+        <div className="pointer-events-none absolute inset-x-3 top-3 z-10 rounded-2xl bg-[#1F1A17]/88 px-4 py-3 text-center shadow-lg sm:top-4">
           <p className="font-sans text-[13px] font-medium leading-snug text-white">
             Mark where the furniture should sit
           </p>
           <p className="mt-1 font-sans text-[12px] text-white/75">
-            Use the highlighted square to drag a box, or the pen to draw the spot.
+            Use square to drag a box, or pen to draw the spot.
           </p>
         </div>
       )}
-      <div
-        className={cn(
-          "absolute left-3 top-3 z-10 flex items-center gap-1 rounded-full border bg-[#F6EFE5]/95 p-1 shadow-sm",
-          highlight ? "border-clay ring-4 ring-clay/35" : "border-[#E7E0D8]",
-        )}
-      >
-        <button
-          type="button"
-          onClick={() => setTool("box")}
-          className={cn(
-            "flex h-10 items-center justify-center gap-1.5 rounded-full px-3",
-            tool === "box" ? "bg-clay text-white" : "text-ink hover:bg-white",
-            highlight && tool === "box" && "animate-pulse",
-          )}
-          aria-label="Mark a rectangle"
-          title="Mark area"
-        >
-          <Square size={16} />
-          <span className="font-sans !text-[11px] font-medium !normal-case !tracking-normal">Square</span>
-        </button>
-        <button
-          type="button"
-          onClick={() => setTool("pen")}
-          className={cn(
-            "flex h-10 items-center justify-center gap-1.5 rounded-full px-3",
-            tool === "pen" ? "bg-clay text-white" : "text-ink hover:bg-white",
-            highlight && "ring-2 ring-clay/50",
-          )}
-          aria-label="Draw with pen"
-          title="Pen"
-        >
-          <PenLine size={16} />
-          <span className="font-sans !text-[11px] font-medium !normal-case !tracking-normal">Pen</span>
-        </button>
-        <button
-          type="button"
-          onClick={clear}
-          className="flex h-10 w-10 items-center justify-center rounded-full text-ink hover:bg-white"
-          aria-label="Clear marks"
-          title="Clear"
-        >
-          <Eraser size={16} />
-        </button>
-      </div>
+      {!toolbarOutside && toolbar}
     </div>
   )
+
+  if (toolbarOutside && frameClassName) {
+    return (
+      <div className="space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          {toolbar}
+          {highlight && (
+            <p className="font-sans text-xs text-ink/55 sm:text-[13px]">
+              Drag a box or draw where the piece should go.
+            </p>
+          )}
+        </div>
+        <div className={frameClassName}>
+          {children}
+          {canvasLayer}
+        </div>
+      </div>
+    )
+  }
+
+  return canvasLayer
 }
