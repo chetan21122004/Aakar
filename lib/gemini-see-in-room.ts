@@ -41,6 +41,19 @@ export function mimeFromFilename(filename: string) {
   return ""
 }
 
+/** Map a browser URL path (/collections/Still%20Mandu%20...) to public/ on disk. */
+function absolutePublicPath(imagePath: string) {
+  const relative = imagePath.replace(/^\/+/, "").replace(/\\/g, "/")
+  const segments = relative.split("/").map((segment) => {
+    try {
+      return decodeURIComponent(segment)
+    } catch {
+      return segment
+    }
+  })
+  return path.join(process.cwd(), "public", ...segments)
+}
+
 export async function loadProductImage(imagePath: string): Promise<InlineImage> {
   if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
     const res = await fetch(imagePath)
@@ -55,12 +68,33 @@ export async function loadProductImage(imagePath: string): Promise<InlineImage> 
     }
   }
 
-  const relative = imagePath.replace(/^\/+/, "").replace(/\\/g, "/")
-  const absolute = path.join(process.cwd(), "public", relative)
-  const buffer = await readFile(absolute)
-  return {
-    mimeType: mimeFromFilename(absolute) || "image/webp",
-    data: buffer.toString("base64"),
+  const absolute = absolutePublicPath(imagePath)
+  try {
+    const buffer = await readFile(absolute)
+    return {
+      mimeType: mimeFromFilename(absolute) || "image/webp",
+      data: buffer.toString("base64"),
+    }
+  } catch (error) {
+    const missing = error instanceof Error && "code" in error && (error as NodeJS.ErrnoException).code === "ENOENT"
+    if (!missing) throw error
+
+    const origin =
+      process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
+      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "")
+    if (origin) {
+      const res = await fetch(`${origin}${imagePath.startsWith("/") ? imagePath : `/${imagePath}`}`)
+      if (res.ok) {
+        const buffer = Buffer.from(await res.arrayBuffer())
+        const headerType = res.headers.get("content-type")?.split(";")[0]?.trim()
+        return {
+          mimeType: headerType && headerType.startsWith("image/") ? headerType : mimeFromFilename(imagePath) || "image/webp",
+          data: buffer.toString("base64"),
+        }
+      }
+    }
+
+    throw new Error("Could not load the product image.")
   }
 }
 
