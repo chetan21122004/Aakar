@@ -8,17 +8,18 @@ import { toast } from "sonner"
 import { Header } from "@/components/header"
 import { FooterSection } from "@/components/sections/footer-section"
 import { PasswordInput } from "@/components/password-input"
-import { createClient } from "@/lib/supabase/client"
 import { getGuestToken } from "@/lib/guest-token"
 import { persistCloudSession } from "@/lib/local-auth"
 import { safeNextPath } from "@/lib/safe-redirect"
 
-function authErrorMessage(message: string) {
-  const text = message.toLowerCase()
-  if (text.includes("invalid login") || text.includes("invalid credentials") || text.includes("not confirmed")) {
-    return "Email or password is incorrect. Create an account if you are new."
-  }
-  return message
+function mergeGuestCartInBackground() {
+  const guestToken = getGuestToken()
+  if (!guestToken) return
+  void fetch("/api/cart/merge", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ guestToken }),
+  }).catch(() => undefined)
 }
 
 export default function LoginPage() {
@@ -29,53 +30,42 @@ export default function LoginPage() {
   const { register, handleSubmit } = useForm<{ email: string; password: string }>()
   const [loading, setLoading] = useState(false)
 
-  const finishLogin = async (email: string, name?: string) => {
-    persistCloudSession({ email, name })
-    const guestToken = getGuestToken()
-    if (guestToken) {
-      await fetch("/api/cart/merge", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ guestToken }),
-      }).catch(() => undefined)
-    }
-    toast.success("Welcome back")
-    router.push(redirect)
-    router.refresh()
-  }
-
   const onSubmit = async (data: { email: string; password: string }) => {
     setLoading(true)
     try {
-      const supabase = createClient()
-      let { data: signedIn, error } = await supabase.auth.signInWithPassword({
-        email: data.email.trim(),
-        password: data.password,
-      })
-      if (error && /not confirmed/i.test(error.message)) {
-        await fetch("/api/auth/confirm-login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: data.email.trim(), password: data.password }),
-        })
-        const retry = await supabase.auth.signInWithPassword({
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
           email: data.email.trim(),
           password: data.password,
-        })
-        signedIn = retry.data
-        error = retry.error
+        }),
+      })
+      const result = (await response.json()) as {
+        error?: string
+        email?: string
+        name?: string
+        phone?: string
       }
-      if (error || !signedIn.user) {
-        throw new Error(authErrorMessage(error?.message || "Could not sign in."))
+
+      if (!response.ok) {
+        throw new Error(result.error || "Could not sign in.")
       }
-      await finishLogin(
-        signedIn.user.email || data.email,
-        (signedIn.user.user_metadata?.full_name as string | undefined) || data.email,
-      )
+
+      persistCloudSession({
+        email: result.email || data.email,
+        name: result.name,
+        phone: result.phone,
+      })
+      mergeGuestCartInBackground()
+      toast.success("Welcome back")
+      router.push(redirect)
+      router.refresh()
     } catch (error) {
       toast.error("Sign in failed", {
         description: error instanceof Error ? error.message : "Check your email and password.",
       })
+    } finally {
       setLoading(false)
     }
   }

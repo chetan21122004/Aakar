@@ -8,10 +8,19 @@ import { toast } from "sonner"
 import { Header } from "@/components/header"
 import { FooterSection } from "@/components/sections/footer-section"
 import { PasswordInput } from "@/components/password-input"
-import { createClient } from "@/lib/supabase/client"
 import { getGuestToken } from "@/lib/guest-token"
 import { persistCloudSession } from "@/lib/local-auth"
 import { safeNextPath } from "@/lib/safe-redirect"
+
+function mergeGuestCartInBackground() {
+  const guestToken = getGuestToken()
+  if (!guestToken) return
+  void fetch("/api/cart/merge", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ guestToken }),
+  }).catch(() => undefined)
+}
 
 function SignupForm() {
   const router = useRouter()
@@ -33,59 +42,32 @@ function SignupForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       })
-      const result = (await response.json()) as { error?: string }
+      const result = (await response.json()) as {
+        error?: string
+        email?: string
+        name?: string
+        phone?: string
+      }
       if (!response.ok) {
         throw new Error(result.error || "Could not create the account.")
       }
 
-      const supabase = createClient()
-      let { data: signedIn, error } = await supabase.auth.signInWithPassword({
-        email: data.email.trim(),
-        password: data.password,
-      })
-      if (error && /not confirmed/i.test(error.message)) {
-        await fetch("/api/auth/confirm-login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: data.email.trim(), password: data.password }),
-        })
-        const retry = await supabase.auth.signInWithPassword({
-          email: data.email.trim(),
-          password: data.password,
-        })
-        signedIn = retry.data
-        error = retry.error
-      }
-      if (error || !signedIn.user) {
-        throw new Error(error?.message || "Account created. Please sign in.")
-      }
-
       persistCloudSession({
-        email: signedIn.user.email || data.email,
-        name: data.name,
-        phone: data.phone,
+        email: result.email || data.email,
+        name: result.name || data.name,
+        phone: result.phone || data.phone,
       })
+      mergeGuestCartInBackground()
+      toast.success("Account created")
+      router.push(redirect)
+      router.refresh()
     } catch (error) {
       toast.error("Registration failed", {
         description: error instanceof Error ? error.message : "Could not create the account.",
       })
+    } finally {
       setLoading(false)
-      return
     }
-
-    const guestToken = getGuestToken()
-    if (guestToken) {
-      await fetch("/api/cart/merge", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ guestToken }),
-      })
-    }
-
-    toast.success("Account created")
-    router.push(redirect)
-    router.refresh()
-    setLoading(false)
   }
 
   return (
